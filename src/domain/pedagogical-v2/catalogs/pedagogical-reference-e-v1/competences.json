@@ -1,0 +1,39 @@
+{
+  "kind": "competences",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-e-v1",
+  "items": [
+    {
+      "id": "competence-e1",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-e-v1",
+      "code": "E1",
+      "domain": "E — Départ",
+      "name": "Accepter le départ sans réponse anticipatrice",
+      "definition": "E1 concerne la capacité du tireur à accepter le départ du coup sans produire une réponse motrice anticipatrice précédant le recul attendu.",
+      "pedagogicalObjective": "Construire une réponse au départ dans laquelle le tireur laisse survenir le coup sans produire, avant le recul, de mouvement anticipateur destiné à accompagner, éviter ou provoquer ce départ.",
+      "prerequisiteIds": [],
+      "observableIndicators": [
+        "Absence de réponse motrice observable précédant le recul réel.",
+        "Lorsque le départ attendu ne se produit pas, absence de mouvement anticipateur associé à ce départ attendu.",
+        "Organisation corporelle conservée jusqu’au moment où le recul réel survient.",
+        "Comportement reproductible sur plusieurs occurrences comparables."
+      ],
+      "indirectIndicators": [
+        "Mouvement corporel apparaissant avant le recul attendu.",
+        "Réponse motrice observable alors qu’aucun départ réel ne s’est produit.",
+        "Dégradation lorsque le tireur cherche à prévoir l’instant exact du départ.",
+        "Amélioration lorsque le tireur accepte de laisser survenir le départ sans tenter d’en provoquer l’instant."
+      ],
+      "interpretationLimits": [
+        "Une absence de réponse anticipatrice sur une occurrence ne suffit pas à exclure E1.",
+        "Pour soutenir E1, la réponse observée doit précéder le recul réel ou apparaître malgré l’absence de départ.",
+        "Un mouvement apparaissant après un véritable départ peut relever du recul normal et ne suffit pas à caractériser E1.",
+        "La position de l’impact en cible ne constitue pas, à elle seule, une preuve de réponse anticipatrice.",
+        "E1 peut coexister avec D4 ou avec d’autres mécanismes ; une observation ne doit pas être attribuée automatiquement à une cause unique."
+      ],
+      "validationMode": "instructor"
+    }
+  ]
+}

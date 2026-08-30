@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Coach Tir",
+    "slug": "shooting-coach",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "shootingcoach",
+    "userInterfaceStyle": "automatic",
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "fr.coachtir.mobile"
+    },
+    "android": {
+      "package": "fr.coachtir.mobile"
+    }
+  }
+}

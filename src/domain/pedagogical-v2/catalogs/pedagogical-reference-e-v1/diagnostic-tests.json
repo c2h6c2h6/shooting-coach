@@ -1,0 +1,46 @@
+{
+  "kind": "diagnostic_tests",
+  "schemaVersion": "pedagogical-v2-inputs-v1",
+  "catalogVersion": "pedagogical-reference-e-v1",
+  "items": [
+    {
+      "id": "diagnostic-test-e1-01",
+      "schemaVersion": "pedagogical-v2-inputs-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-e-v1",
+      "code": "TEST-E1-01",
+      "name": "Départ attendu non produit",
+      "objective": "Déterminer si une réponse motrice anticipatrice apparaît lorsque le tireur s’attend à un départ alors qu’aucun départ ni recul réel ne survient.",
+      "discriminatedHypothesisIds": [],
+      "discriminatedUncertaintyCodes": [
+        "UNCERTAINTY_E1_ANTICIPATORY_RESPONSE"
+      ],
+      "observedCompetenceId": "competence-e1",
+      "prerequisiteReferenceIds": [],
+      "conditionsOfUse": [
+        "Le tireur doit s’attendre à ce qu’un départ puisse survenir.",
+        "Certaines occurrences doivent permettre d’observer la réponse du tireur alors qu’aucun départ réel ne survient.",
+        "L’instructeur doit pouvoir observer suffisamment clairement la chronologie entre l’action du tireur et l’absence ou la présence réelle du départ.",
+        "Le test doit être utilisé dans des conditions permettant de distinguer une réponse anticipatrice d’un mouvement consécutif au recul."
+      ],
+      "interpretationLimits": [
+        "Une absence de réponse anticipatrice sur une occurrence ne suffit pas à exclure E1.",
+        "Une réponse observée ne soutient E1 que si elle précède le recul réel ou apparaît malgré l’absence de départ.",
+        "Un mouvement apparaissant après un véritable départ peut relever du recul normal.",
+        "La position de l’impact en cible ne permet pas, à elle seule, d’interpréter ce test.",
+        "Une réponse observable malgré l’absence de départ constitue une evidence particulièrement informative mais ne produit pas automatiquement un diagnostic."
+      ],
+      "stopCriteria": [
+        "L’instructeur ne peut plus déterminer suffisamment clairement la chronologie entre la réponse motrice observée et le départ ou l’absence de départ.",
+        "Les conditions ne permettent plus de distinguer raisonnablement une réponse anticipatrice d’un autre mouvement.",
+        "La poursuite du test n’apporte plus d’information discriminante utile.",
+        "L’instructeur décide d’interrompre le test."
+      ],
+      "validationMode": "instructor",
+      "supervisionRequirements": [
+        "Supervision directe par un instructeur.",
+        "Observation de la chronologie entre la réponse motrice et le départ ou l’absence de départ."
+      ]
+    }
+  ]
+}

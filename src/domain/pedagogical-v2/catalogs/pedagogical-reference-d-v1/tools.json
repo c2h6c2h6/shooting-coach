@@ -1,0 +1,27 @@
+{
+  "kind": "tools",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-d-v1",
+  "items": [
+    {
+      "id": "pedagogical-tool:OBSERVATION_VIDEO",
+      "code": "OBSERVATION_VIDEO",
+      "kind": "pedagogical_tool",
+      "name": "Vidéo d’observation",
+      "description": "Vidéo utilisée comme feedback ou aide à l’observation, sans validation automatique.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "pedagogical-tool:INSTRUCTOR_TACTILE_FEEDBACK",
+      "code": "INSTRUCTOR_TACTILE_FEEDBACK",
+      "kind": "pedagogical_tool",
+      "name": "Contact pédagogique léger de l’instructeur",
+      "description": "Contact pédagogique léger permettant de rendre perceptible une variation, lorsqu’il est explicitement pertinent.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    }
+  ]
+}

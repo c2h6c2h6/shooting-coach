@@ -1,0 +1,67 @@
+{
+  "kind": "techniques",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-ab-v1",
+  "items": [
+    {
+      "id": "technique:B6:01",
+      "code": "TECH-B6-01",
+      "name": "Stabiliser l’organisation des poignets",
+      "principle": "Conserver une organisation fonctionnelle suffisamment stable pour que le recul se produise sans rupture parasite et que l’arme retrouve un comportement reproductible, sans chercher à bloquer le recul ni supprimer tout mouvement.",
+      "compatibleCompetenceIds": ["competence:B6"],
+      "indications": ["Une rupture parasite reproductible du poignet est directement observée.", "Le retour en ligne est variable ou exige une correction musculaire importante et reproductible."],
+      "contraindications": ["Le phénomène n’est pas directement observable.", "Le retour est systématiquement décalé mais reproductible et une autre cause reste plausible.", "La consigne conduit à lutter contre le recul ou à rigidifier excessivement les poignets."],
+      "instructorRequired": false,
+      "compatiblePedagogicalToolIds": ["pedagogical-tool:REFERENCE_PHOTO", "pedagogical-tool:OBSERVATION_VIDEO"],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "technique:B4:01",
+      "code": "TECH-B4-01",
+      "name": "Coordination fonctionnelle des deux mains",
+      "principle": "Faire varier légèrement et de manière contrôlée la contribution relative des deux mains, sans valeur cible universelle, afin d’identifier une organisation qui limite la perturbation de l’arme puis d’en construire la reproductibilité.",
+      "compatibleCompetenceIds": ["competence:B4"],
+      "indications": [
+        "Le test comparatif met en évidence un effet reproductible lorsque la contribution relative des deux mains est modifiée.",
+        "Le tireur doit apprendre à retrouver l’organisation fonctionnelle observée pendant le test.",
+        "La contribution des deux mains reste variable ou difficile à reproduire malgré une géométrie de prise cohérente."
+      ],
+      "contraindications": [
+        "Lorsque la séance est réalisée à une main.",
+        "Lorsque le test comparatif ne montre aucune différence exploitable.",
+        "Lorsque plusieurs paramètres sont modifiés simultanément et empêchent d’attribuer raisonnablement l’effet à la contribution relative des mains.",
+        "Lorsque la consigne conduit à rechercher une force maximale ou une répartition chiffrée."
+      ],
+      "instructorRequired": false,
+      "compatiblePedagogicalToolIds": ["pedagogical-tool:MARKER_HAND_REFERENCES"],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "technique:B7:01",
+      "code": "TECH-B7-01",
+      "name": "Conservation des repères de prise",
+      "principle": "Faire porter l’attention sur quelques repères simples de géométrie et de pression afin que la prise initialement construite reste cohérente pendant toute la séquence, sans reconstruction entre les répétitions ni recherche de force supplémentaire.",
+      "compatibleCompetenceIds": ["competence:B3"],
+      "indications": [
+        "La prise change de manière observable au cours d’une séquence.",
+        "La pression, la hauteur ou les repères des mains deviennent variables entre les répétitions.",
+        "Le test de constance de prise produit une observation reproductible compatible avec B7."
+      ],
+      "contraindications": [
+        "Lorsque la difficulté concerne la reconstruction après abandon complet de la prise.",
+        "Lorsque le test ne montre aucune variation exploitable.",
+        "Lorsque la fatigue, la douleur ou un autre mécanisme rend la séquence non interprétable.",
+        "Lorsque la consigne conduit à augmenter volontairement la force de prise plutôt qu’à conserver son organisation."
+      ],
+      "instructorRequired": false,
+      "compatiblePedagogicalToolIds": ["pedagogical-tool:MARKER_HAND_REFERENCES", "pedagogical-tool:OBSERVATION_VIDEO"],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    }
+  ]
+}

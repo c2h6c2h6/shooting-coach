@@ -1,0 +1,77 @@
+{
+  "kind": "tools",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-ab-v1",
+  "items": [
+    {
+      "id": "pedagogical-tool:MARKER_HAND_REFERENCES",
+      "code": "MARKER_HAND_REFERENCES",
+      "kind": "pedagogical_tool",
+      "name": "Repères temporaires au marqueur sur les mains",
+      "description": "Repères temporaires au marqueur sur les mains pour objectiver la position/reproductibilité.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "pedagogical-tool:FLOOR_POSITION_REFERENCES",
+      "code": "FLOOR_POSITION_REFERENCES",
+      "kind": "pedagogical_tool",
+      "name": "Repères temporaires au sol",
+      "description": "Repères temporaires au sol.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "pedagogical-tool:REFERENCE_PHOTO",
+      "code": "REFERENCE_PHOTO",
+      "kind": "pedagogical_tool",
+      "name": "Photographie de référence",
+      "description": "Photographie d’une position validée servant de référence.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "pedagogical-tool:MIRROR_FEEDBACK",
+      "code": "MIRROR_FEEDBACK",
+      "kind": "pedagogical_tool",
+      "name": "Miroir d’auto-observation",
+      "description": "Miroir permettant l’auto-observation.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "pedagogical-tool:OBSERVATION_VIDEO",
+      "code": "OBSERVATION_VIDEO",
+      "kind": "pedagogical_tool",
+      "name": "Vidéo d’observation",
+      "description": "Vidéo utilisée comme feedback ou aide à l’observation, sans validation automatique.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "pedagogical-tool:INSTRUCTOR_TACTILE_FEEDBACK",
+      "code": "INSTRUCTOR_TACTILE_FEEDBACK",
+      "kind": "pedagogical_tool",
+      "name": "Contact pédagogique léger de l’instructeur",
+      "description": "Contact pédagogique léger permettant de rendre perceptible une variation, lorsqu’il est explicitement pertinent.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "pedagogical-tool:BANANA_APPLE_ANALOGY",
+      "code": "BANANA_APPLE_ANALOGY",
+      "kind": "pedagogical_tool",
+      "name": "Analogie « banane / pomme »",
+      "description": "Métaphore pédagogique : main forte stable / main support contribuant fortement à la stabilité. Aucun pourcentage biomécanique imposé.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    }
+  ]
+}

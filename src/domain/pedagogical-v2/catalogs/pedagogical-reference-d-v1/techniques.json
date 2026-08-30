@@ -1,0 +1,54 @@
+{
+  "kind": "techniques",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-d-v1",
+  "items": [
+    {
+      "id": "technique-d4-01",
+      "code": "TECH-D4-01",
+      "name": "Ralentissement volontaire",
+      "principle": "Faire exécuter volontairement l’action sur la détente à une vitesse suffisamment réduite pour permettre au tireur de percevoir et à l’instructeur d’observer l’organisation de la montée en pression, notamment une éventuelle accélération terminale. Une fois l’action progressive acquise, la durée peut être réduite progressivement sans modifier la qualité recherchée.",
+      "compatibleCompetenceIds": [
+        "competence-d4"
+      ],
+      "indications": [
+        "Difficulté du tireur à percevoir la manière dont sa pression évolue jusqu’au départ.",
+        "Accélération terminale observée ou suspectée.",
+        "Besoin de rendre l’action suffisamment lisible pour permettre un retour instructeur.",
+        "Besoin de faire ressentir la différence entre vitesse de l’action et progressivité de l’action."
+      ],
+      "contraindications": [
+        "Lorsque ralentir l’action ne répond pas à l’incertitude ou à l’objectif pédagogique travaillé.",
+        "Lorsque le ralentissement provoque une modification telle de l’action qu’elle n’est plus interprétable.",
+        "Lorsque l’élève transforme la consigne en objectif de lenteur.",
+        "Lorsque l’instructeur dispose déjà d’éléments suffisants et que la poursuite de la technique n’apporte plus d’information ou d’apprentissage utile."
+      ],
+      "instructorRequired": true,
+      "compatiblePedagogicalToolIds": [],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "technique-d2-index-hand-independence-01",
+      "code": "TECH-D2-INDEPENDENCE-01",
+      "name": "Dissocier l’action de l’index de la tenue de la main",
+      "principle": "Faire agir l’index tout en maintenant aussi stable que possible l’organisation des autres doigts de la main, sans demander de relâcher la main ni de diminuer arbitrairement sa force.",
+      "compatibleCompetenceIds": ["competence-d2"],
+      "indications": [
+        "Une augmentation reproductible de l’action des autres doigts est synchronisée avec l’index.",
+        "Un relâchement reproductible des autres doigts est synchronisé avec l’index."
+      ],
+      "contraindications": [
+        "Lorsque les autres doigts sont sensiblement stables pendant le test.",
+        "Lorsque le comportement est variable ou non observable de manière fiable.",
+        "Lorsque la consigne est interprétée comme une demande de serrer moins fort ou de relâcher globalement la main."
+      ],
+      "instructorRequired": false,
+      "compatiblePedagogicalToolIds": [],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    }
+  ]
+}

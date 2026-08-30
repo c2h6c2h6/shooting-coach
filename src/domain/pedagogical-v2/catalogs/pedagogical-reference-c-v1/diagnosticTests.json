@@ -1,0 +1,8 @@
+{"kind":"diagnostic_tests","schemaVersion":"pedagogical-v2-inputs-v1","catalogVersion":"pedagogical-reference-c-v1","items":[{
+ "id":"diagnostic-test:C1:alignment-reproducibility:01","code":"TEST-C1-ALIGNMENT-01","name":"Test de reproductibilité de l’alignement",
+ "objective":"Observer si le tireur reconstruit une relation géométrique comparable entre les organes de visée.",
+ "discriminatedHypothesisIds":["SIGHT_ALIGNMENT_VARIATION"],"discriminatedUncertaintyCodes":[],"observedCompetenceId":"competence:C1","prerequisiteReferenceIds":[],
+ "conditionsOfUse":["Zone de travail à sec conforme aux règles de sécurité.","Organes de visée observables de manière fiable."],
+ "interpretationLimits":["Le focus visuel doit être évalué séparément.","Le résultat en cible ne constitue pas la preuve principale.","Une variation latérale ou verticale est une manifestation du même défaut de reproductibilité."],
+ "stopCriteria":["Fatigue visuelle.","Observation non fiable.","Condition de sécurité non satisfaite."],"validationMode":"semi_automatic","supervisionRequirements":[],
+ "schemaVersion":"pedagogical-v2-inputs-v1","itemVersion":"1.0.0","catalogVersion":"pedagogical-reference-c-v1"}]}

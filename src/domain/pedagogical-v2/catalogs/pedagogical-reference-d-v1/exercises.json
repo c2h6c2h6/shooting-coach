@@ -1,0 +1,135 @@
+{
+  "kind": "exercises",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-d-v1",
+  "items": [
+    {
+      "id": "exercise-d4-01",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1",
+      "code": "EX-D4-01",
+      "name": "Construire la montée de pression",
+      "primaryCompetenceId": "competence-d4",
+      "secondaryCompetenceIds": [],
+      "pedagogicalTechniqueIds": [
+        "technique-d4-01"
+      ],
+      "learningPhase": "acquisition",
+      "pedagogicalObjective": "Produire plusieurs actions progressives et reproductibles dans une situation simplifiée, sans contrainte temporelle ajoutée.",
+      "rationale": "Isoler la progressivité de l’action sur la détente dans une situation volontairement simplifiée, sans contrainte temporelle ajoutée, afin de permettre au tireur de construire et à l’instructeur d’observer une montée de pression sans accélération terminale brusque.",
+      "prerequisiteCompetenceIds": [
+        "competence-d3"
+      ],
+      "modeCodes": [],
+      "instructorRequired": true,
+      "technicalEquipmentCodes": [],
+      "protocol": [
+        "L’instructeur place l’exercice dans une situation simplifiée compatible avec les conditions d’entraînement et de sécurité établies.",
+        "Le tireur applique la consigne : « Fais monter la pression jusqu’au départ, sans action brusque finale. »",
+        "L’instructeur observe prioritairement l’évolution de l’action sur la détente, sans ajouter de contrainte temporelle.",
+        "L’action est répétée suffisamment pour permettre à l’instructeur d’apprécier si le comportement observé est reproductible et non accidentel."
+      ],
+      "instructions": [
+        "Fais monter la pression jusqu’au départ, sans action brusque finale."
+      ],
+      "desiredSensations": [
+        "Perception d’une pression qui augmente progressivement jusqu’au départ.",
+        "Sensation que le départ survient pendant une action déjà engagée, sans action terminale brusque.",
+        "Conservation de la qualité de l’action lorsque sa durée commence ensuite à être réduite."
+      ],
+      "frequentErrors": [
+        "Accélération terminale brusque destinée à provoquer le départ.",
+        "Transformer le ralentissement en objectif de lenteur.",
+        "Interrompre puis reprendre l’action au lieu de conserver la continuité requise par D3.",
+        "Modifier simultanément plusieurs éléments de l’action, rendant l’observation de D4 difficilement interprétable."
+      ],
+      "successCriteria": [
+        "Le comportement doit être suffisamment répété pour permettre à l’instructeur de constater qu’il n’est pas accidentel."
+      ],
+      "stopCriteria": [
+        "L’action n’est plus suffisamment continue pour permettre d’évaluer proprement D4.",
+        "Les conditions ne permettent plus d’observer la progressivité de manière suffisamment fiable.",
+        "Le ralentissement modifie l’action au point qu’elle n’est plus interprétable.",
+        "L’instructeur décide d’interrompre l’exercice."
+      ],
+      "doNotUseWhen": [
+        "Lorsque D3 n’est pas suffisamment présente pour permettre de travailler la progressivité de l’action.",
+        "Lorsque l’objectif pédagogique du moment ne concerne pas D4.",
+        "Lorsque le ralentissement provoque une modification telle de l’action qu’elle n’est plus interprétable.",
+        "Lorsque la répétition n’apporte plus d’information ou d’apprentissage utile."
+      ],
+      "pedagogicalToolIds": [],
+      "defaultVariables": {
+        "distance": null,
+        "numberOfHands": null,
+        "time": null,
+        "cadence": null,
+        "zoneSize": null,
+        "targetType": null,
+        "sightSystem": null,
+        "shotCount": null,
+        "movement": null,
+        "attentionalLoad": null,
+        "complexity": null,
+        "supervision": "instructor"
+      },
+      "modifiableVariableKeys": [
+        "time"
+      ]
+    },
+    {
+      "id": "exercise-d2-index-hand-independence-01",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1",
+      "code": "EX-D2-INDEPENDENCE-01",
+      "name": "Index indépendant",
+      "primaryCompetenceId": "competence-d2",
+      "secondaryCompetenceIds": [],
+      "pedagogicalTechniqueIds": ["technique-d2-index-hand-independence-01"],
+      "learningPhase": "acquisition",
+      "pedagogicalObjective": "Reproduire plusieurs actions de l’index sans modification parasite manifeste des autres doigts de la main.",
+      "rationale": "Isoler directement l’indépendance index–main sans utiliser les impacts ni la seule stabilité des organes de visée comme preuve.",
+      "prerequisiteCompetenceIds": [],
+      "modeCodes": [],
+      "instructorRequired": false,
+      "technicalEquipmentCodes": [],
+      "protocol": [
+        "Installer la prise normalement dans une zone préparée pour le travail à sec.",
+        "Réaliser une action contrôlée de l’index.",
+        "Maintenir l’organisation des autres doigts aussi constante que possible.",
+        "Répéter l’action plusieurs fois.",
+        "Utiliser si disponible un retour visuel ou tactile comme aide pédagogique, sans le rendre obligatoire."
+      ],
+      "instructions": ["Fais agir l’index sans modifier volontairement l’organisation des autres doigts."],
+      "desiredSensations": [
+        "Action de l’index perceptible sans fermeture supplémentaire de la main.",
+        "Organisation des autres doigts restant comparable entre les répétitions."
+      ],
+      "frequentErrors": [
+        "Relâcher volontairement toute la main.",
+        "Diminuer arbitrairement la force de prise.",
+        "Observer seulement le guidon au lieu des autres doigts.",
+        "Modifier simultanément le placement de l’index."
+      ],
+      "successCriteria": ["L’action de l’index est reproduite plusieurs fois sans modification parasite manifeste des autres doigts de la main."],
+      "stopCriteria": [
+        "Les autres doigts ne peuvent pas être observés de manière fiable.",
+        "La prise se désorganise ou plusieurs paramètres sont modifiés simultanément.",
+        "Les conditions de sécurité du travail à sec ne sont plus réunies."
+      ],
+      "doNotUseWhen": [
+        "Lorsque le test d’indépendance index–main n’a pas soutenu l’hypothèse.",
+        "Lorsque l’objectif concerne le placement, la direction, la continuité ou la progressivité de l’action de l’index."
+      ],
+      "pedagogicalToolIds": [],
+      "defaultVariables": {
+        "distance": null,"numberOfHands": null,"time": null,"cadence": null,"zoneSize": null,
+        "targetType": null,"sightSystem": null,"shotCount": null,"movement": null,"attentionalLoad": null,
+        "complexity": "simple","supervision": "selon le contexte"
+      },
+      "modifiableVariableKeys": ["time","supervision"]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "tools",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-c-v1",
+  "items": [
+    {
+      "id": "pedagogical-tool:REFERENCE_PHOTO",
+      "code": "REFERENCE_PHOTO",
+      "kind": "pedagogical_tool",
+      "name": "Photographie de référence",
+      "description": "Photographie d’une position validée servant de référence.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-c-v1"
+    },
+    {
+      "id": "pedagogical-tool:MIRROR_FEEDBACK",
+      "code": "MIRROR_FEEDBACK",
+      "kind": "pedagogical_tool",
+      "name": "Miroir d’auto-observation",
+      "description": "Miroir permettant l’auto-observation.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-c-v1"
+    },
+    {
+      "id": "pedagogical-tool:OBSERVATION_VIDEO",
+      "code": "OBSERVATION_VIDEO",
+      "kind": "pedagogical_tool",
+      "name": "Vidéo d’observation",
+      "description": "Vidéo utilisée comme feedback ou aide à l’observation, sans validation automatique.",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-c-v1"
+    }
+  ]
+}

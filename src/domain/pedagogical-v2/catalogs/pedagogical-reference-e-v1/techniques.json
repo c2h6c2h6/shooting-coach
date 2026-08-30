@@ -1,0 +1,33 @@
+{
+  "kind": "techniques",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-e-v1",
+  "items": [
+    {
+      "id": "technique-e1-01",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-e-v1",
+      "code": "TECH-E1-01",
+      "name": "Acceptation du départ",
+      "principle": "Amener le tireur à poursuivre son action sans chercher à provoquer, accompagner ou éviter l’instant du départ, afin que le coup puisse survenir sans réponse motrice anticipatrice.",
+      "compatibleCompetenceIds": [
+        "competence-e1"
+      ],
+      "indications": [
+        "Réponse motrice observée avant le recul ou malgré l’absence de départ réel.",
+        "Tendance du tireur à chercher à provoquer ou contrôler volontairement l’instant exact du départ.",
+        "Organisation qui se dégrade à l’approche du départ alors que l’action précédente reste acceptable.",
+        "Besoin de faire ressentir la différence entre laisser survenir le départ et y répondre par anticipation."
+      ],
+      "contraindications": [
+        "Lorsque la chronologie du mouvement observé ne permet pas de distinguer une réponse anticipatrice d’un mouvement consécutif au recul.",
+        "Lorsque l’incertitude principale concerne une autre compétence et qu’E1 n’est pas suffisamment étayée.",
+        "Lorsque la consigne conduit le tireur à interrompre ou dégrader volontairement son action dans le seul but de ne pas anticiper.",
+        "Lorsque la poursuite de la technique n’apporte plus d’information ou d’apprentissage utile."
+      ],
+      "instructorRequired": true,
+      "compatiblePedagogicalToolIds": []
+    }
+  ]
+}

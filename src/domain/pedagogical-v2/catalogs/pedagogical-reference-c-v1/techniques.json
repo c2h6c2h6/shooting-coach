@@ -1,0 +1,8 @@
+{"kind":"techniques","schemaVersion":"pedagogical-v2-contracts-v1","catalogVersion":"pedagogical-reference-c-v1","items":[{
+ "id":"technique:C1:01","code":"TECH-C1-01","name":"Reproduire un alignement constant des organes de visée",
+ "principle":"Retrouver à chaque reconstruction de la visée une relation géométrique comparable entre les organes de visée, sans confondre cette géométrie avec le repère sur lequel porte l’attention visuelle.",
+ "compatibleCompetenceIds":["competence:C1"],
+ "indications":["Le test spécifique montre une variation latérale ou verticale reproductible de l’alignement.","Le tireur ne reconstruit pas une relation géométrique comparable entre les présentations."],
+ "contraindications":["Le test montre un alignement reproductible.","La difficulté concerne uniquement le focus visuel.","La relation géométrique ne peut pas être observée de manière fiable."],
+ "instructorRequired":false,"compatiblePedagogicalToolIds":["pedagogical-tool:REFERENCE_PHOTO","pedagogical-tool:MIRROR_FEEDBACK","pedagogical-tool:OBSERVATION_VIDEO"],
+ "schemaVersion":"pedagogical-v2-contracts-v1","itemVersion":"1.0.0","catalogVersion":"pedagogical-reference-c-v1"}]}

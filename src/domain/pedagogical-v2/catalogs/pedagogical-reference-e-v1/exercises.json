@@ -1,0 +1,33 @@
+{
+  "kind": "exercises",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-e-v1",
+  "items": [{
+    "id": "exercise-e1-01",
+    "schemaVersion": "pedagogical-v2-contracts-v1",
+    "itemVersion": "1.0.0",
+    "catalogVersion": "pedagogical-reference-e-v1",
+    "code": "EX-E1-01",
+    "name": "Laisser partir sans anticiper",
+    "primaryCompetenceId": "competence-e1",
+    "secondaryCompetenceIds": [],
+    "pedagogicalTechniqueIds": ["technique-e1-01"],
+    "learningPhase": "acquisition",
+    "pedagogicalObjective": "Permettre au départ de survenir sans réponse motrice anticipatrice.",
+    "rationale": "Travailler directement l’acceptation du départ, sans déduire l’absence d’anticipation de la géométrie des impacts.",
+    "prerequisiteCompetenceIds": [],
+    "modeCodes": [],
+    "instructorRequired": true,
+    "technicalEquipmentCodes": [],
+    "protocol": ["Préparer une zone à sec conformément aux règles de sécurité.", "Produire l’action normale sans chercher à provoquer l’instant du départ.", "Observer l’absence ou la présence d’une réponse motrice anticipatrice.", "Répéter dans des conditions comparables."],
+    "instructions": ["Laisse le départ survenir sans chercher à le provoquer ni à y répondre."],
+    "desiredSensations": ["Action continue sans préparation motrice au recul.", "Acceptation de l’incertitude sur l’instant du départ."],
+    "frequentErrors": ["Chercher à bloquer le recul.", "Ralentir sans observer la chronologie de la réponse.", "Utiliser l’impact comme preuve directe."],
+    "successCriteria": ["L’action est répétée sans réponse motrice anticipatrice observable."],
+    "stopCriteria": ["L’observation temporelle devient ambiguë.", "Une condition de sécurité n’est plus réunie.", "La fatigue rend l’action non comparable."],
+    "doNotUseWhen": ["Lorsque la chronologie entre mouvement et départ ne peut pas être observée.", "Lorsque les conditions du travail à sec ne sont pas réunies."],
+    "pedagogicalToolIds": [],
+    "defaultVariables": {"distance": null, "numberOfHands": null, "time": null, "cadence": "contrôlée", "zoneSize": {"width": null, "height": null, "label": null}, "targetType": null, "sightSystem": null, "shotCount": 0, "movement": null, "attentionalLoad": null, "complexity": "simple", "supervision": "instructeur"},
+    "modifiableVariableKeys": ["numberOfHands", "attentionalLoad", "complexity", "supervision"]
+  }]
+}

@@ -1,0 +1,197 @@
+{
+  "kind": "exercises",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-ab-v1",
+  "items": [
+    {
+      "id": "exercise:B4:01",
+      "code": "EX-B4-01",
+      "name": "Reproduire la contribution efficace des deux mains",
+      "primaryCompetenceId": "competence:B4",
+      "secondaryCompetenceIds": [],
+      "pedagogicalTechniqueIds": ["technique:B4:01"],
+      "learningPhase": "acquisition",
+      "pedagogicalObjective": "Reproduire une organisation complémentaire des deux mains donnant un comportement de l’arme stable et comparable, sans rechercher de force maximale ni de répartition universelle.",
+      "rationale": "Transformer l’effet reproductible observé pendant le test comparatif en une organisation des deux mains que le tireur peut retrouver plusieurs fois dans des conditions similaires.",
+      "prerequisiteCompetenceIds": ["competence:B3"],
+      "modeCodes": [],
+      "instructorRequired": false,
+      "technicalEquipmentCodes": [],
+      "protocol": [
+        "Retrouver la configuration ayant donné le comportement le plus stable pendant le test comparatif.",
+        "Réaliser une série contrôlée en conservant autant que possible la posture, la visée, l’action sur la détente et la cadence.",
+        "Observer si le comportement de l’arme reste comparable entre les répétitions.",
+        "Interrompre l’exercice si l’organisation devient forcée, douloureuse ou non interprétable."
+      ],
+      "instructions": [
+        "Reproduis l’organisation efficace des deux mains sans rechercher de valeur de force prédéfinie."
+      ],
+      "desiredSensations": [
+        "Contribution complémentaire des deux mains sans crispation maximale.",
+        "Organisation retrouvable sans réajustements successifs.",
+        "Comportement de l’arme comparable entre plusieurs répétitions."
+      ],
+      "frequentErrors": [
+        "Rechercher une force maximale.",
+        "Modifier simultanément la posture, la visée, la détente ou la cadence.",
+        "Transformer une consigne qualitative en répartition chiffrée.",
+        "Confondre variation de contribution et changement de placement des mains."
+      ],
+      "successCriteria": [
+        "Le tireur reproduit plusieurs fois une organisation des deux mains donnant un comportement stable et comparable, sans perturbation parasite manifeste."
+      ],
+      "stopCriteria": [
+        "Douleur, fatigue, crispation importante ou perte de concentration.",
+        "Comportement trop variable pour permettre une comparaison utile.",
+        "Modification simultanée de plusieurs paramètres rendant l’exercice non interprétable.",
+        "Non-respect d’une règle de sécurité."
+      ],
+      "doNotUseWhen": [
+        "Lorsque la séance est réalisée à une main.",
+        "Lorsque le test comparatif n’a pas produit de résultat exploitable.",
+        "Lorsque la géométrie élémentaire de la prise à deux mains n’est pas suffisamment construite.",
+        "Lorsque les conditions de sécurité du tir réel ne sont pas réunies."
+      ],
+      "pedagogicalToolIds": ["pedagogical-tool:MARKER_HAND_REFERENCES"],
+      "defaultVariables": {
+        "distance": null,
+        "numberOfHands": 2,
+        "time": null,
+        "cadence": "contrôlée",
+        "zoneSize": {"width": null, "height": null, "label": null},
+        "targetType": null,
+        "sightSystem": null,
+        "shotCount": 5,
+        "movement": null,
+        "attentionalLoad": null,
+        "complexity": "simple",
+        "supervision": "selon le contexte de séance"
+      },
+      "modifiableVariableKeys": ["distance", "cadence", "zoneSize", "targetType", "sightSystem", "shotCount", "attentionalLoad", "complexity", "supervision"],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "exercise:B6:01",
+      "code": "EX-B6-01",
+      "name": "Reproduire l’organisation du poignet",
+      "primaryCompetenceId": "competence:B6",
+      "secondaryCompetenceIds": [],
+      "pedagogicalTechniqueIds": ["technique:B6:01"],
+      "learningPhase": "acquisition",
+      "pedagogicalObjective": "Installer puis reproduire une organisation fonctionnelle comparable du poignet sans rupture parasite manifeste pendant l’action.",
+      "rationale": "Transformer l’observation d’une rupture reproductible en travail direct de l’organisation du poignet, sans utiliser la cible comme preuve ni chercher à bloquer le recul.",
+      "prerequisiteCompetenceIds": ["competence:B3", "competence:B4"],
+      "modeCodes": [],
+      "instructorRequired": false,
+      "technicalEquipmentCodes": [],
+      "protocol": ["Installer une organisation fonctionnelle confortable du poignet.", "Répéter plusieurs actions comparables en observant directement le poignet.", "Conserver l’organisation sans rigidité excessive.", "Interrompre si une douleur ou une tension importante apparaît."],
+      "instructions": ["Reproduis la même organisation fonctionnelle du poignet sans chercher à bloquer le mouvement normal de l’arme."],
+      "desiredSensations": ["Organisation stable sans crispation excessive.", "Poignet comparable entre les répétitions."],
+      "frequentErrors": ["Chercher à verrouiller totalement le poignet.", "Lutter volontairement contre le recul.", "Utiliser le résultat en cible comme seule preuve."],
+      "successCriteria": ["Le tireur reproduit plusieurs fois une organisation comparable du poignet sans rupture parasite manifeste."],
+      "stopCriteria": ["Douleur, crispation importante ou fatigue.", "Observation non fiable.", "Non-respect d’une règle de sécurité."],
+      "doNotUseWhen": ["Lorsque le poignet ne peut pas être observé directement.", "Lorsque la difficulté relève uniquement d’une autre fonction déjà identifiée."],
+      "pedagogicalToolIds": ["pedagogical-tool:REFERENCE_PHOTO", "pedagogical-tool:OBSERVATION_VIDEO"],
+      "defaultVariables": {"distance": null, "numberOfHands": null, "time": null, "cadence": "contrôlée", "zoneSize": {"width": null, "height": null, "label": null}, "targetType": null, "sightSystem": null, "shotCount": null, "movement": null, "attentionalLoad": null, "complexity": "simple", "supervision": "selon le contexte de séance"},
+      "modifiableVariableKeys": ["numberOfHands", "cadence", "attentionalLoad", "complexity", "supervision"],
+      "schemaVersion": "pedagogical-v2-contracts-v1", "itemVersion": "1.0.0", "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "exercise:B6:02",
+      "code": "EX-B6-02",
+      "name": "Reproduire un retour en ligne cohérent",
+      "primaryCompetenceId": "competence:B6",
+      "secondaryCompetenceIds": [],
+      "pedagogicalTechniqueIds": ["technique:B6:01"],
+      "learningPhase": "stabilization",
+      "pedagogicalObjective": "Conserver l’organisation du poignet, laisser le recul se produire et retrouver un retour comparable sans correction volontaire excessive.",
+      "rationale": "Travailler le retour comme indicateur fonctionnel de l’organisation des poignets, sans en faire une compétence autonome ni considérer le recul normal comme une faute.",
+      "prerequisiteCompetenceIds": ["competence:B3", "competence:B4"],
+      "modeCodes": [],
+      "instructorRequired": false,
+      "technicalEquipmentCodes": [],
+      "protocol": ["Installer l’organisation fonctionnelle des poignets.", "Réaliser plusieurs répétitions comparables en laissant le recul se produire.", "Observer directement le retour de l’arme.", "Éviter toute correction volontaire excessive après le départ."],
+      "instructions": ["Laisse le recul se produire et observe si l’arme revient de manière comparable sans correction musculaire excessive."],
+      "desiredSensations": ["Recul accepté sans lutte volontaire.", "Retour comparable entre les répétitions."],
+      "frequentErrors": ["Pousser l’arme vers la cible.", "Bloquer volontairement le recul.", "Confondre retour décalé mais constant et retour variable."],
+      "successCriteria": ["Le retour devient reproductible et comparable sur plusieurs répétitions, sans correction musculaire excessive ou différente d’un tir à l’autre."],
+      "stopCriteria": ["Douleur, crispation importante ou fatigue.", "Retour non observable de manière fiable.", "Non-respect d’une règle de sécurité."],
+      "doNotUseWhen": ["Lorsque le retour ne peut pas être directement observé.", "Lorsque les conditions du tir réel ne sont pas réunies."],
+      "pedagogicalToolIds": ["pedagogical-tool:OBSERVATION_VIDEO"],
+      "defaultVariables": {"distance": null, "numberOfHands": null, "time": null, "cadence": "contrôlée", "zoneSize": {"width": null, "height": null, "label": null}, "targetType": null, "sightSystem": null, "shotCount": 5, "movement": null, "attentionalLoad": null, "complexity": "simple", "supervision": "selon le contexte de séance"},
+      "modifiableVariableKeys": ["numberOfHands", "cadence", "shotCount", "attentionalLoad", "complexity", "supervision"],
+      "schemaVersion": "pedagogical-v2-contracts-v1", "itemVersion": "1.0.0", "catalogVersion": "pedagogical-reference-ab-v1"
+    },
+    {
+      "id": "exercise:B7:01",
+      "code": "EX-B7-01",
+      "name": "Conserver une prise cohérente pendant la série",
+      "primaryCompetenceId": "competence:B3",
+      "secondaryCompetenceIds": [],
+      "pedagogicalTechniqueIds": ["technique:B7:01"],
+      "learningPhase": "stabilization",
+      "pedagogicalObjective": "Conserver les repères essentiels de géométrie et de pression de la prise pendant plusieurs répétitions successives.",
+      "rationale": "Isoler la conservation de la prise pendant une séquence continue, sans la confondre avec sa reconstruction après l’avoir complètement quittée.",
+      "prerequisiteCompetenceIds": ["competence:B3"],
+      "modeCodes": [],
+      "instructorRequired": false,
+      "technicalEquipmentCodes": [],
+      "protocol": [
+        "Construire une prise confortable et fonctionnelle avant la première répétition.",
+        "Identifier un nombre limité de repères de géométrie et de pression à conserver.",
+        "Réaliser une série contrôlée sans quitter volontairement la prise entre les répétitions.",
+        "Comparer les repères du début et de la fin de la série sans reconstruire la prise pendant l’exercice."
+      ],
+      "instructions": [
+        "Conserve les mêmes repères de prise du début à la fin de la série, sans ajouter de force."
+      ],
+      "desiredSensations": [
+        "Prise restant organisée sans crispation croissante.",
+        "Repères des mains stables entre les répétitions.",
+        "Absence de besoin de reconstruire la prise pendant la série."
+      ],
+      "frequentErrors": [
+        "Augmenter progressivement la force de prise.",
+        "Réinstaller la main support entre les répétitions.",
+        "Confondre conservation de la prise et immobilité absolue.",
+        "Quitter puis reconstruire la prise, ce qui évaluerait une autre compétence."
+      ],
+      "successCriteria": [
+        "Les repères essentiels de géométrie et de pression restent cohérents du début à la fin de la série sans reconstruction importante."
+      ],
+      "stopCriteria": [
+        "Douleur, fatigue, crispation importante ou perte de concentration.",
+        "Reconstruction répétée de la prise rendant l’exercice non interprétable.",
+        "Modification simultanée d’autres paramètres empêchant d’observer la conservation de la prise.",
+        "Non-respect d’une règle de sécurité."
+      ],
+      "doNotUseWhen": [
+        "Lorsque l’objectif est de vérifier la reconstruction après abandon complet de la prise.",
+        "Lorsque la prise initiale n’est pas suffisamment construite.",
+        "Lorsque le test de constance n’a pas produit de résultat exploitable.",
+        "Lorsque les conditions de sécurité du tir réel ne sont pas réunies."
+      ],
+      "pedagogicalToolIds": ["pedagogical-tool:MARKER_HAND_REFERENCES", "pedagogical-tool:OBSERVATION_VIDEO"],
+      "defaultVariables": {
+        "distance": null,
+        "numberOfHands": null,
+        "time": null,
+        "cadence": "contrôlée",
+        "zoneSize": {"width": null, "height": null, "label": null},
+        "targetType": null,
+        "sightSystem": null,
+        "shotCount": 5,
+        "movement": null,
+        "attentionalLoad": null,
+        "complexity": "simple",
+        "supervision": "selon le contexte de séance"
+      },
+      "modifiableVariableKeys": ["distance", "numberOfHands", "cadence", "zoneSize", "targetType", "sightSystem", "shotCount", "attentionalLoad", "complexity", "supervision"],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-ab-v1"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "kind": "diagnostic_tests",
+  "schemaVersion": "pedagogical-v2-inputs-v1",
+  "catalogVersion": "pedagogical-reference-d-v1",
+  "items": [
+    {
+      "id": "diagnostic-test-d4-01",
+      "code": "TEST-D4-01",
+      "name": "Observation ralentie de l’action",
+      "objective": "L’augmentation de pression reste-t-elle progressive lorsque l’action est volontairement ralentie afin de rendre son organisation observable ?",
+      "discriminatedHypothesisIds": [],
+      "discriminatedUncertaintyCodes": [
+        "UNCERTAINTY_D4_PROGRESSIVITY_INSUFFICIENT"
+      ],
+      "observedCompetenceId": "competence-d4",
+      "prerequisiteReferenceIds": [
+        "competence-d3"
+      ],
+      "conditionsOfUse": [
+        "Action volontairement ralentie.",
+        "Objectif exclusif : rendre l’organisation de la pression plus observable.",
+        "Conditions permettant une observation directe par l’instructeur.",
+        "Aucune contrainte temporelle ajoutée."
+      ],
+      "interpretationLimits": [
+        "Une action progressive pendant le test n’exclut pas qu’une perturbation apparaisse dans d’autres conditions.",
+        "Une action non progressive pendant le test renforce l’hypothèse D4 insuffisante mais ne permet pas d’exclure l’intervention concomitante d’un autre mécanisme.",
+        "Une perturbation de l’arme ne suffit pas à attribuer le défaut à D4.",
+        "La position des impacts en cible ne permet pas, à elle seule, d’interpréter le résultat de ce test."
+      ],
+      "stopCriteria": [
+        "Impossibilité d’observer l’action de manière suffisamment fiable.",
+        "Conditions ne permettant plus d’isoler raisonnablement l’observation recherchée.",
+        "Interruption demandée par l’instructeur."
+      ],
+      "validationMode": "instructor",
+      "supervisionRequirements": [
+        "Supervision instructeur requise."
+      ],
+      "schemaVersion": "pedagogical-v2-inputs-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "diagnostic-test-d2-index-hand-independence-01",
+      "code": "TEST-D2-INDEPENDENCE-01",
+      "name": "Test d’indépendance index–main",
+      "objective": "Lorsque l’index agit sur la détente, les autres doigts de la main qui tient l’arme modifient-ils involontairement leur action ?",
+      "discriminatedHypothesisIds": [],
+      "discriminatedUncertaintyCodes": ["TRIGGER_FINGER_HAND_COACTIVATION"],
+      "observedCompetenceId": "competence-d2",
+      "prerequisiteReferenceIds": [],
+      "conditionsOfUse": [
+        "Protocole à sec réalisé selon les règles de sécurité existantes.",
+        "Prise installée normalement.",
+        "Plusieurs actions contrôlées de l’index.",
+        "Observation directe des autres doigts de la main qui tient l’arme."
+      ],
+      "interpretationLimits": [
+        "Les impacts ne constituent pas la preuve principale.",
+        "La stabilité du guidon ne démontre pas à elle seule une co-activation des autres doigts.",
+        "Une augmentation et un relâchement synchronisés sont deux manifestations possibles du même défaut d’indépendance.",
+        "Un comportement variable ou non observable ne permet pas de conclure."
+      ],
+      "stopCriteria": [
+        "Les autres doigts ne sont pas observables de manière suffisamment fiable.",
+        "La prise ou un autre paramètre est modifié simultanément.",
+        "Les conditions de sécurité du travail à sec ne sont plus réunies."
+      ],
+      "validationMode": "instructor",
+      "supervisionRequirements": ["Observation directe ou retour tactile léger par un instructeur si disponible."],
+      "schemaVersion": "pedagogical-v2-inputs-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    }
+  ]
+}

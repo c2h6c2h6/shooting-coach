@@ -1,0 +1,187 @@
+{
+  "kind": "competences",
+  "schemaVersion": "pedagogical-v2-contracts-v1",
+  "catalogVersion": "pedagogical-reference-d-v1",
+  "items": [
+    {
+      "id": "competence-d2",
+      "code": "D2",
+      "domain": "D — Détente",
+      "name": "Appliquer une pression directionnellement neutre sur la détente",
+      "definition": "Le tireur exerce l’action de l’index sur la détente sans introduire de composante directionnelle parasite suffisamment importante pour perturber l’organisation de l’arme.",
+      "pedagogicalObjective": "Construire une action de l’index dont la direction de pression permet d’agir sur la détente sans entraîner de déplacement parasite de l’arme imputable à cette direction.",
+      "internalComponents": [
+        {"code": "D2.1", "description": "Neutralité directionnelle de l’action de l’index."},
+        {"code": "D2.2", "description": "Indépendance de l’action de l’index vis-à-vis des autres doigts de la main qui tient l’arme."}
+      ],
+      "prerequisiteIds": [],
+      "observableIndicators": [
+        "L’action de l’index s’effectue sans déplacement latéral observable de l’arme synchronisé avec cette action.",
+        "La direction du mouvement de l’index reste cohérente pendant l’action sur la détente.",
+        "La modification volontaire de la direction de pression modifie de manière observable la perturbation associée à l’action de l’index.",
+        "Le comportement est reproductible sur plusieurs actions comparables."
+      ],
+      "indirectIndicators": [
+        "Perturbation de l’arme synchronisée avec une action directionnelle visible de l’index.",
+        "Défaut persistant alors que la pression de la main forte reste stable.",
+        "Amélioration lorsque l’attention pédagogique est portée uniquement sur la direction de l’action de l’index.",
+        "Différence observable entre deux directions de pression volontairement comparées sous supervision."
+      ],
+      "interpretationLimits": [
+        "Une perturbation latérale de l’arme ne suffit pas, à elle seule, à diagnostiquer D2.",
+        "La position de l’impact en cible ne permet pas, à elle seule, de valider ou invalider D2.",
+        "D2 distingue la neutralité directionnelle de l’action de l’index et son indépendance vis-à-vis des autres doigts ; elle ne décrit ni sa progressivité ni la continuité de l’action.",
+        "Une perturbation synchronisée avec l’action de l’index peut relever de sa direction, d’une co-activation des autres doigts, de D4 ou d’une combinaison ; l’observation doit donc rester différentielle.",
+        "Une réponse anticipatrice relevant de E1 ne doit pas être requalifiée automatiquement en défaut D2."
+      ],
+      "validationMode": "instructor",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "competence-d3",
+      "code": "D3",
+      "domain": "D — Détente",
+      "name": "Maintenir une action continue sur la détente",
+      "definition": "Le tireur exerce une action sur la détente qui se poursuit sans interruption volontaire, relâchement parasite ni succession de reprises jusqu’au départ du coup. La continuité décrit l’absence de rupture dans l’action ; elle ne définit ni sa vitesse ni sa progressivité.",
+      "pedagogicalObjective": "Construire une action de détente dans laquelle, une fois la pression volontairement engagée, celle-ci se poursuit sans succession pression–arrêt–reprise jusqu’au départ du coup.",
+      "prerequisiteIds": [],
+      "observableIndicators": [
+        "Mouvement de l’index continu jusqu’au départ.",
+        "Absence de relâchement pendant l’action engagée.",
+        "Absence de succession répétée pression–arrêt–reprise.",
+        "Départ du coup survenant pendant une action déjà engagée.",
+        "Capacité à reproduire cette continuité sur plusieurs actions comparables."
+      ],
+      "indirectIndicators": [
+        "Action qui commence puis s’interrompt lorsque l’image de visée oscille.",
+        "Petites reprises successives de pression.",
+        "Temps de départ très variable dans des conditions comparables.",
+        "Amélioration lorsque la consigne est uniquement de poursuivre l’action.",
+        "Amélioration lors d’un guidage pédagogique de l’action."
+      ],
+      "interpretationLimits": [
+        "Une action discontinue ne permet pas, à elle seule, d’identifier sa cause.",
+        "Elle peut notamment être associée à une recherche excessive de stabilité ou de perfection visuelle, à une difficulté d’acceptation du départ, à une co-contraction de la main forte, à la fatigue ou à une mauvaise compréhension de la consigne.",
+        "D3 décrit la rupture de l’action, pas pourquoi cette rupture existe.",
+        "La position des impacts en cible ne permet pas, à elle seule, de diagnostiquer D3.",
+        "Ne pas confondre D3 avec D4 : une action peut être continue mais brutalement accélérée."
+      ],
+      "validationMode": "instructor",
+      "pedagogicalToolIds": [
+        "pedagogical-tool:INSTRUCTOR_TACTILE_FEEDBACK",
+        "pedagogical-tool:OBSERVATION_VIDEO"
+      ],
+      "pedagogicalSupportNotes": [
+        "La continuité signifie que l’action ne s’interrompt pas ; elle ne signifie ni lenteur obligatoire ni vitesse imposée."
+      ],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "competence-d4",
+      "code": "D4",
+      "domain": "D — Détente",
+      "name": "Construire une pression progressive sur la détente",
+      "definition": "Le tireur fait évoluer la pression exercée sur la détente de manière progressive et maîtrisée jusqu’au départ du coup, sans accélération terminale brusque destinée à provoquer volontairement l’instant du départ.",
+      "pedagogicalObjective": "Construire une action dans laquelle le départ du coup survient au cours d’une montée de pression déjà engagée, et non à la suite d’une action terminale brusque du doigt.",
+      "prerequisiteIds": ["competence-d3"],
+      "observableIndicators": [
+        "Augmentation de l’action sur la détente sans accélération terminale brusque.",
+        "Mouvement de l’index dont le comportement reste cohérent jusqu’au départ.",
+        "Reproductibilité de cette organisation sur plusieurs actions comparables."
+      ],
+      "indirectIndicators": [
+        "Perturbation de l’arme synchronisée avec une accélération terminale visible.",
+        "Dégradation apparaissant lorsque le tireur cherche volontairement à provoquer le départ.",
+        "Amélioration lorsque la montée en pression est volontairement ralentie.",
+        "Différence nette entre une action guidée et l’action autonome."
+      ],
+      "interpretationLimits": [
+        "Une perturbation de l’arme au départ ne suffit pas à diagnostiquer D4.",
+        "Une perturbation peut notamment être compatible avec : D2 — direction de pression ou indépendance index–main ; E1 — réponse anticipatrice ; D4 ; ou une combinaison.",
+        "La position des impacts en cible ne permet jamais, à elle seule, de valider ou invalider D4.",
+        "Le terme “coup de doigt” ne constitue pas un diagnostic technique suffisamment précis du moteur."
+      ],
+      "validationMode": "instructor",
+      "pedagogicalSupportNotes": [
+        "Progressif ne signifie pas lent.",
+        "Le ralentissement peut être utilisé pour apprendre ou observer D4.",
+        "Le ralentissement n’est pas la compétence.",
+        "Une action rapide peut être progressive."
+      ],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "competence-d5",
+      "code": "D5",
+      "domain": "D — Détente",
+      "name": "Poursuivre l’action sur la détente jusqu’à la butée",
+      "definition": "Le tireur poursuit l’action exercée sur la détente après le départ du coup jusqu’à atteindre la butée mécanique, sans relâchement prématuré provoqué par le départ.",
+      "pedagogicalObjective": "Construire une action dans laquelle le départ du coup ne provoque pas l’arrêt ou le relâchement de l’action sur la détente, celle-ci étant poursuivie jusqu’à la butée mécanique.",
+      "prerequisiteIds": [
+        "competence-d4"
+      ],
+      "observableIndicators": [
+        "L’action sur la détente se poursuit après le départ jusqu’à la butée mécanique.",
+        "Aucun relâchement immédiat de la détente n’apparaît au moment du départ.",
+        "La butée est atteinte avant tout éventuel retour de la détente.",
+        "Le tireur peut maintenir la détente à la butée pendant la phase d’observation et de décision."
+      ],
+      "indirectIndicators": [
+        "Relâchement de la détente immédiatement après le départ.",
+        "Retour de la détente engagé avant que la butée ait été clairement atteinte.",
+        "Amélioration lorsque la consigne porte uniquement sur la poursuite de l’action jusqu’à la butée."
+      ],
+      "interpretationLimits": [
+        "Un relâchement prématuré après le départ ne permet pas, à lui seul, d’identifier la cause de ce comportement.",
+        "D5 décrit la poursuite de l’action jusqu’à la butée ; elle ne décrit pas le retour vers le reset.",
+        "Atteindre la butée ne signifie pas qu’il faut rechercher immédiatement le reset.",
+        "D5 ne définit ni une cadence de tir ni une vitesse imposée après le départ."
+      ],
+      "validationMode": "instructor",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "competence-d6",
+      "code": "D6",
+      "domain": "D — Détente",
+      "name": "Revenir au reset de manière contrôlée lorsqu’une nouvelle action est nécessaire",
+      "definition": "Lorsque la décision de poursuivre impose une nouvelle action sur la détente, le tireur effectue depuis la butée un retour contrôlé jusqu’au point de reset permettant le réengagement de l’action, sans relâchement excessif ni désorganisation.",
+      "pedagogicalObjective": "Construire un retour depuis la butée vers le reset qui rende possible une nouvelle action sur la détente tout en conservant l’organisation du geste et sans faire de la vitesse ou de la recherche du clic une finalité.",
+      "prerequisiteIds": [
+        "competence-d5"
+      ],
+      "observableIndicators": [
+        "Le retour vers le reset n’est engagé que lorsqu’une nouvelle action sur la détente est nécessaire.",
+        "Le retour depuis la butée est contrôlé jusqu’au point permettant le réengagement de l’action.",
+        "Le tireur n’effectue pas de relâchement excessif au-delà de ce qui est nécessaire au reset.",
+        "Une nouvelle action peut être engagée après le reset sans désorganisation observable.",
+        "Le comportement est reproductible sur plusieurs cycles comparables."
+      ],
+      "indirectIndicators": [
+        "Relâchement immédiat et automatique après chaque départ, indépendamment de la décision de poursuivre.",
+        "Recherche volontaire du clic de reset au détriment de l’organisation du geste.",
+        "Relâchement excessif de la détente avant la nouvelle action.",
+        "Amélioration lorsque le retour depuis la butée est volontairement contrôlé."
+      ],
+      "interpretationLimits": [
+        "Le reset n’est nécessaire que lorsqu’une nouvelle action sur la détente doit suivre.",
+        "D6 ne doit pas être évaluée comme une recherche de vitesse.",
+        "La perception ou l’audition du clic de reset ne constitue pas, à elle seule, un critère de maîtrise de D6.",
+        "La référence à un tempo comparable entre l’aller et le retour est un outil pédagogique d’acquisition et non une exigence chronométrique universelle.",
+        "D6 décrit le retour contrôlé vers le reset ; elle ne remplace pas D5, qui concerne la poursuite préalable jusqu’à la butée."
+      ],
+      "validationMode": "instructor",
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
+    }
+  ]
+}

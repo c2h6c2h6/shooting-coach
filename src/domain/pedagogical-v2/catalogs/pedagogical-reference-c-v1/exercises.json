@@ -1,0 +1,15 @@
+{"kind":"exercises","schemaVersion":"pedagogical-v2-contracts-v1","catalogVersion":"pedagogical-reference-c-v1","items":[{
+ "id":"exercise:C1:01","code":"EX-C1-01","name":"Reconstruire le même alignement","primaryCompetenceId":"competence:C1","secondaryCompetenceIds":[],"pedagogicalTechniqueIds":["technique:C1:01"],"learningPhase":"acquisition",
+ "pedagogicalObjective":"Reconstruire plusieurs fois une relation géométrique comparable entre les organes de visée.",
+ "rationale":"Isoler la reproductibilité géométrique de l’alignement sans utiliser le focus visuel, la vitesse ou le résultat en cible comme preuve de substitution.",
+ "prerequisiteCompetenceIds":[],"modeCodes":[],"instructorRequired":false,"technicalEquipmentCodes":[],
+ "protocol":["Partir d’une position de visée neutre et relâchée.","Construire la visée et observer la relation géométrique entre les organes de visée.","Quitter volontairement cette visée.","Reconstruire puis comparer la relation géométrique.","Répéter plusieurs fois dans des conditions comparables."],
+ "instructions":["Quitte puis reconstruis la visée en recherchant la même relation géométrique entre les organes de visée."],
+ "desiredSensations":["Reconstruction simple et comparable.","Attention portée à la relation géométrique plutôt qu’au résultat en cible."],
+ "frequentErrors":["Répondre seulement à la question de ce qui paraît net.","Ralentir sans réellement reconstruire l’alignement.","Utiliser l’impact comme preuve directe."],
+ "successCriteria":["Le tireur reconstruit plusieurs fois une relation géométrique comparable entre les organes de visée, sans variation parasite manifeste."],
+ "stopCriteria":["Fatigue visuelle ou résultat non observable.","Modification simultanée de plusieurs paramètres rendant la comparaison impossible.","Non-respect d’une règle de sécurité."],
+ "doNotUseWhen":["Lorsque les organes de visée ne peuvent pas être observés de manière fiable.","Lorsque les conditions du travail à sec ne sont pas réunies."],
+ "pedagogicalToolIds":["pedagogical-tool:REFERENCE_PHOTO","pedagogical-tool:MIRROR_FEEDBACK","pedagogical-tool:OBSERVATION_VIDEO"],
+ "defaultVariables":{"distance":null,"numberOfHands":null,"time":null,"cadence":"contrôlée","zoneSize":{"width":null,"height":null,"label":null},"targetType":null,"sightSystem":null,"shotCount":null,"movement":null,"attentionalLoad":null,"complexity":"simple","supervision":"selon le contexte de séance"},
+ "modifiableVariableKeys":["numberOfHands","sightSystem","attentionalLoad","complexity","supervision"],"schemaVersion":"pedagogical-v2-contracts-v1","itemVersion":"1.0.0","catalogVersion":"pedagogical-reference-c-v1"}]}
