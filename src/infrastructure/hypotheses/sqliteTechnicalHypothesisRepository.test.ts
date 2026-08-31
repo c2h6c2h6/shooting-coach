@@ -90,7 +90,7 @@ it("relit B5 sous D2 sans modifier evidence, rang, score ni SQLite", async () =>
 
 it.each([
   "GRIP_CHANGES_BETWEEN_SHOTS", "LOSS_OF_TECHNIQUE_DURING_SERIES",
-  "INCONSISTENT_BODY_POSITION", "FATIGUE",
+  "INCONSISTENT_BODY_POSITION", "FATIGUE", "ABRUPT_TRIGGER_PRESS", "INCONSISTENT_TRIGGER_PRESS",
 ] as const)("relit %s comme code réservé sans réécriture", async (hypothesisCode) => {
   const persisted: TechnicalHypothesis = {
     id: `legacy-${hypothesisCode}`, sessionId: "session", seriesId: "series", comparisonId: null,

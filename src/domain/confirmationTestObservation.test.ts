@@ -6,20 +6,12 @@ describe("observation factuelle du test de stabilité du guidon", () => {
   it.each([
     ["Guidon stable", "does_not_support_hypothesis"],
     ["Mouvement latéral répétitif", "supports_hypothesis"],
-    ["Mouvement vertical", "supports_hypothesis"],
+    ["Mouvement vertical", "weakly_supports_hypothesis"],
     ["Mouvement variable", "weakly_supports_hypothesis"],
     ["Résultat non observable", "not_observed"],
-  ] as const)("traduit %s pour l’hypothèse d’action brusque", (observation, expected) => {
-    expect(outcomeForTestObservation("TEST_SIGHT_STABILITY_DRY", "ABRUPT_TRIGGER_PRESS", observation))
+  ] as const)("traduit %s pour l’hypothèse latérale", (observation, expected) => {
+    expect(outcomeForTestObservation("TEST_SIGHT_STABILITY_DRY", "LATERAL_TRIGGER_PRESSURE", observation))
       .toBe(expected);
-  });
-
-  it("donne au mouvement variable son sens propre pour une action inconstante", () => {
-    expect(outcomeForTestObservation(
-      "TEST_SIGHT_STABILITY_DRY",
-      "INCONSISTENT_TRIGGER_PRESS",
-      "Mouvement variable",
-    )).toBe("supports_hypothesis");
   });
 });
 
@@ -53,7 +45,7 @@ describe("couverture explicite du catalogue actif", () => {
   it("rejette une observation étrangère au protocole", () => {
     expect(() => outcomeForTestObservation(
       "TEST_SIGHT_STABILITY_DRY",
-      "ABRUPT_TRIGGER_PRESS",
+      "LATERAL_TRIGGER_PRESSURE",
       "Cela renforce l’hypothèse",
     )).toThrow("Observation non prévue");
   });

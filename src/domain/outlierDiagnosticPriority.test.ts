@@ -1,13 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { confirmationTestCatalog } from "./confirmationTestCatalog";
 import { calculateSeriesMetrics } from "./seriesMetrics";
 import { observeSeries } from "./shootingObservation";
 import { generateTechnicalHypotheses } from "./technicalHypothesis";
 import { UNVERIFIED_TARGET_GEOMETRY_VERSION } from "./targetCoordinateConversion";
-import {
-  seriesObservationSummary,
-  userFacingHypothesisTitle,
-} from "../ui/analysisPresentation";
+import { seriesObservationSummary } from "../ui/analysisPresentation";
 
 const geometry = {
   version: UNVERIFIED_TARGET_GEOMETRY_VERSION,
@@ -57,9 +53,7 @@ describe("priorité diagnostique de la structure du groupement", () => {
     expect(result.metrics.potentiallyAtypicalImpactIds).toEqual(["impact-5"]);
     expect(result.metrics.includedImpactCount).toBe(5);
     expect(result.observations.primary?.observationCode).toBe("OUTLIER_TO_VERIFY");
-    expect(result.hypotheses[0]?.hypothesisCode).toBe("ABRUPT_TRIGGER_PRESS");
-    expect(result.hypotheses[0]?.supportingEvidence.map((item) => item.code))
-      .toContain("PUNCTUAL_PERTURBATION_COMPATIBILITY");
+    expect(result.hypotheses.map((item) => item.hypothesisCode)).not.toContain("ABRUPT_TRIGGER_PRESS");
     expect(result.hypotheses[0]?.hypothesisCode).not.toBe("EQUIPMENT_OR_SIGHT_ISSUE");
     expect(result.hypotheses.some((item) => item.hypothesisCode === "EQUIPMENT_OR_SIGHT_ISSUE"))
       .toBe(false);
@@ -69,10 +63,6 @@ describe("priorité diagnostique de la structure du groupement", () => {
     expect(seriesObservationSummary(result.observations)).toBe(
       "Le groupement principal est resserré et proche du centre. Un impact isolé est à vérifier.",
     );
-    expect(userFacingHypothesisTitle(result.hypotheses[0]!, "Action brusque sur la détente"))
-      .toBe("Perturbation ponctuelle au départ du coup");
-    expect(confirmationTestCatalog.find((test) => test.code === "TEST_SIGHT_STABILITY_DRY")
-      ?.hypothesisCodes).toContain(result.hypotheses[0]?.hypothesisCode);
   });
 
   it("conserve le biais constant pour cinq impacts compacts tous décalés", () => {

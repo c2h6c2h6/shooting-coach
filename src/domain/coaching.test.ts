@@ -18,7 +18,7 @@ const safe:SafetyContext={inAuthorizedRange:true,rangeRulesAccepted:true,safeDir
  dummyRoundsAllowed:false,dummyRoundProcedureKnown:false,instructorPresent:false,canDryFire:true,canLiveFire:true};
 describe("étape 10",()=>{
  it("refuse une hypothèse trop faible",()=>expect(selectConfirmationTest({hypothesis:h({internalScore:1}),alternatives:[],sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:true}).primary).toBeNull());
- it("choisit un test disponible",()=>expect(selectConfirmationTest({hypothesis:h(),alternatives:[],sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:true}).primary?.code).toBe("TEST_SIGHT_STABILITY_DRY"));
+ it("privilégie le test spécifique de placement pour D2.1",()=>expect(selectConfirmationTest({hypothesis:h(),alternatives:[],sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:true}).primary?.code).toBe("TEST_TRIGGER_FINGER_PLACEMENT"));
  it("refuse un contexte inconnu",()=>expect(selectConfirmationTest({hypothesis:h(),alternatives:[],sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:false}).blockers).toContain("Contexte inconnu."));
  it("offre une alternative sans tir pour l’anticipation",()=>expect(selectConfirmationTest({hypothesis:h({hypothesisCode:"SHOT_ANTICIPATION",category:"anticipation"}),alternatives:[],sessionMode:"training",safety:safe,userCanPerform:true,contextKnown:true}).primary?.requiresDryFire).toBe(true));
  it("bloque le test instructeur absent",()=>{const t=confirmationTestCatalog.find(x=>x.requiresInstructor)!;expect(safetyBlockers(t,safe)).toContain("Instructeur requis mais absent.");});
@@ -48,7 +48,7 @@ describe("étape 10",()=>{
   expect(proposeCoaching({hypothesis:h({hypothesisCode}),testRunId:"t",outcome:"supports_hypothesis",
    sessionId:"s",level:"beginner",numberOfHands:2,safety:safe})?.drill.code).toBe(drillCode);
  });
- it.each(["LATERAL_TRIGGER_PRESSURE","ABRUPT_TRIGGER_PRESS","INCONSISTENT_TRIGGER_PRESS","UNSTABLE_STANCE","POSTURAL_SWAY"] as const)
+ it.each(["LATERAL_TRIGGER_PRESSURE","UNSTABLE_STANCE","POSTURAL_SWAY"] as const)
   ("ne choisit aucun drill quand %s a plusieurs candidats sans binding",hypothesisCode=>{
    expect(proposeCoaching({hypothesis:h({hypothesisCode}),testRunId:"t",outcome:"supports_hypothesis",
     sessionId:"s",level:"beginner",numberOfHands:2,safety:safe})).toBeNull();

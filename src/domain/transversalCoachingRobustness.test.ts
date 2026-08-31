@@ -127,7 +127,7 @@ describe("première hypothèse réellement testable", () => {
   });
 
   it("conserve H1 lorsque H1 est testable", () => {
-    const h1 = hypothesis("ABRUPT_TRIGGER_PRESS", 1);
+    const h1 = hypothesis("LATERAL_TRIGGER_PRESSURE", 1);
     const h2 = hypothesis("LATERAL_TRIGGER_PRESSURE", 2);
     expect(firstStructurallyTestableHypothesis({ hypotheses: [h1, h2], sessionMode: "coaching_free" }))
       .toBe(h1);

@@ -36,7 +36,7 @@ describe("does_not_support et poursuite différentielle", () => {
   it("passe de H1 affaiblie à H2 testable", () => {
     const h1 = applyConfirmationOutcomeToHypothesis(hypothesis("LATERAL_TRIGGER_PRESSURE", 1),
       "does_not_support_hypothesis");
-    const h2 = hypothesis("ABRUPT_TRIGGER_PRESS", 2);
+    const h2 = hypothesis("SHOT_ANTICIPATION", 2, { category: "anticipation" });
     expect(nextTestableHypothesisAfterOutcome([h1, h2], "coaching_free")).toBe(h2);
   });
 
@@ -44,7 +44,7 @@ describe("does_not_support et poursuite différentielle", () => {
     const h1 = applyConfirmationOutcomeToHypothesis(hypothesis("LATERAL_TRIGGER_PRESSURE", 1),
       "does_not_support_hypothesis");
     const h2 = hypothesis("ATTENTION_LOSS", 2, { category: "context_equipment" });
-    const h3 = hypothesis("ABRUPT_TRIGGER_PRESS", 3);
+    const h3 = hypothesis("SHOT_ANTICIPATION", 3, { category: "anticipation" });
     expect(nextTestableHypothesisAfterOutcome([h1, h2, h3], "coaching_free")).toBe(h3);
   });
 
@@ -67,7 +67,7 @@ describe("does_not_support et poursuite différentielle", () => {
     const h2 = hypothesis("UNBALANCED_HAND_PRESSURE", 2, {
       category: "grip", applicableContext: { numberOfHands: 1 },
     });
-    const h3 = hypothesis("ABRUPT_TRIGGER_PRESS", 3);
+    const h3 = hypothesis("SHOT_ANTICIPATION", 3, { category: "anticipation" });
     expect(nextTestableHypothesisAfterOutcome([h1, h2, h3], "coaching_free")).toBe(h3);
   });
 

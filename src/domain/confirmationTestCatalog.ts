@@ -17,10 +17,6 @@ function categoryFor(code:string):ConfirmationTestDefinition["category"]{
  return"context_equipment";
 }
 export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
- dry("TEST_SIGHT_STABILITY_DRY","Stabilité du guidon à sec","Observer un déplacement au départ.",
-  ["LATERAL_TRIGGER_PRESSURE","ABRUPT_TRIGGER_PRESS","INCONSISTENT_TRIGGER_PRESS"],
-  ["Guidon stable","Mouvement latéral répétitif","Mouvement vertical","Mouvement variable","Résultat non observable"],
-  ["EQUIPMENT_OR_SIGHT_ISSUE"]),
  {...dry("TEST_TRIGGER_FINGER_PLACEMENT","Placement descriptif du doigt","Vérifier si une légère modification du placement réduit le mouvement parasite, sans imposer une position universelle.",
   ["TRIGGER_FINGER_TOO_LITTLE","TRIGGER_FINGER_TOO_DEEP","LATERAL_TRIGGER_PRESSURE"],
   ["Pression dans l’axe sans déplacement visible","Déplacement répétitif selon le placement","Aucune différence observable"]),
@@ -28,6 +24,10 @@ export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
    "Effectuer des départs avec le placement habituel et observer le mouvement des organes de visée.",
    "Modifier légèrement le placement de l’index, sans rechercher une profondeur universelle, puis répéter les départs.",
    "Comparer uniquement si le mouvement parasite diminue, disparaît ou reste inchangé."]},
+ dry("TEST_SIGHT_STABILITY_DRY","Stabilité du guidon à sec","Observer un déplacement au départ.",
+  ["LATERAL_TRIGGER_PRESSURE"],
+  ["Guidon stable","Mouvement latéral répétitif","Mouvement vertical","Mouvement variable","Résultat non observable"],
+  ["EQUIPMENT_OR_SIGHT_ISSUE"]),
  dry("TEST_ANTICIPATION_DRY","Départ attendu non produit","Observer si une réponse motrice apparaît avant ou au moment du départ attendu alors qu’aucun recul réel ne survient.",
   ["SHOT_ANTICIPATION"],
   ["Aucune réaction anticipatrice observable","Abaissement anticipé reproductible","Poussée anticipée reproductible","Sursaut ou crispation anticipatrice reproductible","Fermeture des yeux anticipatrice reproductible","Autre réponse anticipatrice reproductible","Résultat non observable ou ambigu"]),
