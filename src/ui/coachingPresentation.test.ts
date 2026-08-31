@@ -9,7 +9,12 @@ import {
   presentDrill,
   presentHypothesis,
   presentOutcome,
+  presentTechnicalControlTitle,
 } from "./coachingPresentation";
+import { e1AnticipationTechnicalControl } from "../domain/pedagogical-v2/e1AnticipationPedagogicalChain";
+import { sightAlignmentTechnicalControl } from "../domain/pedagogical-v2/sightAlignmentPedagogicalChain";
+import { wristOrganizationTechnicalControl } from "../domain/pedagogical-v2/wristStabilityPedagogicalChain";
+import { d2TriggerHandTechnicalControl } from "../domain/technicalObservationControl";
 
 const test = confirmationTestCatalog.find((item) => item.code === "TEST_SIGHT_STABILITY_DRY")!;
 const drill = trainingDrillCatalog.find((item) => item.code === "DRILL_DRY_CONTROLLED_RELEASES")!;
@@ -79,5 +84,23 @@ describe("hotfix UX — présentation du coaching", () => {
     expect(test.code).toBe("TEST_SIGHT_STABILITY_DRY");
     expect(drill.code).toBe("DRILL_DRY_CONTROLLED_RELEASES");
     expect(drill.objective).toBe("horizontal_stability");
+  });
+
+  it("projette le libellé du contrôle technique associé", () => {
+    expect(presentTechnicalControlTitle(d2TriggerHandTechnicalControl)).toBe("Index indépendant");
+    expect(presentTechnicalControlTitle(wristOrganizationTechnicalControl)).toBe("Reproduire l’organisation du poignet");
+    expect(presentTechnicalControlTitle(sightAlignmentTechnicalControl)).toBe("Reconstruire le même alignement");
+    expect(presentTechnicalControlTitle(e1AnticipationTechnicalControl)).toBe("Laisser partir sans anticiper");
+  });
+
+  it("utilise un fallback neutre si l’ancien cycle n’a pas de libellé", () => {
+    expect(presentTechnicalControlTitle({ exerciseName: "", competenceName: "" })).toBe("Observation technique");
+    expect(presentTechnicalControlTitle(undefined)).toBe("Observation technique");
+  });
+
+  it("ne déduit jamais un titre D2 du seul mode technique", () => {
+    const screen = readFileSync(resolve(process.cwd(), "app/sessions/[id]/series/[seriesId]/coaching.tsx"), "utf8");
+    expect(screen).not.toContain('<Text style={styles.section}>Index indépendant</Text>');
+    expect(screen).toContain("presentTechnicalControlTitle(technicalControl)");
   });
 });

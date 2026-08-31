@@ -2,6 +2,7 @@ import type {
   CoachingObjective,
   ConfirmationOutcome,
   ConfirmationTestDefinition,
+  TechnicalObservationControlSnapshot,
   TrainingDrill,
 } from "../domain/coachingTypes";
 import type { HypothesisCode } from "../domain/technicalHypothesisCatalog";
@@ -23,6 +24,11 @@ interface DrillPresentation {
   objective: string;
   instructions: string[];
   successCriterion: string;
+}
+
+/** Projects the selected technical control without inferring a competence from its mode. */
+export function presentTechnicalControlTitle(control: Pick<TechnicalObservationControlSnapshot, "exerciseName" | "competenceName"> | null | undefined): string {
+  return control?.exerciseName?.trim() || control?.competenceName?.trim() || "Observation technique";
 }
 
 const objectiveLabels: Record<CoachingObjective, string> = {

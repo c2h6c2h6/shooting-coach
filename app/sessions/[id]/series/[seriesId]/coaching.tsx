@@ -9,7 +9,7 @@ import { safetyBlockers } from "../../../../../src/domain/coachingSafetyRules";
 import { confirmCoordinatedSafety,confirmSessionSafety,EMPTY_SAFETY_CONTEXT,inheritedSafetyKeys,
  isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys,USER_CONFIRMABLE_TEST_SAFETY_KEYS } from "../../../../../src/domain/sessionSafetyContext";
 import { useCoaching } from "../../../../../src/ui/CoachingProvider";
-import { presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome } from "../../../../../src/ui/coachingPresentation";
+import { presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome,presentTechnicalControlTitle } from "../../../../../src/ui/coachingPresentation";
 import { useTechnicalHypotheses } from "../../../../../src/ui/TechnicalHypothesisProvider";
 import { colors,layout,shadows } from "../../../../../src/ui/theme";
 import { isConfirmationTestApplicableForNumberOfHands, numberOfHandsFromApplicableContext } from "../../../../../src/domain/numberOfHandsApplicability";
@@ -103,7 +103,7 @@ export default function CoachingScreen(){
     {test&&test.observationCriteria.map(observation=><Pressable key={observation} style={styles.secondary} onPress={()=>void finish(observation)}><Text style={styles.secondaryText}>{observation}</Text></Pressable>)}
     <Pressable onPress={()=>void service.cancel(state.cycle,state.test).then(()=>router.replace(`/sessions/${sessionId}`))}><Text style={styles.link}>Interrompre ou refuser</Text></Pressable></View>:null}
   {outcome?<View style={styles.card}><Text style={styles.section}>Résultat du test</Text><Text style={styles.body}>{presentOutcome(outcome,state?.test.testCode)}</Text>
-   {hasWork&&technicalControl?<><Text style={styles.kicker}>TRAVAILLER</Text><Text style={styles.section}>Index indépendant</Text>
+   {hasWork&&technicalControl?<><Text style={styles.kicker}>TRAVAILLER</Text><Text style={styles.section}>{presentTechnicalControlTitle(technicalControl)}</Text>
     {technicalControl.exerciseInstructions.map((instruction,index)=><Text key={`exercise-${index}`} style={styles.body}>{index+1}. {instruction}</Text>)}
     {!showTechnicalEvaluation?<Pressable style={styles.primary} onPress={()=>setShowTechnicalEvaluation(true)}>
      <Text style={styles.primaryText}>Vérifier le résultat du travail</Text></Pressable>:<>
