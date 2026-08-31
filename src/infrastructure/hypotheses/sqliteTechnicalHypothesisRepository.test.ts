@@ -87,3 +87,23 @@ it("relit B5 sous D2 sans modifier evidence, rang, score ni SQLite", async () =>
   expect(reread.supportingEvidence).toEqual(persisted.supportingEvidence);
   expect(database.writes).toEqual([]);
 });
+
+it.each([
+  "GRIP_CHANGES_BETWEEN_SHOTS", "LOSS_OF_TECHNIQUE_DURING_SERIES",
+  "INCONSISTENT_BODY_POSITION", "FATIGUE",
+] as const)("relit %s comme code réservé sans réécriture", async (hypothesisCode) => {
+  const persisted: TechnicalHypothesis = {
+    id: `legacy-${hypothesisCode}`, sessionId: "session", seriesId: "series", comparisonId: null,
+    observationId: "observation", hypothesisCode, category: "context_equipment", status: "requires_confirmation",
+    plausibilityLevel: "medium", confidenceLevel: "low", rank: 2, internalScore: 5,
+    supportingEvidence: [{ code: "PERSISTED_EVIDENCE", labelFr: "Evidence historique", source: "observation" }],
+    contradictingEvidence: [], missingEvidence: [], applicableContext: {}, sourceRules: ["legacy-rule"],
+    rulesetVersion: "legacy", generatedAt: "then",
+  };
+  const database = new HistoricalB5Database(persisted);
+  const [reread] = await new SqliteTechnicalHypothesisRepository(database, () => "unused", () => "unused")
+    .generateForSeries("series");
+  expect(reread).toMatchObject({ hypothesisCode, rank: 2, internalScore: 5, sourceRules: ["legacy-rule"] });
+  expect(reread.supportingEvidence).toEqual(persisted.supportingEvidence);
+  expect(database.writes).toEqual([]);
+});

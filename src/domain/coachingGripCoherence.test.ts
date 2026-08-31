@@ -154,12 +154,12 @@ describe("cohérence test / exercice pour une prise variable", () => {
     expect(drill.executionSteps).toEqual(["Reproduire la même prise à chaque coup."]);
   });
 
-  it("corrige aussi le cas strictement analogue d’un changement de prise entre les coups", () => {
+  it("ne propose plus de chaîne corrective à une manifestation comparative réservée", () => {
     expect(proposeCoaching({
       hypothesis:{...hypothesis,hypothesisCode:"GRIP_CHANGES_BETWEEN_SHOTS"},
       testRunId:"test-run-grip-placement",outcome:"supports_hypothesis",sessionId:hypothesis.sessionId,
       level:"beginner",numberOfHands:2,safety,
-    })?.drill.code).toBe("DRILL_CONSTANT_GRIP");
+    })).toBeNull();
   });
 
   it("ne change pas le parcours Action brusque sur la détente", () => {

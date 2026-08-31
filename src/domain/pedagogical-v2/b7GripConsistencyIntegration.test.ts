@@ -24,10 +24,11 @@ describe("rattachement des chaînes historiques B7 à la maîtrise de B3",()=>{
   .toMatchObject({id:"exercise:B7:01",primaryCompetenceId:"competence:B3",learningPhase:"stabilization",
    pedagogicalTechniqueIds:["technique:B7:01"],defaultVariables:{shotCount:5}}));
 
- it("rattache uniquement les deux hypothèses de variation compatibles",()=>expect(gripConsistencyPedagogicalBindings
-  .map(item=>item.hypothesisCode)).toEqual(["INCONSISTENT_GRIP_PRESSURE","GRIP_CHANGES_BETWEEN_SHOTS"]));
+ it("rattache uniquement l’hypothèse canonique de variation",()=>expect(gripConsistencyPedagogicalBindings
+  .map(item=>item.hypothesisCode)).toEqual(["INCONSISTENT_GRIP_PRESSURE"]));
 
- it.each(["INCONSISTENT_GRIP_PRESSURE","GRIP_CHANGES_BETWEEN_SHOTS"] as const)("transporte B3 et l’intention de maîtrise pour %s",code=>{
+ it("transporte B3 et l’intention de maîtrise pour l’hypothèse canonique",()=>{
+  const code="INCONSISTENT_GRIP_PRESSURE" as const;
   expect(proposeCoaching({hypothesis:hypothesis(code),testRunId:"t",outcome:"supports_hypothesis",sessionId:"s",
    level:"intermediate",numberOfHands:2,safety})?.pedagogicalBinding).toMatchObject({
     confirmationTestCode:"TEST_GRIP_CONSTANCY",competenceId:"competence:B3",

@@ -10,6 +10,12 @@ export type HypothesisRegistryStatus =
   | "reserved_without_source"
   | "orphan_or_incoherent";
 
+export type ReservedHypothesisRole =
+  | "comparative_grip_manifestation"
+  | "mastery_robustness_indicator"
+  | "contextual_non_technical"
+  | "out_of_scope";
+
 export interface ActiveHypothesisSource {
   readonly kind: "single_series_observation";
   /** Exact mapping objects consumed by `generateTechnicalHypotheses`. */
@@ -20,6 +26,7 @@ export interface HypothesisRegistryEntry {
   readonly code: HypothesisCode;
   readonly status: HypothesisRegistryStatus;
   readonly activeSources: readonly ActiveHypothesisSource[];
+  readonly reservedRole?: ReservedHypothesisRole;
 }
 
 const activeWithSingleSeriesSource = new Set<HypothesisCode>([
@@ -41,6 +48,13 @@ const comparisonOnly = new Set<HypothesisCode>([
   "LOSS_OF_TECHNIQUE_DURING_SERIES", "FATIGUE",
 ]);
 
+const reservedRoles: Partial<Record<HypothesisCode, ReservedHypothesisRole>> = {
+  GRIP_CHANGES_BETWEEN_SHOTS: "comparative_grip_manifestation",
+  LOSS_OF_TECHNIQUE_DURING_SERIES: "mastery_robustness_indicator",
+  INCONSISTENT_BODY_POSITION: "contextual_non_technical",
+  FATIGUE: "out_of_scope",
+};
+
 const comparisonObservationCodes = new Set([
   "GROUP_WIDER", "SHAPE_CHANGED", "NO_NOTABLE_CHANGE",
 ]);
@@ -61,6 +75,7 @@ export function createTechnicalHypothesisRegistry(
         : activeWithSingleSeriesSource.has(code) ? "active_with_source"
           : "reserved_without_source",
       activeSources: sourcesFor(code),
+      ...(reservedRoles[code] === undefined ? {} : { reservedRole: reservedRoles[code] }),
     }])) as Record<HypothesisCode, HypothesisRegistryEntry>;
 }
 

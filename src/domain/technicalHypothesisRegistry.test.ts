@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { normalizeHistoricalE1Hypothesis } from "./e1AnticipationCompatibility";
+import { confirmationTestCatalog } from "./confirmationTestCatalog";
+import { coachingRecommendationCatalog } from "./coachingRecommendationCatalog";
+import { diagnosticQuestionCatalog } from "./diagnosticQuestionCatalog";
 import { observationHypothesisMappings } from "./observationHypothesisMappings";
+import { gripConsistencyPedagogicalBindings } from "./pedagogical-v2/twoHandContributionPedagogicalBinding";
 import { generateTechnicalHypotheses, TechnicalHypothesis } from "./technicalHypothesis";
 import {
   activeHypothesisCodes,
@@ -8,6 +12,7 @@ import {
   technicalHypothesisRegistry,
 } from "./technicalHypothesisCatalog";
 import type { ShootingObservation } from "./shootingObservation";
+import { trainingDrillCatalog } from "./trainingDrillCatalog";
 
 const observation = (code: ShootingObservation["observationCode"], scope: ShootingObservation["scope"] = "single_series"): ShootingObservation => ({
   id: `observation-${code}`, sessionId: "session", seriesId: scope === "comparison" ? null : "series",
@@ -83,5 +88,34 @@ describe("registre explicite des hypothèses", () => {
       laterality: "right", impactCount: 5, generatedAt: "now",
     });
     expect(generated).toEqual([]);
+  });
+
+  it("décrit les quatre réserves comparison-only sans créer de causalité technique", () => {
+    expect(technicalHypothesisRegistry.GRIP_CHANGES_BETWEEN_SHOTS.reservedRole).toBe("comparative_grip_manifestation");
+    expect(technicalHypothesisRegistry.LOSS_OF_TECHNIQUE_DURING_SERIES.reservedRole).toBe("mastery_robustness_indicator");
+    expect(technicalHypothesisRegistry.INCONSISTENT_BODY_POSITION.reservedRole).toBe("contextual_non_technical");
+    expect(technicalHypothesisRegistry.FATIGUE.reservedRole).toBe("out_of_scope");
+    expect(observationHypothesisMappings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ observation: "SHAPE_CHANGED", hypothesis: "GRIP_CHANGES_BETWEEN_SHOTS" }),
+      expect.objectContaining({ observation: "SHAPE_CHANGED", hypothesis: "INCONSISTENT_BODY_POSITION" }),
+      expect.objectContaining({ observation: "GROUP_WIDER", hypothesis: "LOSS_OF_TECHNIQUE_DURING_SERIES" }),
+      expect.objectContaining({ observation: "GROUP_WIDER", hypothesis: "FATIGUE" }),
+    ]));
+  });
+
+  it("laisse uniquement INCONSISTENT_GRIP_PRESSURE dans la chaîne canonique de prise", () => {
+    const reserved = ["GRIP_CHANGES_BETWEEN_SHOTS", "LOSS_OF_TECHNIQUE_DURING_SERIES",
+      "INCONSISTENT_BODY_POSITION", "FATIGUE"] as const;
+    expect(confirmationTestCatalog.find((item) => item.code === "TEST_GRIP_CONSTANCY")?.hypothesisCodes)
+      .toEqual(expect.arrayContaining(["INCONSISTENT_GRIP_PRESSURE"]));
+    expect(gripConsistencyPedagogicalBindings.map((item) => item.hypothesisCode))
+      .toEqual(["INCONSISTENT_GRIP_PRESSURE"]);
+    for (const code of reserved) {
+      expect(confirmationTestCatalog.every((item) => !item.hypothesisCodes.includes(code))).toBe(true);
+      expect(coachingRecommendationCatalog.every((item) => !item.hypothesisCodes.includes(code))).toBe(true);
+      expect(trainingDrillCatalog.every((item) => !item.linkedHypothesisCodes.includes(code))).toBe(true);
+    }
+    expect(diagnosticQuestionCatalog.every((item) => !item.hypotheses.includes("FATIGUE")
+      && !item.hypotheses.includes("LOSS_OF_TECHNIQUE_DURING_SERIES"))).toBe(true);
   });
 });

@@ -30,7 +30,7 @@ export const twoHandContributionPedagogicalBinding:PedagogicalChainBinding={
 
 function gripConsistencyBindingsFor(competenceId:string,masteryIntents?:readonly MasteryLevel[]):readonly PedagogicalChainBinding[] {
   return [
-  "INCONSISTENT_GRIP_PRESSURE","GRIP_CHANGES_BETWEEN_SHOTS",
+  "INCONSISTENT_GRIP_PRESSURE",
 ].map((hypothesisCode)=>({
   hypothesisCode:hypothesisCode as HypothesisCode,
   confirmationTestCode:"TEST_GRIP_CONSTANCY",

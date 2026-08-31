@@ -43,11 +43,11 @@ describe("reclassification historique B7/B8 vers la maîtrise de competence:B3",
  });
 
  it("conserve la chaîne active B7 avec une intention de stabilization/robustness",()=>{
-  expect(gripConsistencyPedagogicalBindings).toHaveLength(2);
+  expect(gripConsistencyPedagogicalBindings).toHaveLength(1);
   expect(gripConsistencyPedagogicalBindings.every(item=>item.competenceId==="competence:B3" &&
    item.masteryIntents?.join(",")==="stabilization,robustness")).toBe(true);
   expect(gripConsistencyPedagogicalBindings.map(item=>item.hypothesisCode)).toEqual([
-   "INCONSISTENT_GRIP_PRESSURE","GRIP_CHANGES_BETWEEN_SHOTS"]);
+   "INCONSISTENT_GRIP_PRESSURE"]);
  });
 
  it("laisse test, drill et recommendation actifs sans hypothèse d’asymétrie",()=>{
@@ -57,7 +57,8 @@ describe("reclassification historique B7/B8 vers la maîtrise de competence:B3",
    "UNBALANCED_HAND_PRESSURE","TWO_HAND_CONTRIBUTION"]));
  });
 
- it.each(["INCONSISTENT_GRIP_PRESSURE","GRIP_CHANGES_BETWEEN_SHOTS"] as const)("propose la chaîne rebinding pour %s",code=>{
+ it("propose la chaîne rebinding pour l’hypothèse canonique",()=>{
+  const code="INCONSISTENT_GRIP_PRESSURE" as const;
   const h=hypothesis(code),before={rank:h.rank,score:h.internalScore};
   const proposal=proposeCoaching({hypothesis:h,testRunId:"t",outcome:"supports_hypothesis",sessionId:"s",
    level:"intermediate",numberOfHands:2,safety});
@@ -70,8 +71,7 @@ describe("reclassification historique B7/B8 vers la maîtrise de competence:B3",
  it("conserve les anciens bindings B7 lisibles et normalisables",()=>{
   expect(historicalGripConsistencyPedagogicalBindings.every(item=>item.competenceId==="competence:B7")).toBe(true);
   expect(historicalGripConsistencyPedagogicalBindings.map(item=>normalizeHistoricalDomainBCompetence(item.competenceId)))
-   .toEqual([{canonicalCompetenceId:"competence:B3",masteryIntents:["stabilization","robustness"],deprecated:true},
-    {canonicalCompetenceId:"competence:B3",masteryIntents:["stabilization","robustness"],deprecated:true}]);
+   .toEqual([{canonicalCompetenceId:"competence:B3",masteryIntents:["stabilization","robustness"],deprecated:true}]);
  });
 
  it("conserve B8 lisible mais non fondamental et non actionnable",()=>{
