@@ -43,12 +43,12 @@ describe("reclassification posture sans causalité géométrique", () => {
     expect(generated.map((item) => item.hypothesisCode)).not.toEqual(expect.arrayContaining([...reserved]));
   });
 
-  it("conserve la couverture complète du registre dans l’état cible 11 / 7 / 30 / 0", () => {
+  it("conserve la couverture complète du registre après les reclassifications ultérieures", () => {
     const counts = Object.values(technicalHypothesisRegistry).reduce<Record<string, number>>((all, entry) => {
       all[entry.status] = (all[entry.status] ?? 0) + 1;
       return all;
     }, {});
-    expect(counts).toEqual({ active_with_source: 11, historical_alias: 7, reserved_without_source: 30 });
+    expect(counts).toEqual({ active_with_source: 8, historical_alias: 7, reserved_without_source: 33 });
   });
 
   it("retire les deux codes de tous les tests, recommendations et drills actifs", () => {
