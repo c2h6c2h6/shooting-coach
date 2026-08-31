@@ -48,7 +48,7 @@ describe("étape 10",()=>{
   expect(proposeCoaching({hypothesis:h({hypothesisCode}),testRunId:"t",outcome:"supports_hypothesis",
    sessionId:"s",level:"beginner",numberOfHands:2,safety:safe})?.drill.code).toBe(drillCode);
  });
- it.each(["LATERAL_TRIGGER_PRESSURE","UNSTABLE_STANCE","POSTURAL_SWAY"] as const)
+ it.each(["LATERAL_TRIGGER_PRESSURE","POOR_NATURAL_POINT_OF_AIM","SHOULDER_TENSION"] as const)
   ("ne choisit aucun drill quand %s a plusieurs candidats sans binding",hypothesisCode=>{
    expect(proposeCoaching({hypothesis:h({hypothesisCode}),testRunId:"t",outcome:"supports_hypothesis",
     sessionId:"s",level:"beginner",numberOfHands:2,safety:safe})).toBeNull();
