@@ -1,7 +1,7 @@
 import { ShootingObservation } from "./shootingObservation";
 import { DiagnosticAnswerValue, diagnosticQuestionCatalog } from "./diagnosticQuestionCatalog";
 import { observationHypothesisMappings } from "./observationHypothesisMappings";
-import { HypothesisCategory, HypothesisCode, HYPOTHESIS_RULESET_VERSION, technicalHypothesisCatalog } from "./technicalHypothesisCatalog";
+import { HypothesisCategory, HypothesisCode, HYPOTHESIS_RULESET_VERSION, isActiveGeneratedHypothesis, technicalHypothesisCatalog, technicalHypothesisRegistry } from "./technicalHypothesisCatalog";
 import { NumberOfHands } from "./session";
 import {
   hypothesisApplicabilityForNumberOfHands,
@@ -40,6 +40,7 @@ export function generateTechnicalHypotheses(input:HypothesisInput):Omit<Technica
   const candidates=[] as Omit<TechnicalHypothesis,"id">[];
   for(const observation of input.observations.filter(o=>o.rank!=="limitation")){
     for(const relation of observationHypothesisMappings.filter(r=>r.observation===observation.observationCode)){
+      if (!isActiveGeneratedHypothesis(technicalHypothesisRegistry, relation.hypothesis)) continue;
       if(!relation.lateralities.includes(input.laterality)||input.impactCount<relation.minimumImpacts) continue;
       const handsApplicability=hypothesisApplicabilityForNumberOfHands(relation.hypothesis,numberOfHands);
       if(handsApplicability==="inapplicable")continue;

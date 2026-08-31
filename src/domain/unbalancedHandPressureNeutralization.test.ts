@@ -69,8 +69,9 @@ describe("neutralisation prudente de UNBALANCED_HAND_PRESSURE", () => {
       hypothesis("ATTENTION_LOSS",2,{category:"context_equipment"})],sessionMode:"coaching_free"})).toBeNull();
   });
 
-  it("conserve les mappings géométriques et numberOfHands", () => {
-    expect(observationHypothesisMappings.some(item=>item.hypothesis==="UNBALANCED_HAND_PRESSURE")).toBe(true);
+  it("rattache les mappings géométriques au code fonctionnel et conserve numberOfHands", () => {
+    expect(observationHypothesisMappings.some(item=>item.hypothesis==="UNBALANCED_HAND_PRESSURE")).toBe(false);
+    expect(observationHypothesisMappings.some(item=>item.hypothesis==="TWO_HAND_CONTRIBUTION")).toBe(true);
     expect(hypothesis().applicableContext.numberOfHands).toBe(2);
     expect(confirmationTestCatalog.find(item=>item.code==="TEST_GRIP_CONSTANCY")?.hypothesisCodes)
       .not.toContain("UNBALANCED_HAND_PRESSURE");

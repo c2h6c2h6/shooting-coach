@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ShootingObservation } from "../../domain/shootingObservation";
+import type { TechnicalHypothesis } from "../../domain/technicalHypothesis";
 import { Database, SqlParameter } from "../database/types";
 import { SqliteTechnicalHypothesisRepository } from "./sqliteTechnicalHypothesisRepository";
 
@@ -44,4 +45,45 @@ describe("contexte numberOfHands des séries d’une séance", () => {
     expect(result.every((item) => item.applicableContext.numberOfHands === 1)).toBe(true);
     expect(result.some((item) => item.hypothesisCode === "UNBALANCED_HAND_PRESSURE")).toBe(false);
   });
+});
+
+class HistoricalB5Database implements Database {
+  readonly writes: string[] = [];
+  constructor(readonly persisted: TechnicalHypothesis) {}
+  async execAsync(_sql: string) {}
+  async withTransactionAsync(task: () => Promise<void>) { await task(); }
+  async getFirstAsync<T>(sql: string) {
+    if (sql.includes("FROM series s JOIN sessions")) return {
+      session_id: "session", recorded_shot_count: 5, shooter_laterality_snapshot: "right", number_of_hands: 2,
+    } as T;
+    return null;
+  }
+  async getAllAsync<T>(sql: string) {
+    if (sql.includes("FROM technical_hypotheses")) return [{
+      result_json: JSON.stringify(this.persisted), latest_outcome: null,
+    }] as T[];
+    return [] as T[];
+  }
+  async runAsync(sql: string, ..._params: SqlParameter[]) {
+    this.writes.push(sql);
+    return { changes: 1 };
+  }
+}
+
+it("relit B5 sous D2 sans modifier evidence, rang, score ni SQLite", async () => {
+  const persisted: TechnicalHypothesis = {
+    id: "legacy-b5", sessionId: "session", seriesId: "series", comparisonId: null, observationId: "observation",
+    hypothesisCode: "DOMINANT_HAND_OVERGRIP", category: "grip", status: "requires_confirmation",
+    plausibilityLevel: "medium", confidenceLevel: "low", rank: 3, internalScore: 7,
+    supportingEvidence: [{ code: "PERSISTED_EVIDENCE", labelFr: "Evidence historique", source: "observation" }],
+    contradictingEvidence: [], missingEvidence: [], applicableContext: { numberOfHands: 2 },
+    sourceRules: ["legacy-rule"], rulesetVersion: "legacy", generatedAt: "then",
+  };
+  const database = new HistoricalB5Database(persisted);
+  const [reread] = await new SqliteTechnicalHypothesisRepository(database, () => "unused", () => "unused")
+    .generateForSeries("series");
+  expect(reread).toMatchObject({ hypothesisCode: "TRIGGER_FINGER_HAND_COACTIVATION", category: "trigger",
+    rank: 3, internalScore: 7, sourceRules: ["legacy-rule"] });
+  expect(reread.supportingEvidence).toEqual(persisted.supportingEvidence);
+  expect(database.writes).toEqual([]);
 });

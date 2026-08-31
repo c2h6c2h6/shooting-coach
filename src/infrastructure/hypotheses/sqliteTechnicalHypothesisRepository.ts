@@ -8,6 +8,7 @@ import type { ConfirmationOutcome } from "../../domain/coachingTypes";
 import { isHistoricalTriggerFingerHypothesis,normalizeHistoricalTriggerFingerHypothesis } from "../../domain/d2TriggerFingerCompatibility";
 import { isHistoricalTwoHandContributionHypothesis,normalizeTwoHandContributionHypothesis } from "../../domain/twoHandContributionCompatibility";
 import { isHistoricalE1Manifestation,normalizeHistoricalE1Hypothesis } from "../../domain/e1AnticipationCompatibility";
+import { historicalB5HypothesisCodes, normalizeHistoricalB5Hypothesis } from "../../domain/b5ToD2Compatibility";
 interface SeriesRow{session_id:string;recorded_shot_count:number;shooter_laterality_snapshot:"right"|"left";number_of_hands:1|2|null}
 export class SqliteTechnicalHypothesisRepository implements TechnicalHypothesisRepository{
  constructor(private database:Database,private createId:()=>string,private now=()=>new Date().toISOString()){}
@@ -37,9 +38,10 @@ export class SqliteTechnicalHypothesisRepository implements TechnicalHypothesisR
   const parsedExisting=existing.map(row=>({hypothesis:JSON.parse(row.result_json) as TechnicalHypothesis,
    latestOutcome:row.latest_outcome}));
   if(parsedExisting.some(row=>row.latestOutcome!==null||isHistoricalTriggerFingerHypothesis(row.hypothesis.hypothesisCode)||isHistoricalE1Manifestation(row.hypothesis.hypothesisCode)
-    ||isHistoricalTwoHandContributionHypothesis(row.hypothesis)))
+    ||isHistoricalTwoHandContributionHypothesis(row.hypothesis)||historicalB5HypothesisCodes.has(row.hypothesis.hypothesisCode)))
    return parsedExisting.map(row=>hypothesisStatusAfterHistoricalOutcome(
-    normalizeTwoHandContributionHypothesis(normalizeHistoricalE1Hypothesis(normalizeHistoricalTriggerFingerHypothesis(row.hypothesis)),true),row.latestOutcome));
+    normalizeTwoHandContributionHypothesis(normalizeHistoricalE1Hypothesis(normalizeHistoricalTriggerFingerHypothesis(
+      normalizeHistoricalB5Hypothesis(row.hypothesis))),true),row.latestOutcome));
   const rows=await this.database.getAllAsync<{result_json:string}>(
    "SELECT result_json FROM shooting_observations WHERE series_id=? AND scope='single_series'",seriesId);
   const observations=rows.map(r=>JSON.parse(r.result_json) as ShootingObservation);

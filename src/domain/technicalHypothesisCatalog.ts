@@ -1,3 +1,6 @@
+import { createTechnicalHypothesisRegistry, isActiveGeneratedHypothesis } from "./technicalHypothesisRegistry";
+export { isActiveGeneratedHypothesis } from "./technicalHypothesisRegistry";
+
 export const HYPOTHESIS_RULESET_VERSION = "technical-hypothesis-rules-v1";
 
 export const hypothesisCodes = [
@@ -20,12 +23,6 @@ export const hypothesisCodes = [
   "TRIGGER_FINGER_HAND_COACTIVATION",
 ] as const;
 export type HypothesisCode = typeof hypothesisCodes[number];
-/** Codes that may be generated for a new diagnosis.  Older codes remain in
- * `hypothesisCodes` so persisted v13 records can still be read. */
-export const historicalE1HypothesisCodes = ["FLINCH_RESPONSE","PUSHING_AGAINST_RECOIL"] as const;
-export const activeHypothesisCodes = hypothesisCodes.filter((code) =>
- !historicalE1HypothesisCodes.includes(code as typeof historicalE1HypothesisCodes[number]),
-) as readonly HypothesisCode[];
 export type HypothesisCategory = "trigger"|"anticipation"|"grip"|"vision"|"stability"|"cadence"|"context_equipment";
 export type ErrorPatternNature = "systematic"|"variable"|"mixed";
 export interface HypothesisDefinition {
@@ -72,3 +69,10 @@ export const technicalHypothesisCatalog: Record<HypothesisCode,HypothesisDefinit
       patternNature,
       laterality:"any",weapon:"semi_automatic_pistol",sight:"open"}];
   })) as Record<HypothesisCode,HypothesisDefinition>;
+
+/** The full catalogue remains readable for persisted v13 hypotheses.  This
+ * register separately defines which codes can be newly generated. */
+export const technicalHypothesisRegistry = createTechnicalHypothesisRegistry(hypothesisCodes);
+export const activeHypothesisCodes = hypothesisCodes.filter((code) =>
+  isActiveGeneratedHypothesis(technicalHypothesisRegistry, code),
+) as readonly HypothesisCode[];

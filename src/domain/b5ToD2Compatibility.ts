@@ -7,8 +7,5 @@ export const historicalB5HypothesisCodes=new Set<HypothesisCode>([
 
 export function normalizeHistoricalB5Hypothesis(hypothesis:TechnicalHypothesis):TechnicalHypothesis {
   if(!historicalB5HypothesisCodes.has(hypothesis.hypothesisCode))return hypothesis;
-  return {...hypothesis,hypothesisCode:"TRIGGER_FINGER_HAND_COACTIVATION",category:"trigger",
-    supportingEvidence:[...hypothesis.supportingEvidence,{code:"HISTORICAL_B5_HAND_COACTIVATION",
-      labelFr:"Une ancienne hypothèse de tension ou de surpression de la main est relue comme une vérification neutre de l’indépendance index–main.",
-      source:"limitation"}]};
+  return {...hypothesis,hypothesisCode:"TRIGGER_FINGER_HAND_COACTIVATION",category:"trigger"};
 }
