@@ -13,9 +13,11 @@ const run=(code:ShootingObservation["observationCode"],laterality:"right"|"left"
  observations:[observation(code,laterality)],laterality,impactCount:count,answers,generatedAt:"2026-01-01"});
 describe("technical hypothesis engine",()=>{
  it.each(["OFFSET_LEFT","OFFSET_RIGHT","OFFSET_HIGH","OFFSET_LOW","OFFSET_HIGH_LEFT","OFFSET_HIGH_RIGHT",
-  "OFFSET_LOW_LEFT","OFFSET_LOW_RIGHT","HORIZONTAL_SPREAD","VERTICAL_SPREAD","TWO_AXIS_SPREAD"] as const)
+  "OFFSET_LOW_LEFT","OFFSET_LOW_RIGHT","HORIZONTAL_SPREAD","TWO_AXIS_SPREAD"] as const)
   ("produit plusieurs causes prudentes pour %s",code=>{const out=run(code);expect(out.length).toBeGreaterThan(1);
    expect(out.every(x=>x.status!=="contradicted"&&x.confidenceLevel!=="high")).toBe(true);});
+ it("conserve la seule piste active réellement restante pour VERTICAL_SPREAD",()=>
+  expect(run("VERTICAL_SPREAD").map(item=>item.hypothesisCode)).toEqual(["WRIST_INSTABILITY"]));
  it("ne déduit plus la profondeur de l’index depuis la direction ou la latéralité",()=>{
   expect(run("OFFSET_LEFT","right").some(x=>x.hypothesisCode.startsWith("TRIGGER_FINGER_TOO_"))).toBe(false);
   expect(run("OFFSET_LEFT","left").some(x=>x.hypothesisCode.startsWith("TRIGGER_FINGER_TOO_"))).toBe(false);

@@ -48,7 +48,7 @@ describe("reclassification posture sans causalité géométrique", () => {
       all[entry.status] = (all[entry.status] ?? 0) + 1;
       return all;
     }, {});
-    expect(counts).toEqual({ active_with_source: 8, historical_alias: 7, reserved_without_source: 33 });
+    expect(counts).toEqual({ active_with_source: 7, historical_alias: 7, reserved_without_source: 34 });
   });
 
   it("retire les deux codes de tous les tests, recommendations et drills actifs", () => {

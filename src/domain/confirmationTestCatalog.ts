@@ -66,7 +66,7 @@ export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
  dry("TEST_SIGHT_ALIGNMENT_REPRODUCIBILITY","Test de reproductibilité de l’alignement","Observer si la même relation géométrique entre les organes de visée est reconstruite d’une répétition à l’autre.",
   ["SIGHT_ALIGNMENT_VARIATION"],["Alignement reproduit de manière comparable","Variation latérale reproductible de l’alignement","Variation verticale reproductible de l’alignement","Variation irrégulière ou non interprétable","Alignement non observable de manière fiable"]),
  dry("TEST_AIMING_DURATION","Durée de visée","Vérifier si la stabilité se dégrade quand la visée est maintenue.",
-  ["EXCESSIVE_AIMING_TIME","AIMING_ZONE_TOO_RESTRICTED"],["Stabilité conservée","Dégradation après plusieurs secondes","Départ forcé"]),
+  ["AIMING_ZONE_TOO_RESTRICTED"],["Stabilité conservée","Dégradation après plusieurs secondes","Départ forcé"]),
  dry("TEST_NATURAL_POINT","Pointage naturel","Vérifier le retour vers la zone visée sans correction musculaire excessive.",
   ["POOR_NATURAL_POINT_OF_AIM","SHOULDER_TENSION"],
   ["Retour naturel vers la zone","Décalage répété","Correction musculaire marquée"]),

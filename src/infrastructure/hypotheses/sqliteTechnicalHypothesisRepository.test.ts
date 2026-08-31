@@ -92,6 +92,7 @@ it.each([
   "GRIP_CHANGES_BETWEEN_SHOTS", "LOSS_OF_TECHNIQUE_DURING_SERIES",
   "INCONSISTENT_BODY_POSITION", "FATIGUE", "ABRUPT_TRIGGER_PRESS", "INCONSISTENT_TRIGGER_PRESS",
   "UNSTABLE_STANCE", "POSTURAL_SWAY", "SIGHT_PICTURE_VARIATION", "ATTENTION_LOSS", "BREATHING_DISRUPTION",
+  "EXCESSIVE_AIMING_TIME",
 ] as const)("relit %s comme code réservé sans réécriture", async (hypothesisCode) => {
   const persisted: TechnicalHypothesis = {
     id: `legacy-${hypothesisCode}`, sessionId: "session", seriesId: "series", comparisonId: null,

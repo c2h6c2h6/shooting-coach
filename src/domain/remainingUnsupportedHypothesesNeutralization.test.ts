@@ -17,7 +17,7 @@ const observation = (observationCode: ShootingObservation["observationCode"]): S
 describe("neutralisation des dernières hypothèses actives non justifiées", () => {
   const reserved = ["SIGHT_PICTURE_VARIATION", "ATTENTION_LOSS", "BREATHING_DISRUPTION"] as const;
   const active = ["LATERAL_TRIGGER_PRESSURE", "SHOT_ANTICIPATION", "INCONSISTENT_GRIP_PRESSURE",
-    "WRIST_INSTABILITY", "SIGHT_ALIGNMENT_VARIATION", "EXCESSIVE_AIMING_TIME",
+    "WRIST_INSTABILITY", "SIGHT_ALIGNMENT_VARIATION",
     "EQUIPMENT_OR_SIGHT_ISSUE", "TWO_HAND_CONTRIBUTION"] as const;
 
   it("réserve les trois codes, conserve exactement les huit actifs et couvre le registre 8 / 7 / 33", () => {
@@ -28,7 +28,7 @@ describe("neutralisation des dernières hypothèses actives non justifiées", ()
       all[entry.status] = (all[entry.status] ?? 0) + 1;
       return all;
     }, {});
-    expect(counts).toEqual({ active_with_source: 8, historical_alias: 7, reserved_without_source: 33 });
+    expect(counts).toEqual({ active_with_source: 7, historical_alias: 7, reserved_without_source: 34 });
   });
 
   it("conserve les observations sources mais retire tous leurs mappings vers les trois codes", () => {

@@ -23,7 +23,7 @@ export const observationHypothesisMappings:ObservationHypothesisMapping[]=[
       ...(o.includes("LOW")?[m(o,"SHOT_ANTICIPATION",2)]:[]),m(o,"EQUIPMENT_OR_SIGHT_ISSUE",1)]),
   m("HORIZONTAL_SPREAD","SIGHT_ALIGNMENT_VARIATION",2),
   m("HORIZONTAL_SPREAD","TWO_HAND_CONTRIBUTION",2),
-  m("VERTICAL_SPREAD","EXCESSIVE_AIMING_TIME",2),m("VERTICAL_SPREAD","WRIST_INSTABILITY",2),
+  m("VERTICAL_SPREAD","WRIST_INSTABILITY",2),
   m("TWO_AXIS_SPREAD","INCONSISTENT_GRIP_PRESSURE",3),
   m("TWO_AXIS_SPREAD","SIGHT_ALIGNMENT_VARIATION",2),
   // La géométrie seule établit un biais constant possible, pas sa cause :
