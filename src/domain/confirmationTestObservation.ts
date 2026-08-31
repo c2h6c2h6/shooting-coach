@@ -17,7 +17,8 @@ const directMappings: Readonly<Record<string, ObservationMap>> = {
     "Sursaut ou crispation anticipatrice reproductible": "supports_hypothesis",
     "Fermeture des yeux anticipatrice reproductible": "supports_hypothesis",
     "Autre réponse anticipatrice reproductible": "supports_hypothesis",
-    "Résultat non observable ou ambigu": "inconclusive",
+    "Résultat ambigu ou non interprétable": "inconclusive",
+    "Réaction non observable de manière fiable": "not_observed",
   },
   TEST_GRIP_CONSTANCY: {
     "Prise ressentie constante": "does_not_support_hypothesis",
@@ -35,7 +36,8 @@ const directMappings: Readonly<Record<string, ObservationMap>> = {
     "Autres doigts sensiblement stables pendant l’action de l’index": "does_not_support_hypothesis",
     "Augmentation reproductible de leur action ou pression synchronisée avec l’index": "supports_hypothesis",
     "Relâchement reproductible synchronisé avec l’index": "supports_hypothesis",
-    "Comportement variable ou non observable de manière fiable": "inconclusive",
+    "Comportement variable ou ambigu": "inconclusive",
+    "Comportement non observable de manière fiable": "not_observed",
   },
   TEST_WRIST_STABILITY: {
     "Organisation sensiblement stable": "does_not_support_hypothesis",

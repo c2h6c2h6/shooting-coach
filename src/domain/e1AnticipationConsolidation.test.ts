@@ -42,7 +42,8 @@ describe("consolidation fonctionnelle E1", () => {
     ["Sursaut ou crispation anticipatrice reproductible", "supports_hypothesis"],
     ["Fermeture des yeux anticipatrice reproductible", "supports_hypothesis"],
     ["Autre réponse anticipatrice reproductible", "supports_hypothesis"],
-    ["Résultat non observable ou ambigu", "inconclusive"],
+    ["Résultat ambigu ou non interprétable", "inconclusive"],
+    ["Réaction non observable de manière fiable", "not_observed"],
   ] as const)("mappe l’observation E1 %s", (observation, outcome) =>
     expect(outcomeForTestObservation("TEST_ANTICIPATION_DRY", "SHOT_ANTICIPATION", observation)).toBe(outcome));
 

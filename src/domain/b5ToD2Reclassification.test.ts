@@ -47,13 +47,14 @@ describe("reclassification de l’ancien B5 sous D2",()=>{
    .not.toContain("TRIGGER_HAND_TENSION");
  });
 
- it("déclare exactement les quatre observations factuelles et leurs statuts",()=>{
+ it("distingue les observations factuelles ambiguës et non observables",()=>{
   const test=confirmationTestCatalog.find(item=>item.code==="TEST_TRIGGER_HAND_INDEPENDENCE")!;
   expect(test.observationCriteria).toEqual(["Autres doigts sensiblement stables pendant l’action de l’index",
    "Augmentation reproductible de leur action ou pression synchronisée avec l’index",
-   "Relâchement reproductible synchronisé avec l’index","Comportement variable ou non observable de manière fiable"]);
+   "Relâchement reproductible synchronisé avec l’index","Comportement variable ou ambigu",
+   "Comportement non observable de manière fiable"]);
   expect(test.observationCriteria.map(observation=>outcomeForTestObservation(test.code,code,observation))).toEqual([
-   "does_not_support_hypothesis","supports_hypothesis","supports_hypothesis","inconclusive"]);
+   "does_not_support_hypothesis","supports_hypothesis","supports_hypothesis","inconclusive","not_observed"]);
  });
 
  it("does_not_support affaiblit sans changer le rang ni le score",()=>{

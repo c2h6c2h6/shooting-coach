@@ -72,9 +72,9 @@ describe("certification historique end-to-end des scénarios A à L",()=>{
  it.each(Object.entries(allowedPresent))("inventorie sans les rendre obligatoires les hypothèses autorisées présentes pour %s",(code,present)=>
   expect(certification(code).presentAllowedHypotheses).toEqual(present));
 
- it("exécute le test réellement proposé pour I et constate l’écart historique",()=>{const result=certification("I");
+ it("constate que l’outcome historique de I n’est plus annoncé par le test réellement proposé",()=>{const result=certification("I");
   expect(result.selection?.primary?.code).toBe("TEST_GRIP_CONSTANCY");expect(result.scenario.expectation.expectedTestCode).toBe("TEST_SIGHT_STABILITY_DRY");
-  expect(result.selection?.primary?.possibleOutcomes).toContain(result.scenario.expectation.expectedTestOutcome);expect(result.proposal).toBeNull();});
+  expect(result.selection?.primary?.possibleOutcomes).not.toContain(result.scenario.expectation.expectedTestOutcome);expect(result.proposal).toBeNull();});
  it("exécute test, recommandation et contrôle pour J sans masquer les écarts",()=>{const result=certification("J");
   expect(result.selection?.primary?.code).toBe("TEST_GRIP_CONSTANCY");expect(result.scenario.expectation.expectedTestCode).toBe("TEST_SIGHT_STABILITY_DRY");
   expect(result.proposal?.recommendation.recommendationCode).toBe("REC_GRIP_CONSTANCY");expect(result.scenario.expectation.expectedRecommendationCode).toBe("REC_TRIGGER_AXIS");

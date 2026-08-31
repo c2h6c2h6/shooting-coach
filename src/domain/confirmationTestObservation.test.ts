@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { confirmationTestCatalog } from "./confirmationTestCatalog";
 import { outcomeForTestObservation } from "./confirmationTestObservation";
+import type { ConfirmationOutcome } from "./coachingTypes";
 
 describe("observation factuelle du test de stabilité du guidon", () => {
   it.each([
@@ -40,6 +41,40 @@ describe("couverture explicite du catalogue actif", () => {
         expect(test.possibleOutcomes, `${test.code} / ${observation}`).toContain(outcome);
       }
     }
+  });
+
+  it("déclare exactement les statuts produits par les 16 protocoles", () => {
+    const expected: Record<string, readonly ConfirmationOutcome[]> = {
+      TEST_TRIGGER_FINGER_PLACEMENT: ["supports_hypothesis", "does_not_support_hypothesis"],
+      TEST_SIGHT_STABILITY_DRY: ["supports_hypothesis", "weakly_supports_hypothesis", "does_not_support_hypothesis", "not_observed"],
+      TEST_ANTICIPATION_DRY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+      TEST_GRIP_CONSTANCY: ["supports_hypothesis", "does_not_support_hypothesis"],
+      TEST_TWO_HAND_CONTRIBUTION: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive"],
+      TEST_TRIGGER_HAND_INDEPENDENCE: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+      TEST_WRIST_STABILITY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+      TEST_RETURN_TO_LINE: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+      TEST_VISUAL_FOCUS: ["supports_hypothesis", "does_not_support_hypothesis", "not_observed"],
+      TEST_SIGHT_ALIGNMENT_REPRODUCIBILITY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+      TEST_AIMING_DURATION: ["supports_hypothesis", "does_not_support_hypothesis"],
+      TEST_NATURAL_POINT: ["supports_hypothesis", "does_not_support_hypothesis"],
+      TEST_SLOW_CONTROLLED_SERIES: ["supports_hypothesis", "does_not_support_hypothesis"],
+      TEST_REGULAR_CADENCE: ["supports_hypothesis", "does_not_support_hypothesis"],
+      TEST_DUMMY_ROUND_SUPERVISED: ["supports_hypothesis", "does_not_support_hypothesis", "not_observed"],
+      TEST_EQUIPMENT_CONTEXT_CHECK: ["supports_hypothesis", "weakly_supports_hypothesis", "does_not_support_hypothesis", "inconclusive"],
+    };
+    expect(Object.keys(expected)).toHaveLength(16);
+    for (const test of confirmationTestCatalog) {
+      expect(test.possibleOutcomes).toEqual(expected[test.code]);
+      expect(test.possibleOutcomes).not.toContain("contradicts_hypothesis");
+      const produced = [...new Set(test.observationCriteria.map((observation) =>
+        outcomeForTestObservation(test.code, test.hypothesisCodes[0], observation)))];
+      expect(produced.sort()).toEqual([...expected[test.code]].sort());
+    }
+  });
+
+  it("conserve contradicts_hypothesis comme statut global historique", () => {
+    const historicalOutcome: ConfirmationOutcome = "contradicts_hypothesis";
+    expect(historicalOutcome).toBe("contradicts_hypothesis");
   });
 
   it("rejette une observation étrangère au protocole", () => {

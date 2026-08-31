@@ -80,6 +80,13 @@ describe("SqliteCoachingRepository",()=>{
   const linked={...run,generatedSeriesId:"series-2"};await repo.createCycle(cycle,linked);
   expect(await repo.getTestRunByGeneratedSeriesId("series-2")).toEqual(linked);
  });
+ it("relit un résultat contradictoire historique sans l’exiger des protocoles actuels",async()=>{
+  const db=new ForeignKeyDatabase(),repo=new SqliteCoachingRepository(db);
+  const historical={...run,status:"completed" as const,outcome:"contradicts_hypothesis" as const,
+   completedAt:"before-v13",generatedSeriesId:"historical-series"};
+  await repo.createCycle(cycle,historical);
+  expect(await repo.getTestRunByGeneratedSeriesId("historical-series")).toEqual(historical);
+ });
  it("retrouve sans doublon la même question source/hypothèse/test",async()=>{
   const db=new ForeignKeyDatabase(),repo=new SqliteCoachingRepository(db);
   const linked={...run,testCode:"controlled_follow_up_series",generatedSeriesId:"series-2"};

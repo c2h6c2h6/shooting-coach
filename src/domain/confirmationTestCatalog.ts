@@ -1,11 +1,26 @@
 import { ConfirmationTestDefinition, COACHING_RULESET_VERSION } from "./coachingTypes";
 import { DRY_FIRE_SAFETY, LIVE_FIRE_SAFETY } from "./coachingSafetyRules";
 
+const outcomesFor = (code: string): ConfirmationTestDefinition["possibleOutcomes"] => {
+ const base = ["supports_hypothesis", "does_not_support_hypothesis"] as const;
+ const outcomes: Partial<Record<string, ConfirmationTestDefinition["possibleOutcomes"]>> = {
+  TEST_SIGHT_STABILITY_DRY: ["supports_hypothesis", "weakly_supports_hypothesis", "does_not_support_hypothesis", "not_observed"],
+  TEST_ANTICIPATION_DRY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+  TEST_TWO_HAND_CONTRIBUTION: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive"],
+  TEST_TRIGGER_HAND_INDEPENDENCE: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+  TEST_WRIST_STABILITY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+  TEST_RETURN_TO_LINE: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+  TEST_VISUAL_FOCUS: ["supports_hypothesis", "does_not_support_hypothesis", "not_observed"],
+  TEST_SIGHT_ALIGNMENT_REPRODUCIBILITY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
+ };
+ return outcomes[code] ?? [...base];
+};
+
 const dry=(code:string,title:string,objective:string,hypothesisCodes:ConfirmationTestDefinition["hypothesisCodes"],
  observationCriteria:string[],discriminatesAgainst:ConfirmationTestDefinition["discriminatesAgainst"]=[]):ConfirmationTestDefinition=>({
  code,title,objective,hypothesisCodes,category: categoryFor(code),prerequisites:["Contexte calme et consigne comprise."],
  safetyRequirements:DRY_FIRE_SAFETY,instructions:["Préparer la zone à sec.","Effectuer cinq départs attentifs sans rechercher de vitesse.","Noter uniquement ce qui est observé."],
- observationCriteria,possibleOutcomes:["supports_hypothesis","weakly_supports_hypothesis","does_not_support_hypothesis","contradicts_hypothesis","inconclusive","not_observed"],
+ observationCriteria,possibleOutcomes:outcomesFor(code),
  minimumDuration:2,maximumDuration:5,requiresLiveFire:false,requiresDryFire:true,requiresDummyRounds:false,
  requiresInstructor:false,supportedWeaponTypes:["semi_automatic_pistol"],supportedSessionModes:["coaching_free","training"],
  discriminatesAgainst,rulesetVersion:COACHING_RULESET_VERSION});
@@ -26,14 +41,14 @@ export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
    "Comparer uniquement si le mouvement parasite diminue, disparaît ou reste inchangé."]},
  dry("TEST_SIGHT_STABILITY_DRY","Stabilité du guidon à sec","Observer un déplacement au départ.",
   ["LATERAL_TRIGGER_PRESSURE"],
-  ["Guidon stable","Mouvement latéral répétitif","Mouvement vertical","Mouvement variable","Résultat non observable"],
+ ["Guidon stable","Mouvement latéral répétitif","Mouvement vertical","Mouvement variable","Résultat non observable"],
   ["EQUIPMENT_OR_SIGHT_ISSUE"]),
  dry("TEST_ANTICIPATION_DRY","Départ attendu non produit","Observer si une réponse motrice apparaît avant ou au moment du départ attendu alors qu’aucun recul réel ne survient.",
   ["SHOT_ANTICIPATION"],
-  ["Aucune réaction anticipatrice observable","Abaissement anticipé reproductible","Poussée anticipée reproductible","Sursaut ou crispation anticipatrice reproductible","Fermeture des yeux anticipatrice reproductible","Autre réponse anticipatrice reproductible","Résultat non observable ou ambigu"]),
+  ["Aucune réaction anticipatrice observable","Abaissement anticipé reproductible","Poussée anticipée reproductible","Sursaut ou crispation anticipatrice reproductible","Fermeture des yeux anticipatrice reproductible","Autre réponse anticipatrice reproductible","Résultat ambigu ou non interprétable","Réaction non observable de manière fiable"]),
  dry("TEST_GRIP_CONSTANCY","Constance de prise","Vérifier si la prise change entre les répétitions.",
   ["WEAK_SUPPORT_HAND_PRESSURE","EXCESSIVE_SUPPORT_HAND_PRESSURE","INCONSISTENT_GRIP_PRESSURE"],
-  ["Prise ressentie constante","Crispation croissante","Pression variable","Changement de placement"]),
+ ["Prise ressentie constante","Crispation croissante","Pression variable","Changement de placement"]),
  {...dry("TEST_TWO_HAND_CONTRIBUTION","Test comparatif de contribution des deux mains",
   "Déterminer si une modification contrôlée de la contribution relative des deux mains modifie de manière reproductible la perturbation observée.",
   ["TWO_HAND_CONTRIBUTION"],
@@ -48,7 +63,8 @@ export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
   ["TRIGGER_FINGER_HAND_COACTIVATION"],
   ["Autres doigts sensiblement stables pendant l’action de l’index",
    "Augmentation reproductible de leur action ou pression synchronisée avec l’index",
-   "Relâchement reproductible synchronisé avec l’index","Comportement variable ou non observable de manière fiable"]),
+   "Relâchement reproductible synchronisé avec l’index","Comportement variable ou ambigu",
+   "Comportement non observable de manière fiable"]),
   instructions:["Préparer la zone à sec et installer la prise normalement.",
    "Réaliser plusieurs actions contrôlées de l’index sans rechercher de départ rapide.",
    "Observer directement les autres doigts de la main qui tient l’arme, sans utiliser les impacts ni la seule stabilité du guidon comme preuve.",
@@ -81,7 +97,7 @@ export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
   prerequisites:["Stand autorisant la procédure.","Tireur connaissant la procédure."],safetyRequirements:LIVE_FIRE_SAFETY,
   instructions:["Test réservé à un cadre supervisé et sécurisé.","Aucun chargement secret par un tiers hors de ce cadre."],
   observationCriteria:["Mouvement observé sur cartouche inerte","Aucun mouvement","Résultat non observable"],
-  possibleOutcomes:["supports_hypothesis","does_not_support_hypothesis","inconclusive","not_observed"],minimumDuration:3,maximumDuration:8,
+  possibleOutcomes:["supports_hypothesis","does_not_support_hypothesis","not_observed"],minimumDuration:3,maximumDuration:8,
   requiresLiveFire:true,requiresDryFire:false,requiresDummyRounds:true,requiresInstructor:true,
   supportedWeaponTypes:["semi_automatic_pistol"],supportedSessionModes:["coaching_free","training"],
   discriminatesAgainst:["EQUIPMENT_OR_SIGHT_ISSUE"],rulesetVersion:COACHING_RULESET_VERSION},
@@ -102,7 +118,7 @@ export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
    "Point visé différent de celui supposé","Doute sur le réglage ou le matériel",
    "Vérification qualifiée nécessaire","Résultat non concluant"],
   possibleOutcomes:["supports_hypothesis","weakly_supports_hypothesis","does_not_support_hypothesis",
-   "contradicts_hypothesis","inconclusive","not_observed"],minimumDuration:2,maximumDuration:5,
+   "inconclusive"],minimumDuration:2,maximumDuration:5,
   requiresLiveFire:false,requiresDryFire:false,requiresDummyRounds:false,requiresInstructor:false,
   supportedWeaponTypes:["semi_automatic_pistol"],supportedSessionModes:["coaching_free","training"],
   discriminatesAgainst:[],rulesetVersion:COACHING_RULESET_VERSION},
