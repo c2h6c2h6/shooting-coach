@@ -162,12 +162,12 @@ describe("cohérence test / exercice pour une prise variable", () => {
     })).toBeNull();
   });
 
-  it("ne change pas le parcours Action brusque sur la détente", () => {
+  it("ne choisit pas arbitrairement un drill pour une action brusque sans binding", () => {
     expect(proposeCoaching({
       hypothesis: {...hypothesis,hypothesisCode:"ABRUPT_TRIGGER_PRESS",category:"trigger"},
       testRunId:"test-run-trigger",outcome:"supports_hypothesis",sessionId:hypothesis.sessionId,
       level:"beginner",numberOfHands:2,safety,
-    })?.drill.code).toBe("DRILL_DRY_CONTROLLED_RELEASES");
+    })).toBeNull();
   });
 
   it("ne change pas le parcours Vérification de configuration", () => {

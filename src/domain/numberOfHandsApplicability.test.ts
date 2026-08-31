@@ -96,12 +96,12 @@ describe("applicabilité pédagogique selon le nombre de mains", () => {
     expect(isTrainingDrillApplicableForNumberOfHands(drill, hypothesis.hypothesisCode, 1)).toBe(false);
   });
 
-  it("laisse test et exercice disponibles à deux mains sans ajouter de soutien au score", () => {
+  it("laisse le test disponible à deux mains sans inventer de drill ni de soutien au score", () => {
     const hypothesis = weakHandHypothesis(2);
     expect(selectConfirmationTest({ hypothesis, alternatives: [], sessionMode: "coaching_free", safety: safe,
       userCanPerform: true, contextKnown: true, numberOfHands: 2 }).primary?.code).toBe("TEST_GRIP_CONSTANCY");
     expect(proposeCoaching({ hypothesis, testRunId: "test", outcome: "supports_hypothesis",
-      sessionId: "session", level: "beginner", numberOfHands: 2, safety: safe })).not.toBeNull();
+      sessionId: "session", level: "beginner", numberOfHands: 2, safety: safe })).toBeNull();
     expect(hypotheses(2).find((item) => item.hypothesisCode === "TWO_HAND_CONTRIBUTION")?.supportingEvidence
       .some((item) => item.code === "NUMBER_OF_HANDS_2")).toBe(false);
   });

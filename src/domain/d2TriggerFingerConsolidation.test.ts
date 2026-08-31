@@ -85,10 +85,10 @@ describe("consolidation fonctionnelle D2", () => {
       .toMatchObject({status:"weakened",rank:1,internalScore:4});
   });
 
-  it("conserve DRILL_DRY_CONTROLLED_RELEASES pour D2", () => {
+  it("ne déduit aucun drill de l’ordre du catalogue pour l’action latérale", () => {
     expect(proposeCoaching({hypothesis:functionalHypothesis(),testRunId:"test",outcome:"supports_hypothesis",
       sessionId:"session",level:"beginner",numberOfHands:2,safety:safe})?.drill.code)
-      .toBe("DRILL_DRY_CONTROLLED_RELEASES");
+      .toBeUndefined();
   });
 
   it.each(["TRIGGER_FINGER_TOO_LITTLE","TRIGGER_FINGER_TOO_DEEP"] as const)(

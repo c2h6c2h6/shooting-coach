@@ -17,7 +17,14 @@ const targetedDrillByHypothesis:Partial<Record<HypothesisCode,string>>={
  POOR_RECOIL_RETURN:"DRILL_RETURN_TO_LINE",
  SIGHT_ALIGNMENT_VARIATION:"DRILL_SIGHT_ALIGNMENT_RECONSTRUCTION",
  SHOT_ANTICIPATION:"DRILL_ACCEPT_DEPARTURE_E1",
+ EQUIPMENT_OR_SIGHT_ISSUE:"DRILL_EQUIPMENT_CONTROL",
 };
+export function selectExplicitDrill(
+ drills:readonly TrainingDrill[],explicitDrillCode:string|null,
+):TrainingDrill|null{
+ if(!explicitDrillCode)return null;
+ return drills.find(item=>item.code===explicitDrillCode)??null;
+}
 export interface CoachingProposal {recommendation:Omit<CoachingRecommendation,"id">;drill:TrainingDrill;
  pedagogicalBinding:PedagogicalChainBinding|null}
 export function proposeCoaching(input:{hypothesis:TechnicalHypothesis;testRunId:string;outcome:ConfirmationOutcome;
@@ -29,9 +36,9 @@ export function proposeCoaching(input:{hypothesis:TechnicalHypothesis;testRunId:
  let drills=trainingDrillCatalog.filter(d=>d.linkedRecommendationCodes.includes(def.code)&&d.difficultyLevel.includes(input.level)
   &&isTrainingDrillApplicableForNumberOfHands(d,input.hypothesis.hypothesisCode,numberOfHands)
   &&safetyBlockers(d,input.safety).length===0);
- if(input.level==="beginner")drills=drills.sort((a,b)=>a.numberOfShots-b.numberOfShots||a.numberOfRepetitions-b.numberOfRepetitions);
- const targetedCode=targetedDrillByHypothesis[input.hypothesis.hypothesisCode];
- const drill=(targetedCode?drills.find(item=>item.code===targetedCode):undefined)??drills[0];if(!drill)return null;
+ const binding=pedagogicalBindingForHypothesis(input.hypothesis.hypothesisCode);
+ const targetedCode=targetedDrillByHypothesis[input.hypothesis.hypothesisCode]??binding?.trainingDrillCode??null;
+ const drill=selectExplicitDrill(drills,targetedCode);if(!drill)return null;
  const adapted={...drill,numberOfShots:Math.min(drill.numberOfShots,MAX_LIVE_SHOTS_PER_DRILL),
   numberOfRepetitions:input.level==="beginner"?Math.min(drill.numberOfRepetitions,5):drill.numberOfRepetitions,
   executionSteps:input.level==="beginner"?drill.executionSteps.slice(0,1):drill.executionSteps};
@@ -40,5 +47,5 @@ export function proposeCoaching(input:{hypothesis:TechnicalHypothesis;testRunId:
   instructions:[def.instruction],safetyNotes:adapted.safetyRequirements,expectedObservation:adapted.successCriteria[0],
   stopConditions:adapted.stopConditions,priority:1,status:"proposed",rulesetVersion:COACHING_RULESET_VERSION,
   generatedAt:input.now??new Date().toISOString()},drill:adapted,
-  pedagogicalBinding:pedagogicalBindingForHypothesis(input.hypothesis.hypothesisCode)};
+  pedagogicalBinding:binding};
 }
