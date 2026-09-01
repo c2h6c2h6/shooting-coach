@@ -12,30 +12,32 @@ describe("hotfix protocole — vérification de configuration", () => {
   it("ne recycle plus le protocole générique de cinq départs à sec", () => {
     expect(configurationTest.instructions.join(" ")).not.toMatch(/préparer la zone à sec|cinq départs|départs à sec/i);
     expect(configurationTest.requiresDryFire).toBe(false);
+    expect(configurationTest.minimumDuration).toBe(.5);
+    expect(configurationTest.maximumDuration).toBe(1);
   });
 
-  it("vérifie arme, cible, distance et point réellement visé", () => {
+  it("ne redemande pas les données de séance déjà connues", () => {
     const instructions = presentConfirmationTest(configurationTest).instructions.join(" ");
-    expect(instructions).toMatch(/arme sélectionnée.*celle utilisée/i);
-    expect(instructions).toMatch(/distance.*type de cible/i);
-    expect(instructions).toMatch(/point réellement visé/i);
+    expect(instructions).toContain("point prévu");
+    expect(instructions).toContain("organes de visée");
+    expect(instructions).toContain("changé d’arme, de réglage ou de configuration depuis la série");
+    expect(instructions).not.toMatch(/distance|type de cible|arme sélectionnée/i);
   });
 
   it("prévoit une vérification qualifiée sans réglage automatique", () => {
     const instructions = presentConfirmationTest(configurationTest).instructions.join(" ");
-    expect(instructions).toContain("demandez une vérification qualifiée");
-    expect(instructions).toContain("avant de modifier quoi que ce soit");
+    expect(configurationTest.observationCriteria).toContain("Je préfère faire vérifier l’arme ou les organes de visée");
     expect(instructions).not.toMatch(/déplacez|réglez|corrigez la hausse|corrigez le guidon/i);
   });
 
   it("présente des observations propres à la configuration", () => {
     expect(configurationTest.observationCriteria).toEqual([
-      "Configuration cohérente",
-      "Écart entre saisie et conditions réelles",
-      "Point visé différent de celui supposé",
-      "Doute sur le réglage ou le matériel",
-      "Vérification qualifiée nécessaire",
-      "Résultat non concluant",
+      "Tout correspond à ce que j’ai réellement fait",
+      "Les informations de la séance ne correspondent pas à la réalité",
+      "Je ne visais pas le point prévu",
+      "J’ai un doute sur le réglage ou le matériel",
+      "Je préfère faire vérifier l’arme ou les organes de visée",
+      "Je ne peux pas conclure",
     ]);
   });
 

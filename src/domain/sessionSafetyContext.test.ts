@@ -4,8 +4,8 @@ import { resolve } from "node:path";
 import { safetyBlockers } from "./coachingSafetyRules";
 import { ConfirmationTestDefinition, SafetyContext } from "./coachingTypes";
 import { confirmationTestCatalog } from "./confirmationTestCatalog";
-import { confirmCoordinatedSafety,confirmSessionSafety,confirmSpecificSafety,EMPTY_SAFETY_CONTEXT,inheritedSafetyKeys,
- isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys } from "./sessionSafetyContext";
+import { confirmCoordinatedSafety,confirmSessionSafety,confirmSpecificSafety,DRY_FIRE_VALIDATION_KEYS,EMPTY_SAFETY_CONTEXT,inheritedSafetyKeys,
+ invalidateDryFireConfiguration,isDryFireConfigurationValidated,isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys } from "./sessionSafetyContext";
 
 const inherited:SafetyContext={...EMPTY_SAFETY_CONTEXT,rangeRulesAccepted:true,safeDirectionAvailable:true,
  inAuthorizedRange:true,eyeAndEarProtection:true,canLiveFire:true,canDryFire:true};
@@ -87,6 +87,19 @@ describe("contexte de sécurité de séance",()=>{
   expect(coordinated.confirmedTestKeys).toHaveLength(4);
   expect(coordinated.testConditions.weaponUnloadedVerified).toBe(true);
  });
+ it("réutilise la première validation à sec pour les deuxième et troisième tests",()=>{
+  const validated=confirmSpecificSafety(inherited,specificSafetyKeys(test({requiresDryFire:true}),inherited));
+  expect(isDryFireConfigurationValidated(validated)).toBe(true);
+  expect(specificSafetyKeys(test({requiresDryFire:true}),validated).filter(key=>!validated[key])).toEqual([]);
+  expect(specificSafetyKeys(test({requiresDryFire:true}),validated).filter(key=>!validated[key])).toEqual([]);
+ });
+ it("invalide la validation à sec avant une reprise live et impose une nouvelle transition live vers dry",()=>{
+  const validated=confirmSpecificSafety(inherited,specificSafetyKeys(test({requiresDryFire:true}),inherited));
+  const afterLive=invalidateDryFireConfiguration(validated);
+  expect(isDryFireConfigurationValidated(afterLive)).toBe(false);
+  expect(DRY_FIRE_VALIDATION_KEYS.filter(key=>!afterLive[key])).toEqual(DRY_FIRE_VALIDATION_KEYS);
+  expect(safetyBlockers(test({requiresDryFire:true}),afterLive)).toContain("Prérequis complets du travail à sec non confirmés.");
+ });
 });
 
 describe("présentation sécurité globale",()=>{
@@ -110,5 +123,11 @@ describe("présentation sécurité globale",()=>{
   expect(screen).toContain("Conditions générales de sécurité de la séance déjà validées.");
   expect(screen).toContain("Aucune condition supplémentaire à confirmer.");
   expect(screen).not.toContain("Conditions générales déjà confirmées");
+ });
+ it("compacte une configuration à sec réutilisée et annonce une reprise restaurée",()=>{
+  expect(screen).toContain("Configuration à sec déjà vérifiée.");
+  expect(screen).toContain("REPRISE DU TEST EN COURS");
+  expect(screen).toContain("setRestoredTest(true)");
+  expect(screen).not.toContain("const previewTest");
  });
 });

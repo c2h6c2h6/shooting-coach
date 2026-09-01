@@ -19,6 +19,12 @@ const safe:SafetyContext={inAuthorizedRange:true,rangeRulesAccepted:true,safeDir
 describe("étape 10",()=>{
  it("refuse une hypothèse trop faible",()=>expect(selectConfirmationTest({hypothesis:h({internalScore:1}),alternatives:[],sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:true}).primary).toBeNull());
  it("privilégie le test spécifique de placement pour D2.1",()=>expect(selectConfirmationTest({hypothesis:h(),alternatives:[],sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:true}).primary?.code).toBe("TEST_TRIGGER_FINGER_PLACEMENT"));
+ it("conserve ce même test comme sélection explicite quand la confirmation à sec reste à faire",()=>{
+  const selection=selectConfirmationTest({hypothesis:h(),alternatives:[],sessionMode:"coaching_free",
+   safety:{...safe,weaponUnloadedVerified:false,magazineRemoved:false,chamberVisualPhysicalCheck:false,liveAmmunitionRemovedFromArea:false},userCanPerform:true,contextKnown:true});
+  expect(selection.primary?.code).toBe("TEST_TRIGGER_FINGER_PLACEMENT");
+  expect(selection.blockers).toContain("Prérequis complets du travail à sec non confirmés.");
+ });
  it("refuse un contexte inconnu",()=>expect(selectConfirmationTest({hypothesis:h(),alternatives:[],sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:false}).blockers).toContain("Contexte inconnu."));
  it("offre une alternative sans tir pour l’anticipation",()=>expect(selectConfirmationTest({hypothesis:h({hypothesisCode:"SHOT_ANTICIPATION",category:"anticipation"}),alternatives:[],sessionMode:"training",safety:safe,userCanPerform:true,contextKnown:true}).primary?.requiresDryFire).toBe(true));
  it("bloque le test instructeur absent",()=>{const t=confirmationTestCatalog.find(x=>x.requiresInstructor)!;expect(safetyBlockers(t,safe)).toContain("Instructeur requis mais absent.");});

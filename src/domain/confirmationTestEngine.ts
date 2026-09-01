@@ -28,10 +28,11 @@ export function selectConfirmationTest(c:TestSelectionContext):TestSelection{
   .map(t=>({t,b:safetyBlockers(t,c.safety),disc:t.discriminatesAgainst.filter(x=>c.alternatives.some(a=>a.hypothesisCode===x)).length}))
   .sort((a,b)=>a.b.length-b.b.length||b.disc-a.disc||Number(a.t.requiresLiveFire)-Number(b.t.requiresLiveFire));
  const usable=candidates.filter(x=>!x.b.length);
- const primary=usable[0]?.t??null;
+ const primary=usable[0]?.t??candidates[0]?.t??null;
  const alternative=usable.find(x=>primary&&x.t.code!==primary.code&&x.t.requiresDryFire&&!x.t.requiresLiveFire)?.t??null;
- return primary?{primary,alternative,reason:"Ce test cherche à départager l’hypothèse principale des causes concurrentes.",blockers:[]}:
-  {primary:null,alternative:null,reason:"Les prérequis de sécurité ne permettent pas de proposer ce test dans le contexte actuel.",blockers:candidates[0]?.b??["Aucun test applicable."]};
+ return primary&&!candidates[0]?.b.length?{primary,alternative,reason:"Ce test cherche à départager l’hypothèse principale des causes concurrentes.",blockers:[]}:
+  primary?{primary,alternative:null,reason:"Les prérequis de sécurité doivent être confirmés avant de commencer ce test.",blockers:candidates[0]?.b??[]}:
+  {primary:null,alternative:null,reason:"Aucun test applicable.",blockers:["Aucun test applicable."]};
 }
 export function firstStructurallyTestableHypothesis(input:{hypotheses:TechnicalHypothesis[];sessionMode:SessionMode;
  exclude?:{hypothesisCode:TechnicalHypothesis["hypothesisCode"];confirmationTestCode:string}}){

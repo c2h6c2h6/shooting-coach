@@ -6,7 +6,7 @@ import { firstStructurallyTestableHypothesis,selectConfirmationTest } from "../.
 import { CoachingOutcome,ConfirmationOutcome,SafetyContext,SessionSafetyContext } from "../../../../../src/domain/coachingTypes";
 import { trainingDrillCatalog } from "../../../../../src/domain/trainingDrillCatalog";
 import { safetyBlockers } from "../../../../../src/domain/coachingSafetyRules";
-import { confirmCoordinatedSafety,confirmSessionSafety,EMPTY_SAFETY_CONTEXT,
+import { confirmCoordinatedSafety,confirmSessionSafety,EMPTY_SAFETY_CONTEXT,invalidateDryFireConfiguration,isDryFireConfigurationValidated,
  isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys,USER_CONFIRMABLE_TEST_SAFETY_KEYS } from "../../../../../src/domain/sessionSafetyContext";
 import { useCoaching } from "../../../../../src/ui/CoachingProvider";
 import { presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome,presentTechnicalControlTitle } from "../../../../../src/ui/coachingPresentation";
@@ -19,13 +19,13 @@ export default function CoachingScreen(){
  const {id:sessionId,seriesId}=useLocalSearchParams<{id:string;seriesId:string}>(),hypService=useTechnicalHypotheses(),service=useCoaching();
  const [hypotheses,setHypotheses]=useState<Awaited<ReturnType<typeof hypService.forSeries>>>([]),[safety,setSafety]=useState(EMPTY_SAFETY_CONTEXT);
  const [sessionSafety,setSessionSafety]=useState<SessionSafetyContext|null>(null);
- const [state,setState]=useState<Awaited<ReturnType<typeof service.start>>|null>(null),[outcome,setOutcome]=useState<ConfirmationOutcome|null>(null),[hasWork,setHasWork]=useState(false),[error,setError]=useState("");
+ const [state,setState]=useState<Awaited<ReturnType<typeof service.start>>|null>(null),[restoredTest,setRestoredTest]=useState(false),[outcome,setOutcome]=useState<ConfirmationOutcome|null>(null),[hasWork,setHasWork]=useState(false),[error,setError]=useState("");
  const [showTechnicalEvaluation,setShowTechnicalEvaluation]=useState(false),[technicalOutcome,setTechnicalOutcome]=useState<CoachingOutcome|null>(null);
  const [excludedTest,setExcludedTest]=useState<{hypothesisCode:TechnicalHypothesis["hypothesisCode"];confirmationTestCode:string}|null>(null);
  const [nextHypothesisCode,setNextHypothesisCode]=useState<TechnicalHypothesis["hypothesisCode"]|null>(null);
  useEffect(()=>{void hypService.forSeries(seriesId).then(setHypotheses);
   void service.sessionSafety(sessionId).then(x=>{if(x){setSessionSafety(x);setSafety(x.conditions);}});
-  void service.active(sessionId).then(x=>{if(x){setState({cycle:x.cycle,test:x.test});
+  void service.active(sessionId).then(x=>{if(x){setState({cycle:x.cycle,test:x.test});setRestoredTest(true);
    setOutcome(x.test.outcome);setHasWork(Boolean(x.cycle.drillCode||x.cycle.controlMode==="technical_observation"));}});
  },[hypService,seriesId,service,sessionId]);
  const rankedTestableHypothesis=firstStructurallyTestableHypothesis({hypotheses,sessionMode:"coaching_free",exclude:excludedTest??undefined});
@@ -33,11 +33,7 @@ export default function CoachingScreen(){
  const numberOfHands=h?numberOfHandsFromApplicableContext(h.applicableContext):null,
  selection=h?selectConfirmationTest({hypothesis:h,alternatives:hypotheses.filter(item=>item.id!==h.id),sessionMode:"coaching_free",safety,userCanPerform:true,contextKnown:true,numberOfHands,allowRankedFallback:true,
   excludeTestCode:excludedTest?.hypothesisCode===h.hypothesisCode?excludedTest.confirmationTestCode:undefined}):null;
- const previewTest=h?confirmationTestCatalog
-  .filter(t=>t.hypothesisCodes.includes(h.hypothesisCode)&&t.supportedSessionModes.includes("coaching_free"))
-  .filter(t=>isConfirmationTestApplicableForNumberOfHands(t,h.hypothesisCode,numberOfHands))
-  .sort((a,b)=>Number(a.requiresLiveFire)-Number(b.requiresLiveFire))[0]:undefined;
- const test=state?confirmationTestCatalog.find(t=>t.code===state.test.testCode):selection?.primary??previewTest;
+ const test=state?confirmationTestCatalog.find(t=>t.code===state.test.testCode):selection?.primary;
  const hypothesisPresentation=h?presentHypothesis(h.hypothesisCode):null;
  const testPresentation=test?presentConfirmationTest(test):null;
  const sessionSafetyConfirmed=isSessionSafetyConfirmed(sessionSafety?.conditions??null);
@@ -47,6 +43,7 @@ export default function CoachingScreen(){
  const requiredSafetyKeys=test?specificSafetyKeys(test,safetyAfterGeneral):[];
  const confirmableSafetyKeys=requiredSafetyKeys.filter(k=>USER_CONFIRMABLE_TEST_SAFETY_KEYS.includes(k));
  const pendingConfirmableSafetyKeys=confirmableSafetyKeys.filter(k=>!safety[k]);
+ const dryFireAlreadyVerified=Boolean(test?.requiresDryFire&&isDryFireConfigurationValidated(safety));
  const blockers=test?safetyBlockers(test,safety):["Aucun test applicable."];
  const drill=state?.cycle.drillCode?trainingDrillCatalog.find(item=>item.code===state.cycle.drillCode):null;
  const technicalControl=state?.cycle.controlMode==="technical_observation"?state.cycle.technicalControl:null;
@@ -57,10 +54,13 @@ export default function CoachingScreen(){
  const canStart=Boolean(test&&safetyConfirmedForTest&&blockers.length===0);
  async function validateCombinedSafety(){if(!test)return;try{
   const coordinated=confirmCoordinatedSafety(safety,test,!sessionSafetyConfirmed);
-  if(!sessionSafetyConfirmed){const saved=await service.validateSessionSafety(sessionId,coordinated.sessionConditions);setSessionSafety(saved);}
-  setSafety(coordinated.testConditions);setError("");}
+  const conditions=test.requiresLiveFire?invalidateDryFireConfiguration(coordinated.testConditions):coordinated.testConditions;
+  const saved=await service.validateSessionSafety(sessionId,conditions);setSessionSafety(saved);
+  setSafety(conditions);setError("");}
   catch{setError("Le contexte de sécurité n’a pas pu être enregistré. Réessayez avant de poursuivre.");}}
- async function begin(){if(!h||!test||!canStart)return;try{setError("");setState(await service.start(h,test.code,safety));}
+ async function begin(){if(!h||!test||!canStart)return;try{setError("");const started=await service.start(h,test.code,safety);
+  const conditions=test.requiresLiveFire?invalidateDryFireConfiguration(safety):safety;if(test.requiresLiveFire){const saved=await service.validateSessionSafety(sessionId,conditions);setSessionSafety(saved);setSafety(conditions);}
+  setRestoredTest(false);setState(started);}
   catch{setError("Le test n’a pas pu commencer. Vos données sont conservées ; revenez à la séance puis réessayez.");}}
  async function finish(observation:string){if(!state)return;try{setError("");
   const next=await service.complete(state.cycle,state.test,observation,"beginner",safety);
@@ -72,13 +72,14 @@ export default function CoachingScreen(){
   setNextHypothesisCode(firstStructurallyTestableHypothesis({hypotheses:updatedHypotheses,sessionMode:"coaching_free",exclude:nextExcluded??undefined})?.hypothesisCode??null);
   setState({cycle:next.cycle,test:next.test});setOutcome(next.outcome);setHasWork(next.hasWork);
  }catch{setError("Le résultat n’a pas pu être enregistré. Votre test est conservé ; réessayez dans un instant.");}}
- function continueDifferentialReasoning(){setState(null);setOutcome(null);setHasWork(false);setError("");}
- async function control(){if(!state?.cycle.drillCode||drillBlockers.length)return;const d=trainingDrillCatalog.find(x=>x.code===state.cycle.drillCode)!;const id=await service.createControl(state.cycle,d.executionSteps[0],d.title,safety);router.replace(`/sessions/${sessionId}/series/${id}`);}
+ function continueDifferentialReasoning(){setState(null);setRestoredTest(false);setOutcome(null);setHasWork(false);setError("");}
+ async function control(){if(!state?.cycle.drillCode||drillBlockers.length)return;const d=trainingDrillCatalog.find(x=>x.code===state.cycle.drillCode)!;const id=await service.createControl(state.cycle,d.executionSteps[0],d.title,safety);if(d.requiresLiveFire){const conditions=invalidateDryFireConfiguration(safety);const saved=await service.validateSessionSafety(sessionId,conditions);setSessionSafety(saved);setSafety(conditions);}router.replace(`/sessions/${sessionId}/series/${id}`);}
  async function completeTechnical(observationCode:string){if(!state||!technicalControl)return;try{setError("");
   const completed=await service.completeTechnicalControl(state.cycle,observationCode,safety);setState({...state,cycle:completed.cycle});
   setTechnicalOutcome(completed.outcome);setHasWork(completed.cycle.status!=="completed");setShowTechnicalEvaluation(false);
  }catch{setError("Le résultat du contrôle technique n’a pas pu être enregistré. Réessayez dans un instant.");}}
  async function beginTransfer(){if(!state||transferBlockers.length)return;try{setError("");const cycle=await service.beginTransfer(state.cycle,safety);
+  const conditions=invalidateDryFireConfiguration(safety),saved=await service.validateSessionSafety(sessionId,conditions);setSessionSafety(saved);setSafety(conditions);
   setState({...state,cycle});setHasWork(true);setTechnicalOutcome(null);}catch{setError("Le transfert en tir réel ne peut pas encore commencer.");}}
  const safetyCard=test&&(!sessionSafetyConfirmed||blockers.length>0)?<View style={styles.card}><Text style={styles.section}>Sécurité avant le test</Text>
    {!sessionSafetyConfirmed?<><Text style={styles.label}>Conditions générales de la séance</Text>
@@ -105,6 +106,7 @@ export default function CoachingScreen(){
     <Text style={styles.label}>{test?.title??"Test indisponible"}</Text>
     <Text style={styles.body}>{selection?.reason??"Ce protocole est affiché avant validation afin que vous sachiez précisément ce qui est proposé."}</Text>
     <Text style={styles.label}>Pourquoi ce test ?</Text><Text style={styles.body}>{testPresentation?.why}</Text>
+    {dryFireAlreadyVerified?<Text style={styles.inherited}>✓ Configuration à sec déjà vérifiée.</Text>:null}
     <Text style={styles.label}>Comment réaliser le test</Text>{testPresentation?.instructions.map((x,index)=><Text key={`${index}-${x}`} style={styles.body}>{index+1}. {x}</Text>)}
     <Text style={styles.label}>Durée</Text><Text style={styles.body}>{test?.minimumDuration} à {test?.maximumDuration} minutes</Text>
     <Text style={styles.label}>Ce qu’il faudra observer</Text><Text style={styles.body}>{testPresentation?.observationQuestion}</Text>{test?.observationCriteria.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
@@ -113,7 +115,7 @@ export default function CoachingScreen(){
     </Pressable>:null}
    </View></>:null}
   {state&&!outcome?
-   <View style={styles.card}><Text style={styles.kicker}>TEST EN COURS</Text><Text style={styles.section}>Qu’avez-vous observé ?</Text><Text style={styles.body}>Choisissez uniquement l’observation factuelle obtenue pendant le test. Son interprétation est effectuée ensuite.</Text>
+   <View style={styles.card}><Text style={styles.kicker}>{restoredTest?"REPRISE DU TEST EN COURS":"TEST EN COURS"}</Text>{restoredTest?<Text style={styles.section}>{test?.title}</Text>:null}<Text style={styles.section}>Qu’avez-vous observé ?</Text><Text style={styles.body}>Choisissez uniquement l’observation factuelle obtenue pendant le test. Son interprétation est effectuée ensuite.</Text>
     {test&&test.observationCriteria.map(observation=><Pressable key={observation} style={styles.secondary} onPress={()=>void finish(observation)}><Text style={styles.secondaryText}>{observation}</Text></Pressable>)}
     <Pressable onPress={()=>void service.cancel(state.cycle,state.test).then(()=>router.replace(`/sessions/${sessionId}`))}><Text style={styles.link}>Interrompre ou refuser</Text></Pressable></View>:null}
   {outcome?<View style={styles.card}><Text style={styles.section}>Résultat du test</Text><Text style={styles.body}>{presentOutcome(outcome,state?.test.testCode)}</Text>

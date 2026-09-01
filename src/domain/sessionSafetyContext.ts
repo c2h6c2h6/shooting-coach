@@ -16,6 +16,17 @@ export const USER_CONFIRMABLE_TEST_SAFETY_KEYS: Array<keyof SafetyContext> = [
   "weaponUnloadedVerified", "magazineRemoved", "chamberVisualPhysicalCheck",
   "liveAmmunitionRemovedFromArea",
 ];
+export const DRY_FIRE_VALIDATION_KEYS: Array<keyof SafetyContext> = [
+ "weaponUnloadedVerified","magazineRemoved","chamberVisualPhysicalCheck","liveAmmunitionRemovedFromArea",
+];
+
+export function isDryFireConfigurationValidated(context:SafetyContext):boolean {
+ return context.canDryFire&&DRY_FIRE_VALIDATION_KEYS.every(key=>context[key]);
+}
+
+export function invalidateDryFireConfiguration(context:SafetyContext):SafetyContext {
+ return DRY_FIRE_VALIDATION_KEYS.reduce<SafetyContext>((next,key)=>({...next,[key]:false}),{...context});
+}
 
 export function confirmSessionSafety(current: SafetyContext): SafetyContext {
   return SESSION_SAFETY_KEYS.reduce<SafetyContext>(
