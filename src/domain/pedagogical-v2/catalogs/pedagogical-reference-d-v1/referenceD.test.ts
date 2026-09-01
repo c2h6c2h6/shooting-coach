@@ -269,8 +269,8 @@ describe("référentiel métier réel D2/D3/D4/D5/D6 v1", () => {
     expect(document).toContain("Comparer sous supervision des actions où la direction de pression de l’index est volontairement modifiée");
     expect(document).toContain("UNCERTAINTY_D2_DIRECTIONAL_PRESSURE");
     expect(loadPedagogicalReferenceDV1().diagnosticTests.map((item) => item.code)).toEqual(["TEST-D2-INDEPENDENCE-01","TEST-D4-01"]);
-    expect(loadPedagogicalReferenceDV1().techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D4-01"]);
-    expect(loadPedagogicalReferenceDV1().exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D4-01"]);
+    expect(loadPedagogicalReferenceDV1().techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D2-01","TECH-D4-01"]);
+    expect(loadPedagogicalReferenceDV1().exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D2-01","EX-D2-02","EX-D4-01"]);
   });
 
   it("préserve exactement les définitions D3 et D4", () => {
@@ -356,8 +356,8 @@ describe("référentiel métier réel D2/D3/D4/D5/D6 v1", () => {
   it("n'encode dans les objets D2/D4 aucun événement, décision ou self-report réel", () => {
     const catalog = loadPedagogicalReferenceDV1();
     expect(catalog.diagnosticTests.map((item) => item.code)).toEqual(["TEST-D2-INDEPENDENCE-01","TEST-D4-01"]);
-    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D4-01"]);
-    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D4-01"]);
+    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D2-01","TECH-D4-01"]);
+    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D2-01","EX-D2-02","EX-D4-01"]);
     const forbidden = new Set(["masteryEvents", "pedagogicalDecisions", "shooterSelfReports",
       "observations", "hypotheses", "recommendations"]);
     expect(competencesFile.items.every((item) => Object.keys(item).every((key) => !forbidden.has(key)))).toBe(true);
@@ -369,7 +369,7 @@ describe("référentiel métier réel D2/D3/D4/D5/D6 v1", () => {
     expect(competencesFile.items.every((item) => !("exerciseId" in item) && !("exerciseIds" in item))).toBe(true);
   });
 
-  it("n'est référencé en production que par le pilote D4 et le contrôle technique D2 explicitement isolés", () => {
+  it("n'est référencé en production que par les chaînes D explicitement isolées", () => {
     const directory = dirname(fileURLToPath(import.meta.url));
     const projectRoot = resolve(directory, "../../../../..");
     const productionFiles = [...sourceFilesUnder(resolve(projectRoot, "app")), ...sourceFilesUnder(resolve(projectRoot, "src"))]
@@ -378,6 +378,7 @@ describe("référentiel métier réel D2/D3/D4/D5/D6 v1", () => {
       /pedagogical-reference-d-v1|loadPedagogicalReferenceDV1/.test(readFileSync(file, "utf8")));
     expect(catalogConsumers).toEqual([
       resolve(projectRoot, "src/application/pedagogicalV2Pilot.ts"),
+      resolve(projectRoot, "src/domain/pedagogical-v2/lateralTriggerPressurePedagogicalChain.ts"),
       resolve(projectRoot, "src/domain/technicalObservationControl.ts"),
     ]);
   });
@@ -488,8 +489,8 @@ describe("D5/D6 — Butée et reset contrôlé", () => {
     expect(catalog.tools.map((item) => item.code).sort()).toEqual([
       "INSTRUCTOR_TACTILE_FEEDBACK", "OBSERVATION_VIDEO",
     ]);
-    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D4-01"]);
-    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D4-01"]);
+    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D2-01","TECH-D4-01"]);
+    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D2-01","EX-D2-02","EX-D4-01"]);
     expect(catalog.diagnosticTests.map((item) => item.code)).toEqual(["TEST-D2-INDEPENDENCE-01","TEST-D4-01"]);
   });
 
@@ -579,8 +580,8 @@ describe("TEST-D4-01 — Observation ralentie de l’action", () => {
     expect(diagnosticTestsFile.items.map((item) => item.code)).toEqual(["TEST-D4-01","TEST-D2-INDEPENDENCE-01"]);
     expect(source).not.toMatch(/douille|départ attendu|EX-D4-01|D1|D2|D5|D6|E1/);
     const catalog = loadPedagogicalReferenceDV1();
-    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D4-01"]);
-    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D4-01"]);
+    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D2-01","TECH-D4-01"]);
+    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D2-01","EX-D2-02","EX-D4-01"]);
   });
 
   it("laisse D3 et D4 inchangés et limite TEST-D4-01 au pilote isolé", () => {
@@ -601,7 +602,7 @@ describe("TEST-D4-01 — Observation ralentie de l’action", () => {
 
 describe("TECH-D4-01 — Ralentissement volontaire", () => {
   it("charge exactement une technique réelle avec son identité et ses versions", () => {
-    expect(loadPedagogicalReferenceDV1().techniques).toHaveLength(2);
+    expect(loadPedagogicalReferenceDV1().techniques).toHaveLength(3);
     expect(technique()).toMatchObject({
       id: "technique-d4-01",
       code: "TECH-D4-01",
@@ -674,8 +675,8 @@ describe("TECH-D4-01 — Ralentissement volontaire", () => {
 
   it("ne produit directement ni exercice, ni décision, ni maîtrise, ni seconde technique", () => {
     const catalog = loadPedagogicalReferenceDV1();
-    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D4-01"]);
-    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D4-01"]);
+    expect(catalog.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D2-01","TECH-D4-01"]);
+    expect(catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D2-01","EX-D2-02","EX-D4-01"]);
     const source = JSON.stringify(techniquesFile);
     expect(source).not.toMatch(/EX-D4-01|MasteryEvent|PedagogicalDecision|CompetenceEvaluation|automaticDiagnosis/);
   });
@@ -683,7 +684,7 @@ describe("TECH-D4-01 — Ralentissement volontaire", () => {
 
 describe("EX-D4-01 — Construire la montée de pression", () => {
   it("charge exactement un exercice réel avec son identité et ses versions", () => {
-    expect(loadPedagogicalReferenceDV1().exercises).toHaveLength(2);
+    expect(loadPedagogicalReferenceDV1().exercises).toHaveLength(4);
     expect(exercise()).toMatchObject({
       id: "exercise-d4-01",
       code: "EX-D4-01",
@@ -803,7 +804,7 @@ describe("EX-D4-01 — Construire la montée de pression", () => {
     const result = loadPedagogicalCatalog([...pedagogicalReferenceDV1Files].reverse());
     expect(result).toEqual(expect.objectContaining({ success: true, diagnostics: [] }));
     if (result.success) {
-      expect(result.catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D4-01"]);
+      expect(result.catalog.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D2-01","EX-D2-02","EX-D4-01"]);
     }
   });
 

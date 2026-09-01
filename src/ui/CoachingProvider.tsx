@@ -20,11 +20,12 @@ import { ControlSeriesInterpretation,interpretControlSeries } from "../domain/co
 import { trainingDrillCatalog } from "../domain/trainingDrillCatalog";
 import { safetyBlockers } from "../domain/coachingSafetyRules";
 import { applyConfirmationOutcomeToHypothesis,completionTransitionForOutcome } from "../domain/confirmationOutcomeTransition";
-import {completeTechnicalObservationControl,controlModeForCycle,prepareTechnicalObservationControl} from "../domain/technicalObservationControl";
+import {completeTechnicalObservationControl,controlModeForCycle,prepareTechnicalObservationControl,prepareTransferTechnicalObservationControl,technicalObservationSafetyBlockers} from "../domain/technicalObservationControl";
 import {triggerHandIndependenceInterventionForOutcome} from "../domain/pedagogical-v2/triggerHandIndependencePedagogicalChain";
 import {wristInterventionForOutcome} from "../domain/pedagogical-v2/wristStabilityPedagogicalChain";
 import {sightAlignmentInterventionForOutcome} from "../domain/pedagogical-v2/sightAlignmentPedagogicalChain";
 import {e1AnticipationInterventionForOutcome} from "../domain/pedagogical-v2/e1AnticipationPedagogicalChain";
+import {d2LateralTransferTechnicalControl,lateralTriggerPressureInterventionForOutcome} from "../domain/pedagogical-v2/lateralTriggerPressurePedagogicalChain";
 import {
  CONTROLLED_BIAS_CONFIRMATION_TEST_CODE,
  confirmationOutcomeFor,
@@ -36,7 +37,8 @@ interface Service{
  complete(cycle:CoachingCycle,test:ConfirmationTestRun,observation:string,level:ShooterLevel,safety:SafetyContext):Promise<{cycle:CoachingCycle;test:ConfirmationTestRun;outcome:ConfirmationOutcome;hasWork:boolean}>;
  cancel(cycle:CoachingCycle,test:ConfirmationTestRun):Promise<void>;
  createControl(cycle:CoachingCycle,instruction:string,objective:string,safety:SafetyContext):Promise<string>;
- completeTechnicalControl(cycle:CoachingCycle,observationCode:string):Promise<{cycle:CoachingCycle;outcome:CoachingOutcome}>;
+ completeTechnicalControl(cycle:CoachingCycle,observationCode:string,safety:SafetyContext):Promise<{cycle:CoachingCycle;outcome:CoachingOutcome}>;
+ beginTransfer(cycle:CoachingCycle,safety:SafetyContext):Promise<CoachingCycle>;
  active(sessionId:string):ReturnType<SqliteCoachingRepository["getActiveCycle"]>;
  sessionSafety(sessionId:string):Promise<SessionSafetyContext|null>;
  validateSessionSafety(sessionId:string,conditions:SafetyContext):Promise<SessionSafetyContext>;
@@ -75,6 +77,8 @@ export function CoachingProvider({children}:PropsWithChildren){
    const updatedHypothesis=applyConfirmationOutcomeToHypothesis(h,outcome);
    const nextTest={...test,status:"completed" as const,completedAt:now,outcome,observations:[...test.observations,observation],confidenceAfter:h.confidenceLevel,
     hypothesisStatusAfter:transition.hypothesisStatus};
+   const d2LateralIntervention=transition.shouldProposeDrill&&h.hypothesisCode==="LATERAL_TRIGGER_PRESSURE"
+    ?lateralTriggerPressureInterventionForOutcome(outcome):null;
    const d2TechnicalIntervention=transition.shouldProposeDrill&&h.hypothesisCode==="TRIGGER_FINGER_HAND_COACTIVATION"
     ?triggerHandIndependenceInterventionForOutcome(outcome):null;
    const wristTechnicalIntervention=transition.shouldProposeDrill?wristInterventionForOutcome(h.hypothesisCode,outcome):null;
@@ -86,10 +90,11 @@ export function CoachingProvider({children}:PropsWithChildren){
     numberOfHands:session.number_of_hands,safety,now}):null;
    const technicalIntervention=d2TechnicalIntervention??(proposal?(wristTechnicalIntervention??alignmentTechnicalIntervention??e1TechnicalIntervention):null);
    const baseNext={...cycle,status:(proposal?"drill_pending":transition.cycleStatus) as CoachingCycle["status"],
-    recommendationId:proposal?randomUUID():null,drillCode:proposal?.drill.code??null,objective:proposal?.recommendation.objective??null,
+    recommendationId:proposal?randomUUID():null,drillCode:d2LateralIntervention?.chain.acquisitionDrillCode??proposal?.drill.code??null,objective:proposal?.recommendation.objective??(d2LateralIntervention?"horizontal_stability":null),
     completedAt:transition.cycleStatus==="completed"?now:cycle.completedAt,
     controlMode:proposal?"series_comparison" as const:cycle.controlMode};
-   const next=technicalIntervention?prepareTechnicalObservationControl(baseNext,technicalIntervention.control):baseNext;
+   const next=d2LateralIntervention?prepareTechnicalObservationControl({...baseNext,transferState:d2LateralIntervention.transferState},d2LateralIntervention.chain.acquisitionControl)
+    :technicalIntervention?prepareTechnicalObservationControl(baseNext,technicalIntervention.control):baseNext;
    await db.runAsync("UPDATE technical_hypotheses SET status=?, result_json=? WHERE id=?",
     updatedHypothesis.status,JSON.stringify(updatedHypothesis),updatedHypothesis.id);
    await repo.saveTest(nextTest);if(proposal&&next.recommendationId)await repo.saveRecommendation({id:next.recommendationId,...proposal.recommendation});
@@ -102,12 +107,25 @@ export function CoachingProvider({children}:PropsWithChildren){
    const blockers=safetyBlockers(drill,safety);if(blockers.length)throw new Error(blockers.join(" "));
    const series=await seriesRepo.create({sessionId:cycle.sessionId,type:"corrective",expectedShotCount:5,instruction,pedagogicalObjective:objective,cadenceType:"free"});
    await repo.saveCycle({...cycle,controlSeriesId:series.id,status:"control_series_pending"});return series.id;},
-  async completeTechnicalControl(cycle,observationCode){
+  async completeTechnicalControl(cycle,observationCode,safety){
    if(!cycle.technicalControl)throw new Error("Définition du contrôle technique introuvable.");
+   const blockers=technicalObservationSafetyBlockers(cycle.technicalControl,safety);if(blockers.length)throw new Error(blockers.join(" "));
    const completed=completeTechnicalObservationControl({cycle,definition:cycle.technicalControl,observationCode,
     evaluationId:randomUUID(),evidenceId:randomUUID(),evaluatedAt:new Date().toISOString()});
-   await new SqliteCoachingRepository(await getDatabase()).saveCycle(completed);
-   return{cycle:completed,outcome:completed.outcome!};
+   const transfer=completed.transferState;
+   const ready=transfer&&transfer.acquisitionControlCompleted&&transfer.transferStatus==="pending"
+    &&safetyBlockers(trainingDrillCatalog.find(item=>item.code===transfer.transferDrillCode)!,safety).length===0;
+   const next=ready?{...completed,transferState:{...transfer!,transferStatus:"ready" as const}}:completed;
+   await new SqliteCoachingRepository(await getDatabase()).saveCycle(next);
+   return{cycle:next,outcome:completed.outcome??transfer?.acquisitionOutcome!};
+  },
+  async beginTransfer(cycle,safety){
+   const transfer=cycle.transferState;if(!transfer||transfer.transferStatus!=="ready")throw new Error("Le transfert en tir réel n’est pas prêt.");
+   const drill=trainingDrillCatalog.find(item=>item.code===transfer.transferDrillCode);if(!drill)throw new Error("Exercice de transfert introuvable.");
+   const blockers=[...safetyBlockers(drill,safety),...technicalObservationSafetyBlockers(d2LateralTransferTechnicalControl,safety)];
+   if(blockers.length)throw new Error([...new Set(blockers)].join(" "));
+   const next=prepareTransferTechnicalObservationControl({...cycle,drillCode:drill.code},d2LateralTransferTechnicalControl);
+   await new SqliteCoachingRepository(await getDatabase()).saveCycle(next);return next;
   },
   async active(sessionId){return new SqliteCoachingRepository(await getDatabase()).getActiveCycle(sessionId);},
   async sessionSafety(sessionId){return new SqliteCoachingRepository(await getDatabase()).getSessionSafety(sessionId);},

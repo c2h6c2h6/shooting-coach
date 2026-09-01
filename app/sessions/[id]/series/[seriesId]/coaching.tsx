@@ -41,6 +41,8 @@ export default function CoachingScreen(){
  const hypothesisPresentation=h?presentHypothesis(h.hypothesisCode):null;
  const testPresentation=test?presentConfirmationTest(test):null;
  const sessionSafetyConfirmed=isSessionSafetyConfirmed(sessionSafety?.conditions??null);
+ const drySafetyConfirmed=safety.rangeRulesAccepted&&safety.safeDirectionAvailable&&safety.canDryFire;
+ const safetyConfirmedForTest=test?.requiresLiveFire?sessionSafetyConfirmed:drySafetyConfirmed;
  const safetyAfterGeneral=sessionSafetyConfirmed?sessionSafety!.conditions:confirmSessionSafety(safety);
  const requiredSafetyKeys=test?specificSafetyKeys(test,safetyAfterGeneral):[];
  const confirmableSafetyKeys=requiredSafetyKeys.filter(k=>USER_CONFIRMABLE_TEST_SAFETY_KEYS.includes(k));
@@ -48,8 +50,11 @@ export default function CoachingScreen(){
  const blockers=test?safetyBlockers(test,safety):["Aucun test applicable."];
  const drill=state?.cycle.drillCode?trainingDrillCatalog.find(item=>item.code===state.cycle.drillCode):null;
  const technicalControl=state?.cycle.controlMode==="technical_observation"?state.cycle.technicalControl:null;
+ const transferState=state?.cycle.transferState;
+ const transferDrill=transferState?trainingDrillCatalog.find(item=>item.code===transferState.transferDrillCode):null;
+ const transferBlockers=transferDrill?safetyBlockers(transferDrill,safety):["Exercice de transfert introuvable."];
  const drillBlockers=drill?safetyBlockers(drill,safety):[];
- const canStart=Boolean(test&&sessionSafetyConfirmed&&blockers.length===0);
+ const canStart=Boolean(test&&safetyConfirmedForTest&&blockers.length===0);
  async function validateCombinedSafety(){if(!test)return;try{
   const coordinated=confirmCoordinatedSafety(safety,test,!sessionSafetyConfirmed);
   if(!sessionSafetyConfirmed){const saved=await service.validateSessionSafety(sessionId,coordinated.sessionConditions);setSessionSafety(saved);}
@@ -70,9 +75,11 @@ export default function CoachingScreen(){
  function continueDifferentialReasoning(){setState(null);setOutcome(null);setHasWork(false);setError("");}
  async function control(){if(!state?.cycle.drillCode||drillBlockers.length)return;const d=trainingDrillCatalog.find(x=>x.code===state.cycle.drillCode)!;const id=await service.createControl(state.cycle,d.executionSteps[0],d.title,safety);router.replace(`/sessions/${sessionId}/series/${id}`);}
  async function completeTechnical(observationCode:string){if(!state||!technicalControl)return;try{setError("");
-  const completed=await service.completeTechnicalControl(state.cycle,observationCode);setState({...state,cycle:completed.cycle});
-  setTechnicalOutcome(completed.outcome);setHasWork(false);setShowTechnicalEvaluation(false);
+  const completed=await service.completeTechnicalControl(state.cycle,observationCode,safety);setState({...state,cycle:completed.cycle});
+  setTechnicalOutcome(completed.outcome);setHasWork(completed.cycle.status!=="completed");setShowTechnicalEvaluation(false);
  }catch{setError("Le résultat du contrôle technique n’a pas pu être enregistré. Réessayez dans un instant.");}}
+ async function beginTransfer(){if(!state||transferBlockers.length)return;try{setError("");const cycle=await service.beginTransfer(state.cycle,safety);
+  setState({...state,cycle});setHasWork(true);setTechnicalOutcome(null);}catch{setError("Le transfert en tir réel ne peut pas encore commencer.");}}
  const safetyCard=test&&(!sessionSafetyConfirmed||blockers.length>0)?<View style={styles.card}><Text style={styles.section}>Sécurité avant le test</Text>
    {!sessionSafetyConfirmed?<><Text style={styles.label}>Conditions générales de la séance</Text>
     {SESSION_SAFETY_KEYS.map(k=><Text key={k} style={styles.help}>• {labels[k]}</Text>)}</>:<Text style={styles.inherited}>✓ Conditions générales de sécurité de la séance déjà validées.</Text>}
@@ -110,7 +117,12 @@ export default function CoachingScreen(){
     {test&&test.observationCriteria.map(observation=><Pressable key={observation} style={styles.secondary} onPress={()=>void finish(observation)}><Text style={styles.secondaryText}>{observation}</Text></Pressable>)}
     <Pressable onPress={()=>void service.cancel(state.cycle,state.test).then(()=>router.replace(`/sessions/${sessionId}`))}><Text style={styles.link}>Interrompre ou refuser</Text></Pressable></View>:null}
   {outcome?<View style={styles.card}><Text style={styles.section}>Résultat du test</Text><Text style={styles.body}>{presentOutcome(outcome,state?.test.testCode)}</Text>
-   {hasWork&&technicalControl?<><Text style={styles.kicker}>TRAVAILLER</Text><Text style={styles.section}>{presentTechnicalControlTitle(technicalControl)}</Text>
+   {hasWork&&transferState?.acquisitionControlCompleted&&state?.cycle.status==="drill_pending"?<><Text style={styles.kicker}>CORRECTION OBSERVÉE À SEC</Text>
+    <Text style={styles.body}>Étape suivante : valider cette correction en tir réel.</Text>
+    {transferBlockers.length?<><Text style={styles.warning}>Validation en tir réel restant à effectuer.</Text>{transferBlockers.map(item=><Text key={item} style={styles.help}>• {item}</Text>)}</>
+     :<><Text style={styles.label}>{transferDrill?.title}</Text>{transferDrill?.executionSteps.map((item,index)=><Text key={item} style={styles.body}>{index+1}. {item}</Text>)}
+      <Pressable style={styles.primary} onPress={()=>void beginTransfer()}><Text style={styles.primaryText}>Passer au transfert en tir réel</Text></Pressable></>}
+   </>:hasWork&&technicalControl?<><Text style={styles.kicker}>{technicalControl.requiresLiveFire?"VALIDER EN TIR RÉEL":"TRAVAILLER"}</Text><Text style={styles.section}>{presentTechnicalControlTitle(technicalControl)}</Text>
     {technicalControl.exerciseInstructions.map((instruction,index)=><Text key={`exercise-${index}`} style={styles.body}>{index+1}. {instruction}</Text>)}
     {!showTechnicalEvaluation?<Pressable style={styles.primary} onPress={()=>setShowTechnicalEvaluation(true)}>
      <Text style={styles.primaryText}>Vérifier le résultat du travail</Text></Pressable>:<>
@@ -124,7 +136,8 @@ export default function CoachingScreen(){
     <Text style={styles.warning}>Arrêt : {d.stopConditions[0]}</Text>{drillBlockers.length
      ?<View style={styles.blocked}><Text style={styles.warning}>Le travail ne peut pas encore commencer.</Text>{drillBlockers.map(item=><Text key={item} style={styles.help}>• {item}</Text>)}</View>
      :<Pressable style={styles.primary} onPress={()=>void control()}><Text style={styles.primaryText}>Créer la série de contrôle</Text></Pressable>}</>})()}</>
-    :technicalOutcome?<><Text style={styles.kicker}>RÉSULTAT DU TRAVAIL</Text><Text style={styles.body}>{technicalOutcomeText[technicalOutcome]}</Text></>
+    :technicalOutcome?<><Text style={styles.kicker}>RÉSULTAT DU TRAVAIL</Text><Text style={styles.body}>{transferState?.transferStatus==="completed"&&technicalOutcome==="objective_improved"
+      ?"Correction validée en tir réel.":technicalOutcomeText[technicalOutcome]}</Text></>
     :<><Text style={styles.help}>Aucune recommandation personnalisée n’est proposée avec ce résultat.</Text>
      {outcome==="does_not_support_hypothesis"||outcome==="inconclusive"||outcome==="not_observed"?<Pressable style={styles.primary} onPress={continueDifferentialReasoning}>
       <Text style={styles.primaryText}>{nextHypothesisCode?`Examiner ensuite : ${presentHypothesis(nextHypothesisCode).title}`:"Aucune autre piste testable n’est disponible"}</Text></Pressable>:null}</>}

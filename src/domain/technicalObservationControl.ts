@@ -2,6 +2,8 @@ import type {CoachingCycle,CoachingOutcome,TechnicalObservationControlSnapshot} 
 import {PEDAGOGICAL_V2_CONTRACT_SCHEMA_VERSION,type EvidenceEffect,type PedagogicalEvidence} from "./pedagogical-v2/contracts";
 import {PEDAGOGICAL_V2_INPUT_SCHEMA_VERSION,type CompetenceEvaluation} from "./pedagogical-v2/inputContracts";
 import type {PedagogicalReferenceSnapshot} from "./pedagogical-v2/decisionContracts";
+import type {SafetyContext} from "./coachingTypes";
+import {safetyBlockers} from "./coachingSafetyRules";
 
 export type TechnicalObservationControlDefinition=TechnicalObservationControlSnapshot;
 
@@ -31,6 +33,11 @@ export function controlModeForCycle(cycle:CoachingCycle){
 export function prepareTechnicalObservationControl(cycle:CoachingCycle,definition:TechnicalObservationControlDefinition):CoachingCycle {
  return {...cycle,status:"evaluation_pending",controlMode:"technical_observation",controlSeriesId:null,
   technicalControl:definition,competenceEvaluation:null,pedagogicalDecision:null,masteryEvent:null};
+}
+
+export function technicalObservationSafetyBlockers(definition:TechnicalObservationControlDefinition,safety:SafetyContext){
+ return safetyBlockers({requiresLiveFire:Boolean(definition.requiresLiveFire),requiresDryFire:Boolean(definition.requiresDryFire),
+  requiresDummyRounds:Boolean(definition.requiresDummyRounds),requiresInstructor:Boolean(definition.requiresInstructor)},safety);
 }
 
 function snapshot(referenceType:PedagogicalReferenceSnapshot["referenceType"],id:string,code:string|null,
@@ -69,6 +76,25 @@ export function completeTechnicalObservationControl(input:{cycle:CoachingCycle;d
   throw new Error("Ce cycle n’attend pas une évaluation technique.");
  const competenceEvaluation=buildTechnicalCompetenceEvaluation({...input,cycleId:input.cycle.id});
  const outcome=competenceEvaluation.structuredResult.outcome as CoachingOutcome;
+ const transfer=input.cycle.transferState;
+ if(transfer&&transfer.transferRequired&&!transfer.acquisitionControlCompleted){
+  if(outcome==="objective_improved")return {...input.cycle,status:"drill_pending",outcome:null,completedAt:null,controlSeriesId:null,
+   competenceEvaluation,transferState:{...transfer,acquisitionControlCompleted:true,acquisitionOutcome:outcome,
+    acquisitionEvaluation:competenceEvaluation,transferStatus:"pending"},pedagogicalDecision:null,masteryEvent:null};
+  return {...input.cycle,status:"completed",outcome,completedAt:input.evaluatedAt,controlSeriesId:null,
+   competenceEvaluation,transferState:{...transfer,acquisitionControlCompleted:true,acquisitionOutcome:outcome,
+    acquisitionEvaluation:competenceEvaluation,transferStatus:"not_required"},pedagogicalDecision:null,masteryEvent:null};
+ }
+ if(transfer&&transfer.transferRequired&&transfer.acquisitionControlCompleted&&transfer.transferStatus!=="completed")return{
+  ...input.cycle,status:"completed",outcome,completedAt:input.evaluatedAt,controlSeriesId:null,competenceEvaluation,
+  transferState:{...transfer,transferStatus:"completed",transferOutcome:outcome},pedagogicalDecision:null,masteryEvent:null};
  return{...input.cycle,status:"completed",outcome,completedAt:input.evaluatedAt,controlSeriesId:null,
   competenceEvaluation,pedagogicalDecision:null,masteryEvent:null};
+}
+
+export function prepareTransferTechnicalObservationControl(cycle:CoachingCycle,definition:TechnicalObservationControlDefinition):CoachingCycle {
+ const transfer=cycle.transferState;
+ if(!transfer||!transfer.acquisitionControlCompleted||transfer.transferStatus!=="ready")throw new Error("Le transfert en tir réel n’est pas prêt.");
+ return {...cycle,status:"evaluation_pending",controlMode:"technical_observation",technicalControl:definition,
+  transferState:{...transfer,transferStatus:"ready"},pedagogicalDecision:null,masteryEvent:null};
 }

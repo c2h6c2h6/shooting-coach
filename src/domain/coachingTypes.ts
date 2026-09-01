@@ -14,6 +14,7 @@ export type CoachingCycleStatus = "proposed"|"test_pending"|"test_completed"|"dr
 export type CoachingOutcome = "objective_improved"|"objective_stable"|"objective_worsened"|"mixed_result"|"insufficient_data";
 export type CoachingObjective = "dispersion"|"centering"|"horizontal_stability"|"vertical_stability"|"consistency";
 export type ControlMode="series_comparison"|"technical_observation";
+export type TransferStatus="not_required"|"pending"|"ready"|"completed";
 export interface TechnicalObservationCriterion {
   readonly code:string;readonly label:string;readonly outcome:CoachingOutcome;
   readonly evidenceEffect:"strengthens"|"weakens"|"contradicts"|"neutral";readonly evidenceStrength:number;
@@ -24,6 +25,13 @@ export interface TechnicalObservationControlSnapshot {
  readonly exerciseCode:string;readonly exerciseName:string;readonly catalogVersion:string;
  readonly exerciseInstructions:readonly string[];readonly protocol:readonly string[];
   readonly observationCriteria:readonly TechnicalObservationCriterion[];readonly knownLimitations:readonly string[];
+  readonly requiresLiveFire?:boolean;readonly requiresDryFire?:boolean;readonly requiresDummyRounds?:boolean;readonly requiresInstructor?:boolean;
+}
+export interface TransferState {
+ readonly acquisitionControlCompleted:boolean;readonly acquisitionOutcome:CoachingOutcome|null;
+ readonly acquisitionEvaluation?:CompetenceEvaluation|null;readonly transferRequired:boolean;
+ readonly transferDrillCode:string;readonly transferControlCode:string;readonly transferStatus:TransferStatus;
+ readonly transferOutcome:CoachingOutcome|null;
 }
 
 export interface SafetyContext {
@@ -82,5 +90,6 @@ export interface CoachingCycle {
   invalidatedAt:string|null;invalidationReason:string|null;rulesetVersion:string;
   controlMode?:ControlMode;technicalControl?:TechnicalObservationControlSnapshot|null;
   competenceEvaluation?:CompetenceEvaluation|null;pedagogicalDecision?:null;masteryEvent?:null;
+  transferState?:TransferState;
 }
 export interface ObjectiveMetricRule { objective:CoachingObjective; metrics:NumericMetricKey[]; lowerIsBetter:boolean }

@@ -302,8 +302,8 @@ describe("5E — intégration métier réelle D4, pure et inactive", () => {
       "competence-d2", "competence-d3", "competence-d4", "competence-d5", "competence-d6",
     ]);
     expect(catalog.diagnosticTests).toHaveLength(2);
-    expect(catalog.techniques).toHaveLength(2);
-    expect(catalog.exercises).toHaveLength(2);
+    expect(catalog.techniques).toHaveLength(3);
+    expect(catalog.exercises).toHaveLength(4);
   });
 
   it("scénario principal — conserve MAINTAIN, les références explicites et acquisition sans événement", () => {

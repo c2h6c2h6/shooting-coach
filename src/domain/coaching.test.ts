@@ -29,7 +29,7 @@ describe("étape 10",()=>{
  it("ne propose pas de drill sans binding explicite",()=>expect(proposeCoaching({hypothesis:h(),testRunId:"t",outcome:"supports_hypothesis",sessionId:"s",level:"beginner",safety:safe})).toBeNull());
  it("ne propose rien après résultat insuffisant",()=>expect(proposeCoaching({hypothesis:h(),testRunId:"t",outcome:"inconclusive",sessionId:"s",level:"beginner",safety:safe})).toBeNull());
  it("ne produit qu’une recommandation prioritaire",()=>expect(proposeCoaching({hypothesis:h({hypothesisCode:"SHOT_ANTICIPATION",category:"anticipation"}),testRunId:"t",outcome:"supports_hypothesis",sessionId:"s",level:"advanced",safety:safe})?.recommendation.priority).toBe(1));
- it("contient douze exercices distincts",()=>expect(new Set(trainingDrillCatalog.map(x=>x.code)).size).toBe(12));
+ it("contient quatorze exercices distincts",()=>expect(new Set(trainingDrillCatalog.map(x=>x.code)).size).toBe(14));
  it("adapte un débutant avec une consigne",()=>expect(proposeCoaching({hypothesis:h({hypothesisCode:"SHOT_ANTICIPATION",category:"anticipation"}),testRunId:"t",outcome:"supports_hypothesis",sessionId:"s",level:"beginner",safety:safe})?.drill.executionSteps.length).toBe(1));
  it("choisit un drill explicite indépendamment de l’ordre du catalogue",()=>{
   const [first,...rest]=trainingDrillCatalog;

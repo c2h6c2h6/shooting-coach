@@ -393,8 +393,8 @@ describe("fixture différentielle métier réelle D2/D4/B5/E1", () => {
 
   it("ajoute uniquement la chaîne d’indépendance sous D2 et isole les objets B4/B7", () => {
     expect(catalogD.diagnosticTests.map((item) => item.code)).toEqual(["TEST-D2-INDEPENDENCE-01","TEST-D4-01"]);
-    expect(catalogD.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D4-01"]);
-    expect(catalogD.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D4-01"]);
+    expect(catalogD.techniques.map((item) => item.code)).toEqual(["TECH-D2-INDEPENDENCE-01","TECH-D2-01","TECH-D4-01"]);
+    expect(catalogD.exercises.map((item) => item.code)).toEqual(["EX-D2-INDEPENDENCE-01","EX-D2-01","EX-D2-02","EX-D4-01"]);
     expect(catalogAB.diagnosticTests).toEqual([]);
     expect(catalogAB.techniques.map((item) => [item.code, item.compatibleCompetenceIds]))
       .toEqual([["TECH-B4-01", ["competence:B4"]], ["TECH-B6-01", ["competence:B6"]],

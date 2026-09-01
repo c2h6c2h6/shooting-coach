@@ -49,6 +49,20 @@
       "schemaVersion": "pedagogical-v2-contracts-v1",
       "itemVersion": "1.0.0",
       "catalogVersion": "pedagogical-reference-d-v1"
+    },
+    {
+      "id": "technique-d2-lateral-pressure-01",
+      "code": "TECH-D2-01",
+      "name": "Construire une action directionnellement neutre",
+      "principle": "Agir sur la détente sans provoquer de déplacement latéral reproductible de l’arme, sans imposer de position universelle de l’index.",
+      "compatibleCompetenceIds": ["competence-d2"],
+      "indications": ["Un déplacement latéral reproductible est synchronisé avec l’action sur la détente."],
+      "contraindications": ["Le déplacement n’est pas reproductible ou l’observation ne permet pas de conclure.", "Le travail vise la progressivité D4, la surprise E1 ou l’indépendance index-main D2.2."],
+      "instructorRequired": false,
+      "compatiblePedagogicalToolIds": [],
+      "schemaVersion": "pedagogical-v2-contracts-v1",
+      "itemVersion": "1.0.0",
+      "catalogVersion": "pedagogical-reference-d-v1"
     }
   ]
 }
