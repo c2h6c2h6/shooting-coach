@@ -11,6 +11,7 @@ import { createReasoningTrace } from "../domain/reasoningJournal";
 import { SqliteSeriesRepository } from "../infrastructure/series/sqliteSeriesRepository";
 import { SqliteSeriesComparisonRepository } from "../infrastructure/comparisons/sqliteSeriesComparisonRepository";
 import { SqliteSeriesMetricsRepository } from "../infrastructure/metrics/sqliteSeriesMetricsRepository";
+import { isPedagogicallySignificantAtypicalImpact } from "../domain/shootingObservation";
 import type { Series } from "../domain/series";
 import { confirmationTestCatalog } from "../domain/confirmationTestCatalog";
 import { outcomeForTestObservation } from "../domain/confirmationTestObservation";
@@ -146,7 +147,14 @@ export function CoachingProvider({children}:PropsWithChildren){
    if(!sourceSeries||!diagnosticSeries||diagnosticSeries.status!=="completed")return null;
    const comparison=await new SqliteSeriesComparisonRepository(db,randomUUID)
     .compareAndSave(sourceSeries.id,diagnosticSeries.id,"manual");
-   const result=deriveDiagnosticConfirmationResult({comparison,sourceSeries,diagnosticSeries});
+   const metricsRepo=new SqliteSeriesMetricsRepository(db,randomUUID);
+   const [sourceMetrics,diagnosticMetrics]=await Promise.all([
+    metricsRepo.getLatest(sourceSeries.id).then(value=>value??metricsRepo.calculateAndSave(sourceSeries.id)),
+    metricsRepo.getLatest(diagnosticSeries.id).then(value=>value??metricsRepo.calculateAndSave(diagnosticSeries.id)),
+   ]);
+   const result=deriveDiagnosticConfirmationResult({comparison,sourceSeries,diagnosticSeries,
+    sourceHasSignificantAtypicalImpact:isPedagogicallySignificantAtypicalImpact(sourceMetrics),
+    diagnosticHasSignificantAtypicalImpact:isPedagogicallySignificantAtypicalImpact(diagnosticMetrics)});
    const now=new Date().toISOString();
    if(run.status!=="completed")await repo.saveTest({...run,status:"completed",completedAt:now,
     outcome:confirmationOutcomeFor(result),observations:[result.headline,result.interpretation],confidenceAfter:run.confidenceBefore,

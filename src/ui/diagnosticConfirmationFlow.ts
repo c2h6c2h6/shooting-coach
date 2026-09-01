@@ -16,32 +16,51 @@ export interface DiagnosticConfirmationResult {
   readonly diagnosticSeriesId: string;
 }
 
+export const SIGNIFICANT_ATYPICAL_IMPACT_LIMITATION =
+  "Un impact atypique significatif influence les mesures : la reproductibilité d’un biais constant ne peut pas être confirmée de manière fiable.";
+
 export function deriveDiagnosticConfirmationResult(input: {
   readonly comparison: SeriesComparison;
   readonly sourceSeries: Series;
   readonly diagnosticSeries: Series;
+  readonly sourceHasSignificantAtypicalImpact?: boolean;
+  readonly diagnosticHasSignificantAtypicalImpact?: boolean;
 }): DiagnosticConfirmationResult {
+  const significantAtypicalImpactPresent = Boolean(
+    input.sourceHasSignificantAtypicalImpact || input.diagnosticHasSignificantAtypicalImpact,
+  );
+  const comparison = significantAtypicalImpactPresent
+    ? { ...input.comparison, limitations: [...input.comparison.limitations, SIGNIFICANT_ATYPICAL_IMPACT_LIMITATION] }
+    : input.comparison;
   const base = {
-    comparison: input.comparison,
+    comparison,
     sourceSeriesId: input.sourceSeries.id,
     diagnosticSeriesId: input.diagnosticSeries.id,
   };
   const cadenceComparable = input.sourceSeries.cadenceType == null
     || input.diagnosticSeries.cadenceType == null
     || input.sourceSeries.cadenceType === input.diagnosticSeries.cadenceType;
-  const horizontal = input.comparison.differences.horizontalOffset;
-  const vertical = input.comparison.differences.verticalOffset;
-  const centerDistance = input.comparison.differences.centroidDistanceToTargetCenter;
-  const materiallyLimited = input.comparison.limitations.some((item) =>
+  const horizontal = comparison.differences.horizontalOffset;
+  const vertical = comparison.differences.verticalOffset;
+  const centerDistance = comparison.differences.centroidDistanceToTargetCenter;
+  const materiallyLimited = comparison.limitations.some((item) =>
     item.startsWith("Écart important d’effectif") || item.startsWith("Exclusions différentes"));
 
-  if (input.comparison.status === "not_comparable" || !cadenceComparable
+  if (comparison.status === "not_comparable" || !cadenceComparable
       || !horizontal || !vertical || !centerDistance || materiallyLimited) {
     return {
       ...base,
       conclusion: "inconclusive",
       headline: "Cette série ne permet pas de conclure suffisamment.",
       interpretation: "Les conditions ou les données disponibles ne permettent pas de départager la piste d’un biais constant.",
+    };
+  }
+  if (significantAtypicalImpactPresent) {
+    return {
+      ...base,
+      conclusion: "inconclusive",
+      headline: "Cette série ne permet pas de confirmer la reproductibilité d’un biais constant.",
+      interpretation: SIGNIFICANT_ATYPICAL_IMPACT_LIMITATION,
     };
   }
   if (horizontal.variation !== "notable" && vertical.variation !== "notable") {
@@ -53,7 +72,7 @@ export function deriveDiagnosticConfirmationResult(input: {
     };
   }
   if (centerDistance.variation === "notable" && centerDistance.delta < 0) {
-    const centeredThreshold = input.comparison.unit === "mm"
+    const centeredThreshold = comparison.unit === "mm"
       ? observationThresholds.physicalMm.centered
       : observationThresholds.normalized.centered;
     const sourceVector = {

@@ -3,7 +3,11 @@ import type { Series } from "../domain/series";
 import { compareSeries, type ComparableSeriesContext } from "../domain/seriesComparison";
 import { calculateSeriesMetrics } from "../domain/seriesMetrics";
 import { UNVERIFIED_TARGET_GEOMETRY_VERSION } from "../domain/targetCoordinateConversion";
-import { deriveDiagnosticConfirmationResult } from "./diagnosticConfirmationFlow";
+import {
+  deriveDiagnosticConfirmationResult,
+  SIGNIFICANT_ATYPICAL_IMPACT_LIMITATION,
+} from "./diagnosticConfirmationFlow";
+import { isPedagogicallySignificantAtypicalImpact } from "../domain/shootingObservation";
 
 const timestamp = "2026-08-26T12:00:00.000Z";
 const geometry = {
@@ -42,6 +46,23 @@ function metrics(centerX: number) {
   });
 }
 
+function metricsForImpacts(id: string, points: ReadonlyArray<readonly [number, number]>,
+  excludedImpactIndex: number | null = null) {
+  return calculateSeriesMetrics({
+    impacts: points.map(([normalizedX, normalizedY], index) => ({
+      id: `${id}-${index + 1}`, normalizedX, normalizedY, isExcluded: index === excludedImpactIndex,
+    })),
+    expectedShotCount: 5, recordedShotCount: 5, geometry, computedAt: timestamp,
+  });
+}
+
+const centeredWithOutlier = (id: string, outlier: readonly [number, number], excluded = false) =>
+  metricsForImpacts(id, [[.495,.495],[.505,.495],[.495,.505],[.505,.505],outlier], excluded ? 4 : null);
+
+const shiftedWithExcludedOutlier = (id: string, centerX: number) => metricsForImpacts(id, [
+  [centerX - .005,.495], [centerX + .005,.495], [centerX - .005,.505], [centerX + .005,.505], [.85,.85],
+], 4);
+
 function context(id: string, numberOfHands: 1 | 2 = 2): ComparableSeriesContext {
   return {
     id, sessionId: "session-1", status: "completed", weaponId: "weapon-1",
@@ -51,20 +72,28 @@ function context(id: string, numberOfHands: 1 | 2 = 2): ComparableSeriesContext 
 }
 
 function run(sourceCenterX: number, diagnosticCenterX: number, diagnosticHands: 1 | 2 = 2) {
+  return runMetrics(metrics(sourceCenterX), metrics(diagnosticCenterX), diagnosticHands);
+}
+
+function runMetrics(sourceMetrics: ReturnType<typeof metrics>, diagnosticMetrics: ReturnType<typeof metrics>,
+  diagnosticHands: 1 | 2 = 2) {
   const comparison = {
     id: "comparison-1",
     computedAt: timestamp,
     ...compareSeries({
       baseline: context(sourceSeries.id),
       compared: context(diagnosticSeries.id, diagnosticHands),
-      baselineMetrics: metrics(sourceCenterX),
-      comparedMetrics: metrics(diagnosticCenterX),
+      baselineMetrics: sourceMetrics,
+      comparedMetrics: diagnosticMetrics,
       comparisonType: "manual",
     }),
   };
   return {
     comparison,
-    result: deriveDiagnosticConfirmationResult({ comparison, sourceSeries, diagnosticSeries }),
+    result: deriveDiagnosticConfirmationResult({ comparison, sourceSeries, diagnosticSeries,
+      sourceHasSignificantAtypicalImpact: isPedagogicallySignificantAtypicalImpact(sourceMetrics),
+      diagnosticHasSignificantAtypicalImpact: isPedagogicallySignificantAtypicalImpact(diagnosticMetrics),
+    }),
   };
 }
 
@@ -118,6 +147,37 @@ describe("confirmation contextuelle d’un biais constant", () => {
 
     expect(comparison.status).toBe("not_comparable");
     expect(comparison.reasons).toContain("Les nombres de mains utilisés diffèrent.");
+    expect(result.conclusion).toBe("inconclusive");
+  });
+
+  it("A : ne renforce pas un décalage global répété par le seul outlier", () => {
+    const source = centeredWithOutlier("source", [.35,.65]);
+    const diagnostic = centeredWithOutlier("diagnostic", [.35,.65]);
+    const { comparison, result } = runMetrics(source, diagnostic);
+    expect(comparison.differences.horizontalOffset?.variation).toBe("stable");
+    expect(result.conclusion).toBe("inconclusive");
+    expect(result.comparison.limitations).toContain(SIGNIFICANT_ATYPICAL_IMPACT_LIMITATION);
+  });
+
+  it("C et D : un outlier significatif dans une seule série rend la confirmation inconclusive", () => {
+    const centered = metrics(.5);
+    expect(runMetrics(centeredWithOutlier("source", [.35,.65]), centered).result.conclusion).toBe("inconclusive");
+    expect(runMetrics(centered, centeredWithOutlier("diagnostic", [.35,.65])).result.conclusion).toBe("inconclusive");
+  });
+
+  it("E : un outlier explicitement exclu ne pénalise pas un biais réellement répété", () => {
+    const source = shiftedWithExcludedOutlier("source", .35);
+    const diagnostic = shiftedWithExcludedOutlier("diagnostic", .355);
+    expect(source.potentiallyAtypicalImpactIds).toEqual([]);
+    expect(diagnostic.potentiallyAtypicalImpactIds).toEqual([]);
+    expect(runMetrics(source, diagnostic).result.conclusion).toBe("strengthened");
+  });
+
+  it("F : des outliers de directions différentes restent inconclusifs", () => {
+    const { result } = runMetrics(
+      centeredWithOutlier("source", [.35,.65]),
+      centeredWithOutlier("diagnostic", [.65,.35]),
+    );
     expect(result.conclusion).toBe("inconclusive");
   });
 });
