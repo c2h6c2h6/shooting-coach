@@ -45,7 +45,7 @@ describe("couverture explicite du catalogue actif", () => {
 
   it("déclare exactement les statuts produits par les 16 protocoles", () => {
     const expected: Record<string, readonly ConfirmationOutcome[]> = {
-      TEST_TRIGGER_FINGER_PLACEMENT: ["supports_hypothesis", "does_not_support_hypothesis"],
+      TEST_TRIGGER_FINGER_PLACEMENT: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
       TEST_SIGHT_STABILITY_DRY: ["supports_hypothesis", "weakly_supports_hypothesis", "does_not_support_hypothesis", "not_observed"],
       TEST_ANTICIPATION_DRY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
       TEST_GRIP_CONSTANCY: ["supports_hypothesis", "does_not_support_hypothesis"],

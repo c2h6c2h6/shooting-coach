@@ -3,7 +3,8 @@ import { DRY_FIRE_SAFETY, LIVE_FIRE_SAFETY } from "./coachingSafetyRules";
 
 const outcomesFor = (code: string): ConfirmationTestDefinition["possibleOutcomes"] => {
  const base = ["supports_hypothesis", "does_not_support_hypothesis"] as const;
- const outcomes: Partial<Record<string, ConfirmationTestDefinition["possibleOutcomes"]>> = {
+  const outcomes: Partial<Record<string, ConfirmationTestDefinition["possibleOutcomes"]>> = {
+  TEST_TRIGGER_FINGER_PLACEMENT: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
   TEST_SIGHT_STABILITY_DRY: ["supports_hypothesis", "weakly_supports_hypothesis", "does_not_support_hypothesis", "not_observed"],
   TEST_ANTICIPATION_DRY: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive", "not_observed"],
   TEST_TWO_HAND_CONTRIBUTION: ["supports_hypothesis", "does_not_support_hypothesis", "inconclusive"],
@@ -32,13 +33,14 @@ function categoryFor(code:string):ConfirmationTestDefinition["category"]{
  return"context_equipment";
 }
 export const confirmationTestCatalog:ConfirmationTestDefinition[]=[
- {...dry("TEST_TRIGGER_FINGER_PLACEMENT","Placement descriptif du doigt","Vérifier si une légère modification du placement réduit le mouvement parasite, sans imposer une position universelle.",
+ {...dry("TEST_TRIGGER_FINGER_PLACEMENT","Influence de l’action de l’index","Observer si l’action sur la détente s’accompagne d’un déplacement latéral reproductible de l’arme.",
   ["TRIGGER_FINGER_TOO_LITTLE","TRIGGER_FINGER_TOO_DEEP","LATERAL_TRIGGER_PRESSURE"],
-  ["Pression dans l’axe sans déplacement visible","Déplacement répétitif selon le placement","Aucune différence observable"]),
+  ["Aucun déplacement latéral reproductible lors de l’action","Déplacement latéral reproductible synchronisé avec l’action sur la détente","Observation ambiguë ou non reproductible","Mouvement impossible à observer de façon fiable"]),
   instructions:["Préparer la zone à sec.",
-   "Effectuer des départs avec le placement habituel et observer le mouvement des organes de visée.",
-   "Modifier légèrement le placement de l’index, sans rechercher une profondeur universelle, puis répéter les départs.",
-   "Comparer uniquement si le mouvement parasite diminue, disparaît ou reste inchangé."]},
+   "Effectuer plusieurs départs avec l’action habituelle sur la détente et observer directement les organes de visée ou l’orientation de l’arme.",
+   "Rechercher uniquement un déplacement latéral synchronisé avec l’action sur la détente et répéter pour vérifier s’il est reproductible.",
+   "Une légère variation du placement peut être utilisée secondairement pour voir si la perturbation varie, sans rechercher de position universelle.",
+   "Ne pas utiliser le résultat en cible comme preuve : retenir uniquement ce qui est directement observable."]},
  dry("TEST_SIGHT_STABILITY_DRY","Stabilité du guidon à sec","Observer un déplacement au départ.",
   ["LATERAL_TRIGGER_PRESSURE"],
  ["Guidon stable","Mouvement latéral répétitif","Mouvement vertical","Mouvement variable","Résultat non observable"],

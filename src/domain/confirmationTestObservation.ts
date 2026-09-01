@@ -6,9 +6,10 @@ type ObservationMap = Readonly<Record<string, ConfirmationOutcome>>;
 
 const directMappings: Readonly<Record<string, ObservationMap>> = {
   TEST_TRIGGER_FINGER_PLACEMENT: {
-    "Pression dans l’axe sans déplacement visible": "does_not_support_hypothesis",
-    "Déplacement répétitif selon le placement": "supports_hypothesis",
-    "Aucune différence observable": "does_not_support_hypothesis",
+    "Aucun déplacement latéral reproductible lors de l’action": "does_not_support_hypothesis",
+    "Déplacement latéral reproductible synchronisé avec l’action sur la détente": "supports_hypothesis",
+    "Observation ambiguë ou non reproductible": "inconclusive",
+    "Mouvement impossible à observer de façon fiable": "not_observed",
   },
   TEST_ANTICIPATION_DRY: {
     "Aucune réaction anticipatrice observable": "does_not_support_hypothesis",

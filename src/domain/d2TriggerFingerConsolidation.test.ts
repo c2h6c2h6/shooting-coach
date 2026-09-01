@@ -64,25 +64,41 @@ describe("consolidation fonctionnelle D2", () => {
     expect(observationHypothesisMappings.some(item=>item.hypothesis.startsWith("TRIGGER_FINGER_TOO_"))).toBe(false);
   });
 
-  it("conserve le test comparatif de placement pour la piste D2 fonctionnelle", () => {
+  it("recadre le test vers la neutralité directionnelle de l’action", () => {
     const test=confirmationTestCatalog.find(item=>item.code==="TEST_TRIGGER_FINGER_PLACEMENT")!;
     expect(test.hypothesisCodes).toContain("LATERAL_TRIGGER_PRESSURE");
-    expect(test.observationCriteria).toEqual(["Pression dans l’axe sans déplacement visible",
-      "Déplacement répétitif selon le placement","Aucune différence observable"]);
-    expect(test.instructions.join(" ")).toMatch(/placement habituel.*Modifier légèrement.*Comparer uniquement/i);
+    expect(test.title).toBe("Influence de l’action de l’index");
+    expect(test.objective).toContain("déplacement latéral reproductible");
+    expect(test.observationCriteria).toEqual(["Aucun déplacement latéral reproductible lors de l’action",
+      "Déplacement latéral reproductible synchronisé avec l’action sur la détente",
+      "Observation ambiguë ou non reproductible","Mouvement impossible à observer de façon fiable"]);
+    expect(test.instructions.join(" ")).toMatch(/action habituelle.*déplacement latéral synchronisé.*reproductible/i);
+    expect(test.instructions.join(" ")).toContain("sans rechercher de position universelle");
+    expect(test.instructions.join(" ")).toMatch(/résultat en cible.*preuve/i);
     const selection=selectConfirmationTest({hypothesis:functionalHypothesis(),alternatives:[],
       sessionMode:"coaching_free",safety:safe,userCanPerform:true,contextKnown:true,numberOfHands:2});
     expect([selection.primary?.code,selection.alternative?.code]).toContain("TEST_TRIGGER_FINGER_PLACEMENT");
     expect(outcomeForTestObservation(test.code,"LATERAL_TRIGGER_PRESSURE",
-      "Déplacement répétitif selon le placement")).toBe("supports_hypothesis");
+      "Déplacement latéral reproductible synchronisé avec l’action sur la détente")).toBe("supports_hypothesis");
+    expect(outcomeForTestObservation(test.code,"LATERAL_TRIGGER_PRESSURE",
+      "Aucun déplacement latéral reproductible lors de l’action")).toBe("does_not_support_hypothesis");
+    expect(outcomeForTestObservation(test.code,"LATERAL_TRIGGER_PRESSURE",
+      "Observation ambiguë ou non reproductible")).toBe("inconclusive");
+    expect(outcomeForTestObservation(test.code,"LATERAL_TRIGGER_PRESSURE",
+      "Mouvement impossible à observer de façon fiable")).toBe("not_observed");
   });
 
   it("does_not_support affaiblit toujours D2 sans modifier rang ni score", () => {
     const hypothesis=functionalHypothesis();
     const outcome=outcomeForTestObservation("TEST_TRIGGER_FINGER_PLACEMENT",hypothesis.hypothesisCode,
-      "Aucune différence observable");
+      "Aucun déplacement latéral reproductible lors de l’action");
     expect(applyConfirmationOutcomeToHypothesis(hypothesis,outcome))
       .toMatchObject({status:"weakened",rank:1,internalScore:4});
+  });
+
+  it("ne considère pas une absence de différence entre placements comme preuve négative", () => {
+    expect(() => outcomeForTestObservation("TEST_TRIGGER_FINGER_PLACEMENT", "LATERAL_TRIGGER_PRESSURE",
+      "Aucune différence observable")).toThrow();
   });
 
   it("ne déduit aucun drill de l’ordre du catalogue pour l’action latérale", () => {
