@@ -6,7 +6,7 @@ import { firstStructurallyTestableHypothesis,selectConfirmationTest } from "../.
 import { CoachingOutcome,ConfirmationOutcome,SafetyContext,SessionSafetyContext } from "../../../../../src/domain/coachingTypes";
 import { trainingDrillCatalog } from "../../../../../src/domain/trainingDrillCatalog";
 import { safetyBlockers } from "../../../../../src/domain/coachingSafetyRules";
-import { confirmCoordinatedSafety,confirmSessionSafety,EMPTY_SAFETY_CONTEXT,inheritedSafetyKeys,
+import { confirmCoordinatedSafety,confirmSessionSafety,EMPTY_SAFETY_CONTEXT,
  isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys,USER_CONFIRMABLE_TEST_SAFETY_KEYS } from "../../../../../src/domain/sessionSafetyContext";
 import { useCoaching } from "../../../../../src/ui/CoachingProvider";
 import { presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome,presentTechnicalControlTitle } from "../../../../../src/ui/coachingPresentation";
@@ -38,7 +38,6 @@ export default function CoachingScreen(){
  const testPresentation=test?presentConfirmationTest(test):null;
  const sessionSafetyConfirmed=isSessionSafetyConfirmed(sessionSafety?.conditions??null);
  const safetyAfterGeneral=sessionSafetyConfirmed?sessionSafety!.conditions:confirmSessionSafety(safety);
- const inheritedKeys=test?inheritedSafetyKeys(test):[];
  const requiredSafetyKeys=test?specificSafetyKeys(test,safetyAfterGeneral):[];
  const confirmableSafetyKeys=requiredSafetyKeys.filter(k=>USER_CONFIRMABLE_TEST_SAFETY_KEYS.includes(k));
  const pendingConfirmableSafetyKeys=confirmableSafetyKeys.filter(k=>!safety[k]);
@@ -66,13 +65,27 @@ export default function CoachingScreen(){
   const completed=await service.completeTechnicalControl(state.cycle,observationCode);setState({...state,cycle:completed.cycle});
   setTechnicalOutcome(completed.outcome);setHasWork(false);setShowTechnicalEvaluation(false);
  }catch{setError("Le résultat du contrôle technique n’a pas pu être enregistré. Réessayez dans un instant.");}}
+ const safetyCard=test&&(!sessionSafetyConfirmed||blockers.length>0)?<View style={styles.card}><Text style={styles.section}>Sécurité avant le test</Text>
+   {!sessionSafetyConfirmed?<><Text style={styles.label}>Conditions générales de la séance</Text>
+    {SESSION_SAFETY_KEYS.map(k=><Text key={k} style={styles.help}>• {labels[k]}</Text>)}</>:<Text style={styles.inherited}>✓ Conditions générales de sécurité de la séance déjà validées.</Text>}
+   {requiredSafetyKeys.length?<><Text style={styles.label}>Conditions spécifiques au protocole</Text>
+    {requiredSafetyKeys.map(k=><Text key={k} style={safety[k]?styles.inherited:styles.help}>{safety[k]?"✓ ":"• "}{labels[k]}</Text>)}</>:<Text style={styles.inherited}>✓ Aucune condition supplémentaire à confirmer.</Text>}
+   <Text style={styles.label}>Règles de sécurité du protocole</Text>{test.safetyRequirements.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
+   {(!sessionSafetyConfirmed||pendingConfirmableSafetyKeys.length>0)?<Pressable style={styles.primary} onPress={()=>void validateCombinedSafety()}>
+    <Text style={styles.primaryText}>{!sessionSafetyConfirmed&&pendingConfirmableSafetyKeys.length
+     ? "Je confirme que les conditions de sécurité nécessaires à ce test sont réunies"
+     : !sessionSafetyConfirmed
+      ? "Je confirme que les conditions générales de sécurité sont réunies"
+      : "Je confirme que les conditions de sécurité spécifiques au protocole sont réunies"}</Text>
+   </Pressable>:blockers.length?<View style={styles.blocked}><Text style={styles.warning}>Le test ne peut pas encore commencer.</Text>{blockers.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}</View>:null}
+  </View>:null;
  if(!h)return <View style={styles.page}><Text>Aucune hypothèse suffisamment étayée.</Text></View>;
  return <ScrollView contentContainerStyle={styles.page}>
   <View style={styles.steps}><Text style={styles.stepText}>1 Série analysée  ›  2 Hypothèse  ›  3 Test  ›  4 Travail  ›  5 Contrôle  ›  6 Résultat</Text></View>
   <Text style={styles.kicker}>VÉRIFIER CETTE HYPOTHÈSE</Text><Text style={styles.title}>{hypothesisPresentation!.title}</Text>
   <Text style={styles.body}>{hypothesisPresentation!.explanation}</Text>
   <Text style={styles.help}>Observation factuelle → hypothèse à vérifier → action facultative. Vous pouvez arrêter à chaque étape.</Text>
-  {!state?<><View style={styles.card}><Text style={styles.section}>Test proposé</Text>
+  {!state?<>{safetyCard}<View style={styles.card}><Text style={styles.section}>Test proposé</Text>
     <Text style={styles.label}>{test?.title??"Test indisponible"}</Text>
     <Text style={styles.body}>{selection?.reason??"Ce protocole est affiché avant validation afin que vous sachiez précisément ce qui est proposé."}</Text>
     <Text style={styles.label}>Pourquoi ce test ?</Text><Text style={styles.body}>{testPresentation?.why}</Text>
@@ -82,22 +95,7 @@ export default function CoachingScreen(){
     {canStart?<Pressable style={styles.primary} onPress={()=>void begin()}>
      <Text style={styles.primaryText}>Commencer le test</Text>
     </Pressable>:null}
-   </View>
-   {test&&(!sessionSafetyConfirmed||blockers.length>0)?<View style={styles.card}><Text style={styles.section}>Sécurité avant le test</Text>
-    {!sessionSafetyConfirmed?<><Text style={styles.label}>Conditions générales de la séance</Text>
-     {SESSION_SAFETY_KEYS.map(k=><Text key={k} style={styles.help}>• {labels[k]}</Text>)}</>:<><Text style={styles.label}>Conditions générales déjà confirmées</Text>
-     {inheritedKeys.map(k=><Text key={k} style={safety[k]?styles.inherited:styles.warning}>{safety[k]?"✓":"⚠"} {labels[k]}</Text>)}</>}
-    {requiredSafetyKeys.length?<><Text style={styles.label}>Conditions spécifiques au protocole</Text>
-     {requiredSafetyKeys.map(k=><Text key={k} style={safety[k]?styles.inherited:styles.help}>{safety[k]?"✓ ":"• "}{labels[k]}</Text>)}</>:null}
-    <Text style={styles.label}>Règles de sécurité du protocole</Text>{test?.safetyRequirements.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
-    {(!sessionSafetyConfirmed||pendingConfirmableSafetyKeys.length>0)?<Pressable style={styles.primary} onPress={()=>void validateCombinedSafety()}>
-     <Text style={styles.primaryText}>{!sessionSafetyConfirmed&&pendingConfirmableSafetyKeys.length
-      ? "Je confirme que les conditions de sécurité nécessaires à ce test sont réunies"
-      : !sessionSafetyConfirmed
-       ? "Je confirme que les conditions générales de sécurité sont réunies"
-       : "Je confirme que les conditions de sécurité spécifiques au protocole sont réunies"}</Text>
-    </Pressable>:blockers.length?<View style={styles.blocked}><Text style={styles.warning}>Le test ne peut pas encore commencer.</Text>{blockers.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}</View>:null}
-   </View>:null}</>:null}
+   </View></>:null}
   {state&&!outcome?
    <View style={styles.card}><Text style={styles.kicker}>TEST EN COURS</Text><Text style={styles.section}>Qu’avez-vous observé ?</Text><Text style={styles.body}>Choisissez uniquement l’observation factuelle obtenue pendant le test. Son interprétation est effectuée ensuite.</Text>
     {test&&test.observationCriteria.map(observation=><Pressable key={observation} style={styles.secondary} onPress={()=>void finish(observation)}><Text style={styles.secondaryText}>{observation}</Text></Pressable>)}

@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { safetyBlockers } from "./coachingSafetyRules";
 import { ConfirmationTestDefinition, SafetyContext } from "./coachingTypes";
+import { confirmationTestCatalog } from "./confirmationTestCatalog";
 import { confirmCoordinatedSafety,confirmSessionSafety,confirmSpecificSafety,EMPTY_SAFETY_CONTEXT,inheritedSafetyKeys,
  isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys } from "./sessionSafetyContext";
 
@@ -57,6 +58,18 @@ describe("contexte de sécurité de séance",()=>{
    "dummyRoundsAllowed","dummyRoundProcedureKnown","instructorPresent",
   ]);
  });
+ it("conserve toutes les exigences du test réel avec alternance inerte supervisée",()=>{
+  const dummyTest=confirmationTestCatalog.find(x=>x.code==="TEST_DUMMY_ROUND_SUPERVISED");
+  expect(dummyTest).toBeDefined();
+  expect(dummyTest).toMatchObject({requiresLiveFire:true,requiresDummyRounds:true,requiresInstructor:true});
+  expect(specificSafetyKeys(dummyTest!,inherited)).toEqual([
+   "dummyRoundsAllowed","dummyRoundProcedureKnown","instructorPresent",
+  ]);
+  expect(safetyBlockers(dummyTest!,inherited)).toEqual([
+   "Munition inerte non autorisée ou procédure non maîtrisée.","Instructeur requis mais absent.",
+  ]);
+  expect(safetyBlockers(dummyTest!,{...inherited,dummyRoundsAllowed:true,dummyRoundProcedureKnown:true,instructorPresent:true})).toEqual([]);
+ });
  it("coordonne une première confirmation générale et à sec sans auto-confirmer instructeur ou munitions inertes",()=>{
   const coordinated=confirmCoordinatedSafety(EMPTY_SAFETY_CONTEXT,
    test({requiresDryFire:true,requiresDummyRounds:true,requiresInstructor:true}),true);
@@ -91,5 +104,11 @@ describe("présentation sécurité globale",()=>{
  it("permet au test réel sans condition supplémentaire de commencer directement",()=>{
   expect(screen).toContain("blockers.length===0");
   expect(screen).toContain("Commencer le test");
+ });
+ it("présente la sécurité avant le contenu du test et compacte le contexte hérité",()=>{
+  expect(screen.indexOf("{safetyCard}")).toBeLessThan(screen.indexOf('<Text style={styles.section}>Test proposé</Text>'));
+  expect(screen).toContain("Conditions générales de sécurité de la séance déjà validées.");
+  expect(screen).toContain("Aucune condition supplémentaire à confirmer.");
+  expect(screen).not.toContain("Conditions générales déjà confirmées");
  });
 });
