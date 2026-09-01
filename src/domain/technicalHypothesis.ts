@@ -72,6 +72,9 @@ export function generateTechnicalHypotheses(input:HypothesisInput):Omit<Technica
         &&isDiagnosticQuestionApplicableForNumberOfHands(q,numberOfHands))){
         const answer=input.answers?.[q.code];
         if(!answer||answer==="uncertain"||answer==="not_observed") continue;
+        // A subjective self-report remains persisted context, not diagnostic
+        // evidence for E1, which requires an observable confirmation test.
+        if(q.code==="FELT_TENSION"&&relation.hypothesis==="SHOT_ANTICIPATION") continue;
         const effect=answer==="yes"?q.yesEffect:q.noEffect;
         if(effect==="support"){score+=2;supporting.push({code:`ANSWER_${q.code}`,labelFr:`Réponse diagnostique compatible : ${q.textFr}`,source:"answer"});}
         if(effect==="weaken"){score-=2;contradicting.push({code:`ANSWER_${q.code}`,labelFr:`Réponse diagnostique qui affaiblit : ${q.textFr}`,source:"answer"});}

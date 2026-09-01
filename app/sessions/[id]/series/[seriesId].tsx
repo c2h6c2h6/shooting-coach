@@ -284,7 +284,7 @@ function HypothesisSection({hypotheses,onAnswer,onConfirmBias,existingBiasConfir
   </View>:null}
   {question?<View style={styles.explanation}><Text style={styles.sectionTitle}>Pour mieux comprendre</Text>
    <Text style={styles.body}>{question.textFr}</Text><View style={styles.answerRow}>
-   {([["yes","Oui"],["no","Non"],["uncertain","Incertain"],["not_observed","Non observé"]] as const).map(([v,l])=>
+   {([["yes","Oui"],["no","Non"],["uncertain","Incertain"],...(question.code==="FELT_TENSION"?[]:[["not_observed","Non observé"] as const])] as const).map(([v,l])=>
     <Pressable key={v} style={[styles.answer,selectedAnswer===v&&styles.answerSelected]}
       onPress={()=>{setSelectedAnswer(v);void onAnswer(question.code,v)}}>
       <Text style={[styles.answerText,selectedAnswer===v&&styles.answerTextSelected]}>{selectedAnswer===v?"●":"○"} {l}</Text>

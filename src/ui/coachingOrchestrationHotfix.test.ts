@@ -1,9 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { diagnosticQuestionCatalog } from "../domain/diagnosticQuestionCatalog";
 
 const screen = readFileSync(
   resolve(process.cwd(), "app/sessions/[id]/series/[seriesId]/coaching.tsx"),
+  "utf8",
+);
+const seriesScreen = readFileSync(
+  resolve(process.cwd(), "app/sessions/[id]/series/[seriesId].tsx"),
   "utf8",
 );
 const provider = readFileSync(resolve(process.cwd(), "src/ui/CoachingProvider.tsx"), "utf8");
@@ -44,5 +49,18 @@ describe("confirmation de sécurité coordonnée", () => {
   it("conserve séparément la confirmation spécifique dans le run du test", () => {
     expect(provider).toContain("confirmedSpecificSafety:JSON.stringify(confirmedSafetyKeys)");
     expect(provider).toContain("saveSessionSafety(context)");
+  });
+});
+
+describe("clarification subjective E1", () => {
+  it("retire Non observé du ressenti FELT_TENSION", () => {
+    expect(seriesScreen).toContain("question.code===\"FELT_TENSION\"");
+    expect(seriesScreen).toContain("Non observé");
+  });
+
+  it("conserve Non observé pour les questions observationnelles", () => {
+    expect(diagnosticQuestionCatalog.find((item) => item.code === "FRONT_SIGHT_CLEAR")?.textFr)
+      .toContain("guidon");
+    expect(seriesScreen).toContain("not_observed");
   });
 });

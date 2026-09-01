@@ -70,6 +70,35 @@ class HistoricalB5Database implements Database {
   }
 }
 
+class DiagnosticAnswerDatabase implements Database {
+  readonly writes: { sql: string; params: SqlParameter[] }[] = [];
+  async execAsync(_sql: string) {}
+  async withTransactionAsync(task: () => Promise<void>) { await task(); }
+  async getFirstAsync<T>(sql: string) {
+    if (sql.includes("FROM series WHERE id")) return { session_id: "session" } as T;
+    return null;
+  }
+  async getAllAsync<T>(sql: string) {
+    if (sql.includes("FROM diagnostic_answers")) {
+      return [{ question_code: "FELT_TENSION", answer_value: "yes" }] as T[];
+    }
+    return [] as T[];
+  }
+  async runAsync(sql: string, ...params: SqlParameter[]) {
+    this.writes.push({ sql, params });
+    return { changes: 1 };
+  }
+}
+
+it("persiste et relit une réponse diagnostique sans la transformer en preuve", async () => {
+  const database = new DiagnosticAnswerDatabase();
+  const repository = new SqliteTechnicalHypothesisRepository(database, () => "answer-id", () => "answered-at");
+  await repository.answer("FELT_TENSION", "series", "yes");
+  expect(database.writes).toHaveLength(1);
+  expect(database.writes[0].sql).toContain("INSERT INTO diagnostic_answers");
+  expect(await repository.listAnswers("series")).toEqual({ FELT_TENSION: "yes" });
+});
+
 it("relit B5 sous D2 sans modifier evidence, rang, score ni SQLite", async () => {
   const persisted: TechnicalHypothesis = {
     id: "legacy-b5", sessionId: "session", seriesId: "series", comparisonId: null, observationId: "observation",

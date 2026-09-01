@@ -48,15 +48,20 @@ describe("technical hypothesis engine",()=>{
  it("conserve score, règles, indices et informations manquantes",()=>{const h=run("OFFSET_LEFT")[0];
   expect(h.internalScore).toEqual(expect.any(Number));expect(h.sourceRules.length).toBeGreaterThan(0);
   expect(h.supportingEvidence.length).toBeGreaterThan(0);expect(h.missingEvidence.length).toBeGreaterThan(0);});
- it("une réponse oui peut renforcer",()=>{const before=run("OFFSET_LOW").find(x=>x.hypothesisCode==="SHOT_ANTICIPATION");
-  const after=run("OFFSET_LOW","right",5,{FELT_TENSION:"yes"}).find(x=>x.hypothesisCode==="SHOT_ANTICIPATION");
-  expect(after!.internalScore).toBeGreaterThan(before!.internalScore);});
- it("une réponse non peut affaiblir",()=>{const before=run("OFFSET_LOW").find(x=>x.hypothesisCode==="SHOT_ANTICIPATION");
-  const after=run("OFFSET_LOW","right",5,{FELT_TENSION:"no"}).find(x=>x.hypothesisCode==="SHOT_ANTICIPATION");
-  expect(after!.internalScore).toBeLessThan(before!.internalScore);});
- it("une réponse incertaine ne modifie pas",()=>expect(
-  run("OFFSET_LOW","right",5,{FELT_TENSION:"uncertain"}).find(x=>x.hypothesisCode==="SHOT_ANTICIPATION")!.internalScore)
-  .toBe(run("OFFSET_LOW").find(x=>x.hypothesisCode==="SHOT_ANTICIPATION")!.internalScore));
+ it.each(["yes","no","uncertain"] as const)("le ressenti FELT_TENSION (%s) reste neutre pour E1",answer=>{
+  const before=run("OFFSET_LOW").find(x=>x.hypothesisCode==="SHOT_ANTICIPATION")!;
+  const after=run("OFFSET_LOW","right",5,{FELT_TENSION:answer}).find(x=>x.hypothesisCode==="SHOT_ANTICIPATION")!;
+  expect(after.internalScore).toBe(before.internalScore);
+  expect(after.status).toBe(before.status);
+  expect(after.rank).toBe(before.rank);
+  expect(after.supportingEvidence.some(x=>x.code==="ANSWER_FELT_TENSION")).toBe(false);
+  expect(after.contradictingEvidence.some(x=>x.code==="ANSWER_FELT_TENSION")).toBe(false);
+ });
+ it("le ressenti FELT_TENSION ne modifie pas le classement E1 à lui seul",()=>{
+  const before=run("OFFSET_LOW").map(x=>[x.hypothesisCode,x.rank,x.internalScore]);
+  const after=run("OFFSET_LOW","right",5,{FELT_TENSION:"yes"}).map(x=>[x.hypothesisCode,x.rank,x.internalScore]);
+  expect(after).toEqual(before);
+ });
  it("n'expose ni pourcentage ni conseil ni exercice",()=>{const text=JSON.stringify(run("OFFSET_LEFT"));
   expect(text).not.toMatch(/%|corrigez|exercice recommandé|vous mettez/i);});
 });
