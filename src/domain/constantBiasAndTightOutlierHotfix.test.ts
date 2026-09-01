@@ -75,9 +75,8 @@ describe("hotfix biais constant — neutralité causale", () => {
     expect(screen).toContain("technicalHypothesisCatalog.EQUIPMENT_OR_SIGHT_ISSUE.titleFr");
     expect(screen).toContain("technicalHypothesisCatalog.LATERAL_TRIGGER_PRESSURE.titleFr");
     expect(screen).toContain("La reproduction du biais ne permet pas, à elle seule, de choisir entre ces causes.");
-    expect(screen).toContain("Examiner les causes possibles");
-    expect(screen).toContain('diagnosticResult.conclusion==="strengthened"');
-    expect(screen).toContain("setShowDiagnosticGeneralAnalysis(true)");
+    expect(screen).toContain("Examiner la première cause testable");
+    expect(screen).toContain("Le décalage est reproductible. Nous allons maintenant vérifier ses causes possibles.");
   });
 
   it("conserve le test de reproductibilité avant de départager les causes", () => {

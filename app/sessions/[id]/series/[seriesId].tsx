@@ -164,9 +164,7 @@ export default function SeriesDetailScreen() {
         ? <View style={styles.card}><Text style={styles.sectionTitle}>Analyse du contrôle…</Text></View> : null}
       {controlResult ? <ControlSeriesResultSection result={controlResult} /> : null}
       {diagnosticResult ? <DiagnosticConfirmationSection result={diagnosticResult}
-        onContinue={()=>diagnosticResult.conclusion==="strengthened"
-          ? setShowDiagnosticGeneralAnalysis(true)
-          : router.push(`/sessions/${sessionId}/series/${series.id}/coaching`)} /> : null}
+        onContinue={()=>router.push(`/sessions/${sessionId}/series/${series.id}/coaching`)} /> : null}
       {hasContextualResult ? <Pressable onPress={()=>setShowDiagnosticGeneralAnalysis(value=>!value)}>
         <Text style={styles.link}>{showDiagnosticGeneralAnalysis?"Masquer l’analyse générale":"Voir l’analyse générale de cette série"}</Text>
       </Pressable> : null}
@@ -309,8 +307,9 @@ function DiagnosticConfirmationSection({result,onContinue}:{result:DiagnosticCon
    <Text style={styles.body}>• {technicalHypothesisCatalog.LATERAL_TRIGGER_PRESSURE.titleFr}</Text>
    <Text style={styles.help}>La reproduction du biais ne permet pas, à elle seule, de choisir entre ces causes.</Text>
   </View>:null}
+  {result.conclusion==="strengthened"?<Text style={styles.body}>Le décalage est reproductible. Nous allons maintenant vérifier ses causes possibles.</Text>:null}
   <Pressable style={styles.primary} onPress={onContinue}><Text style={styles.primaryText}>
-   {result.conclusion==="strengthened"?"Examiner les causes possibles":
+   {result.conclusion==="strengthened"?"Examiner la première cause testable":
     result.conclusion==="weakened"?"Examiner une autre piste":"Continuer avec le coach"}
   </Text></Pressable>
  </View>;

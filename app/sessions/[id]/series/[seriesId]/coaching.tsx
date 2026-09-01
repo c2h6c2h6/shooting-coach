@@ -14,21 +14,25 @@ import { useTechnicalHypotheses } from "../../../../../src/ui/TechnicalHypothesi
 import { colors,layout,shadows } from "../../../../../src/ui/theme";
 import { isConfirmationTestApplicableForNumberOfHands, numberOfHandsFromApplicableContext } from "../../../../../src/domain/numberOfHandsApplicability";
 import { applyConfirmationOutcomeToHypothesis } from "../../../../../src/domain/confirmationOutcomeTransition";
+import { TechnicalHypothesis } from "../../../../../src/domain/technicalHypothesis";
 export default function CoachingScreen(){
  const {id:sessionId,seriesId}=useLocalSearchParams<{id:string;seriesId:string}>(),hypService=useTechnicalHypotheses(),service=useCoaching();
  const [hypotheses,setHypotheses]=useState<Awaited<ReturnType<typeof hypService.forSeries>>>([]),[safety,setSafety]=useState(EMPTY_SAFETY_CONTEXT);
  const [sessionSafety,setSessionSafety]=useState<SessionSafetyContext|null>(null);
  const [state,setState]=useState<Awaited<ReturnType<typeof service.start>>|null>(null),[outcome,setOutcome]=useState<ConfirmationOutcome|null>(null),[hasWork,setHasWork]=useState(false),[error,setError]=useState("");
  const [showTechnicalEvaluation,setShowTechnicalEvaluation]=useState(false),[technicalOutcome,setTechnicalOutcome]=useState<CoachingOutcome|null>(null);
+ const [excludedTest,setExcludedTest]=useState<{hypothesisCode:TechnicalHypothesis["hypothesisCode"];confirmationTestCode:string}|null>(null);
+ const [nextHypothesisCode,setNextHypothesisCode]=useState<TechnicalHypothesis["hypothesisCode"]|null>(null);
  useEffect(()=>{void hypService.forSeries(seriesId).then(setHypotheses);
   void service.sessionSafety(sessionId).then(x=>{if(x){setSessionSafety(x);setSafety(x.conditions);}});
   void service.active(sessionId).then(x=>{if(x){setState({cycle:x.cycle,test:x.test});
    setOutcome(x.test.outcome);setHasWork(Boolean(x.cycle.drillCode||x.cycle.controlMode==="technical_observation"));}});
  },[hypService,seriesId,service,sessionId]);
- const rankedTestableHypothesis=firstStructurallyTestableHypothesis({hypotheses,sessionMode:"coaching_free"});
+ const rankedTestableHypothesis=firstStructurallyTestableHypothesis({hypotheses,sessionMode:"coaching_free",exclude:excludedTest??undefined});
  const h=(state?hypotheses.find(item=>item.id===state.cycle.hypothesisId):null)??rankedTestableHypothesis;
  const numberOfHands=h?numberOfHandsFromApplicableContext(h.applicableContext):null,
- selection=h?selectConfirmationTest({hypothesis:h,alternatives:hypotheses.filter(item=>item.id!==h.id),sessionMode:"coaching_free",safety,userCanPerform:true,contextKnown:true,numberOfHands,allowRankedFallback:true}):null;
+ selection=h?selectConfirmationTest({hypothesis:h,alternatives:hypotheses.filter(item=>item.id!==h.id),sessionMode:"coaching_free",safety,userCanPerform:true,contextKnown:true,numberOfHands,allowRankedFallback:true,
+  excludeTestCode:excludedTest?.hypothesisCode===h.hypothesisCode?excludedTest.confirmationTestCode:undefined}):null;
  const previewTest=h?confirmationTestCatalog
   .filter(t=>t.hypothesisCodes.includes(h.hypothesisCode)&&t.supportedSessionModes.includes("coaching_free"))
   .filter(t=>isConfirmationTestApplicableForNumberOfHands(t,h.hypothesisCode,numberOfHands))
@@ -55,8 +59,12 @@ export default function CoachingScreen(){
   catch{setError("Le test n’a pas pu commencer. Vos données sont conservées ; revenez à la séance puis réessayez.");}}
  async function finish(observation:string){if(!state)return;try{setError("");
   const next=await service.complete(state.cycle,state.test,observation,"beginner",safety);
-  setHypotheses(current=>current.map(item=>item.id===state.cycle.hypothesisId
-   ?applyConfirmationOutcomeToHypothesis(item,next.outcome):item));
+  const updatedHypotheses=hypotheses.map(item=>item.id===state.cycle.hypothesisId
+   ?applyConfirmationOutcomeToHypothesis(item,next.outcome):item);
+  const nextExcluded=next.outcome==="inconclusive"||next.outcome==="not_observed"
+   ?{hypothesisCode:h!.hypothesisCode,confirmationTestCode:state.test.testCode}:null;
+  setHypotheses(updatedHypotheses);setExcludedTest(nextExcluded);
+  setNextHypothesisCode(firstStructurallyTestableHypothesis({hypotheses:updatedHypotheses,sessionMode:"coaching_free",exclude:nextExcluded??undefined})?.hypothesisCode??null);
   setState({cycle:next.cycle,test:next.test});setOutcome(next.outcome);setHasWork(next.hasWork);
  }catch{setError("Le résultat n’a pas pu être enregistré. Votre test est conservé ; réessayez dans un instant.");}}
  function continueDifferentialReasoning(){setState(null);setOutcome(null);setHasWork(false);setError("");}
@@ -79,13 +87,14 @@ export default function CoachingScreen(){
       : "Je confirme que les conditions de sécurité spécifiques au protocole sont réunies"}</Text>
    </Pressable>:blockers.length?<View style={styles.blocked}><Text style={styles.warning}>Le test ne peut pas encore commencer.</Text>{blockers.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}</View>:null}
   </View>:null;
- if(!h)return <View style={styles.page}><Text>Aucune hypothèse suffisamment étayée.</Text></View>;
+ if(!h)return <View style={styles.page}><Text>{excludedTest?"Aucune autre piste testable n’est disponible pour cette série. Le test courant pourra être repris ultérieurement.":"Aucune hypothèse suffisamment étayée."}</Text></View>;
  return <ScrollView contentContainerStyle={styles.page}>
   <View style={styles.steps}><Text style={styles.stepText}>1 Série analysée  ›  2 Hypothèse  ›  3 Test  ›  4 Travail  ›  5 Contrôle  ›  6 Résultat</Text></View>
   <Text style={styles.kicker}>VÉRIFIER CETTE HYPOTHÈSE</Text><Text style={styles.title}>{hypothesisPresentation!.title}</Text>
   <Text style={styles.body}>{hypothesisPresentation!.explanation}</Text>
   <Text style={styles.help}>Observation factuelle → hypothèse à vérifier → action facultative. Vous pouvez arrêter à chaque étape.</Text>
-  {!state?<>{safetyCard}<View style={styles.card}><Text style={styles.section}>Test proposé</Text>
+  {!state?<>{safetyCard}<View style={styles.card}><Text style={styles.section}>Cause à vérifier</Text>
+    <Text style={styles.label}>{hypothesisPresentation!.title}</Text><Text style={styles.section}>Test proposé</Text>
     <Text style={styles.label}>{test?.title??"Test indisponible"}</Text>
     <Text style={styles.body}>{selection?.reason??"Ce protocole est affiché avant validation afin que vous sachiez précisément ce qui est proposé."}</Text>
     <Text style={styles.label}>Pourquoi ce test ?</Text><Text style={styles.body}>{testPresentation?.why}</Text>
@@ -117,8 +126,8 @@ export default function CoachingScreen(){
      :<Pressable style={styles.primary} onPress={()=>void control()}><Text style={styles.primaryText}>Créer la série de contrôle</Text></Pressable>}</>})()}</>
     :technicalOutcome?<><Text style={styles.kicker}>RÉSULTAT DU TRAVAIL</Text><Text style={styles.body}>{technicalOutcomeText[technicalOutcome]}</Text></>
     :<><Text style={styles.help}>Aucune recommandation personnalisée n’est proposée avec ce résultat.</Text>
-     {outcome==="does_not_support_hypothesis"?<Pressable style={styles.primary} onPress={continueDifferentialReasoning}>
-      <Text style={styles.primaryText}>Examiner la piste testable suivante</Text></Pressable>:null}</>}
+     {outcome==="does_not_support_hypothesis"||outcome==="inconclusive"||outcome==="not_observed"?<Pressable style={styles.primary} onPress={continueDifferentialReasoning}>
+      <Text style={styles.primaryText}>{nextHypothesisCode?`Examiner ensuite : ${presentHypothesis(nextHypothesisCode).title}`:"Aucune autre piste testable n’est disponible"}</Text></Pressable>:null}</>}
   </View>:null}
   <Pressable onPress={()=>router.push("/safety" as never)}><Text style={styles.link}>Sécurité et limites</Text></Pressable>
   {error?<View style={styles.errorBox}><Text style={styles.warning}>{error}</Text></View>:null}

@@ -14,6 +14,11 @@ const seriesScreen = readFileSync(
 const provider = readFileSync(resolve(process.cwd(), "src/ui/CoachingProvider.tsx"), "utf8");
 
 describe("orchestration factuelle du test de coaching", () => {
+  it("route directement la reproductibilité vers le coaching causal", () => {
+    expect(seriesScreen).toContain("Le décalage est reproductible. Nous allons maintenant vérifier ses causes possibles.");
+    expect(seriesScreen).toContain("Examiner la première cause testable");
+    expect(seriesScreen).toContain("onContinue={()=>router.push(`/sessions/${sessionId}/series/${series.id}/coaching`)}");
+  });
   it("ne propose aucun statut de preuve avant la réalisation du test", () => {
     expect(screen).not.toContain("Renforce l’hypothèse");
     expect(screen).not.toContain("Renforce faiblement");
@@ -62,5 +67,19 @@ describe("clarification subjective E1", () => {
     expect(diagnosticQuestionCatalog.find((item) => item.code === "FRONT_SIGHT_CLEAR")?.textFr)
       .toContain("guidon");
     expect(seriesScreen).toContain("not_observed");
+  });
+
+  it("annonce explicitement la cause et le test sélectionnés", () => {
+    expect(screen).toContain("Cause à vérifier");
+    expect(screen).toContain("Test proposé");
+  });
+
+  it("nomme la prochaine cause après une hypothèse non soutenue", () => {
+    expect(screen).toContain("Examiner ensuite : ${presentHypothesis(nextHypothesisCode).title}");
+  });
+
+  it("termine prudemment lorsqu’aucune autre piste n’est disponible", () => {
+    expect(screen).toContain("Aucune autre piste testable n’est disponible pour cette série.");
+    expect(screen).toContain("Le test courant pourra être repris ultérieurement.");
   });
 });

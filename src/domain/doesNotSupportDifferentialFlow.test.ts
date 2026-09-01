@@ -61,6 +61,15 @@ describe("does_not_support et poursuite différentielle", () => {
     expect(nextTestableHypothesisAfterOutcome([h1], "coaching_free")).toBeNull();
   });
 
+  it.each(["inconclusive", "not_observed"] as const)("écarte temporairement le couple H1/test après %s", outcome => {
+    const h1 = hypothesis("EQUIPMENT_OR_SIGHT_ISSUE", 1, { category: "context_equipment" });
+    const h2 = hypothesis("SHOT_ANTICIPATION", 2, { category: "anticipation" });
+    expect(nextTestableHypothesisAfterOutcome([h1, h2], "coaching_free", {
+      hypothesisCode: h1.hypothesisCode, confirmationTestCode: "TEST_EQUIPMENT_CONTEXT_CHECK",
+    })).toBe(h2);
+    expect(applyConfirmationOutcomeToHypothesis(h1, outcome).status).toBe("requires_confirmation");
+  });
+
   it("respecte numberOfHands pendant la poursuite", () => {
     const h1 = applyConfirmationOutcomeToHypothesis(hypothesis("LATERAL_TRIGGER_PRESSURE", 1),
       "does_not_support_hypothesis");

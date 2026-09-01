@@ -41,6 +41,7 @@ export function hypothesisStatusAfterHistoricalOutcome(
 export function nextTestableHypothesisAfterOutcome(
   hypotheses: TechnicalHypothesis[],
   sessionMode: SessionMode,
+  exclude?: { hypothesisCode: TechnicalHypothesis["hypothesisCode"]; confirmationTestCode: string },
 ): TechnicalHypothesis | null {
-  return firstStructurallyTestableHypothesis({ hypotheses, sessionMode });
+  return firstStructurallyTestableHypothesis({ hypotheses, sessionMode, exclude });
 }

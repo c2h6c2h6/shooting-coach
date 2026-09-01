@@ -8,7 +8,7 @@ import { isConfirmationTestApplicableForNumberOfHands,numberOfHandsFromApplicabl
 export interface TestSelectionContext {
   hypothesis:TechnicalHypothesis; alternatives:TechnicalHypothesis[]; sessionMode:SessionMode;
   safety:SafetyContext; userCanPerform:boolean; contextKnown:boolean; numberOfHands?:NumberOfHands|null;
-  allowRankedFallback?:boolean;
+  allowRankedFallback?:boolean; excludeTestCode?:string;
 }
 export interface TestSelection {primary:ConfirmationTestDefinition|null;alternative:ConfirmationTestDefinition|null;reason:string;blockers:string[]}
 export function selectConfirmationTest(c:TestSelectionContext):TestSelection{
@@ -18,7 +18,8 @@ export function selectConfirmationTest(c:TestSelectionContext):TestSelection{
    c.hypothesis.internalScore<2)return{primary:null,alternative:null,reason:"L’hypothèse est trop faiblement soutenue pour proposer un test.",blockers:["Soutien insuffisant."]};
  const numberOfHands=c.numberOfHands===1||c.numberOfHands===2?c.numberOfHands:null;
  const supported=confirmationTestCatalog.filter(t=>t.hypothesisCodes.includes(c.hypothesis.hypothesisCode)&&t.supportedSessionModes.includes(c.sessionMode));
- const applicable=supported.filter(t=>isConfirmationTestApplicableForNumberOfHands(t,c.hypothesis.hypothesisCode,numberOfHands));
+ const applicable=supported.filter(t=>isConfirmationTestApplicableForNumberOfHands(t,c.hypothesis.hypothesisCode,numberOfHands)
+  &&t.code!==c.excludeTestCode);
  if(supported.length&&!applicable.length)return{primary:null,alternative:null,
   reason:numberOfHands===1?"Ce test concerne une interaction entre les deux mains et n’est pas applicable à cette séance à une main.":
    "Le nombre de mains doit être renseigné avant de proposer ce test.",
@@ -32,13 +33,15 @@ export function selectConfirmationTest(c:TestSelectionContext):TestSelection{
  return primary?{primary,alternative,reason:"Ce test cherche à départager l’hypothèse principale des causes concurrentes.",blockers:[]}:
   {primary:null,alternative:null,reason:"Les prérequis de sécurité ne permettent pas de proposer ce test dans le contexte actuel.",blockers:candidates[0]?.b??["Aucun test applicable."]};
 }
-export function firstStructurallyTestableHypothesis(input:{hypotheses:TechnicalHypothesis[];sessionMode:SessionMode}){
+export function firstStructurallyTestableHypothesis(input:{hypotheses:TechnicalHypothesis[];sessionMode:SessionMode;
+ exclude?:{hypothesisCode:TechnicalHypothesis["hypothesisCode"];confirmationTestCode:string}}){
  return input.hypotheses.find(h=>{
   if(!["strengthened","requires_confirmation"].includes(h.status)||h.internalScore<2)return false;
   const numberOfHands=numberOfHandsFromApplicableContext(h.applicableContext);
   return confirmationTestCatalog.some(t=>t.hypothesisCodes.includes(h.hypothesisCode)
    &&t.supportedSessionModes.includes(input.sessionMode)
-   &&isConfirmationTestApplicableForNumberOfHands(t,h.hypothesisCode,numberOfHands));
+   &&isConfirmationTestApplicableForNumberOfHands(t,h.hypothesisCode,numberOfHands)
+   &&!(input.exclude?.hypothesisCode===h.hypothesisCode&&input.exclude.confirmationTestCode===t.code));
  })??null;
 }
 export function hypothesisEffect(outcome:ConfirmationOutcome){
