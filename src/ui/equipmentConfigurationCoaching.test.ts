@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { confirmationTestCatalog } from "../domain/confirmationTestCatalog";
 import { trainingDrillCatalog } from "../domain/trainingDrillCatalog";
-import { presentConfirmationTest, presentDrill, presentOutcome } from "./coachingPresentation";
+import { presentCoachingOutcome, presentConfirmationTest, presentDrill, presentOutcome } from "./coachingPresentation";
 
 const configurationTest = confirmationTestCatalog.find(
   (item) => item.code === "TEST_EQUIPMENT_CONTEXT_CHECK",
@@ -16,41 +16,51 @@ describe("hotfix protocole — vérification de configuration", () => {
     expect(configurationTest.maximumDuration).toBe(1);
   });
 
-  it("ne redemande pas les données de séance déjà connues", () => {
+  it("propose un contrôle visible en trois gestes simples", () => {
     const instructions = presentConfirmationTest(configurationTest).instructions.join(" ");
-    expect(instructions).toContain("point prévu");
+    expect(configurationTest.title).toBe("Vérifier la visée / le matériel");
+    expect(configurationTest.instructions).toEqual([
+      "Mettez l’arme en sécurité.",
+      "Regardez les organes de visée et l’état apparent du matériel.",
+      "Si vous avez changé d’arme ou de réglage depuis la série, signalez-le.",
+    ]);
     expect(instructions).toContain("organes de visée");
-    expect(instructions).toContain("changé d’arme, de réglage ou de configuration depuis la série");
+    expect(instructions).toContain("changé d’arme ou de réglage");
     expect(instructions).not.toMatch(/distance|type de cible|arme sélectionnée/i);
   });
 
   it("prévoit une vérification qualifiée sans réglage automatique", () => {
     const instructions = presentConfirmationTest(configurationTest).instructions.join(" ");
-    expect(configurationTest.observationCriteria).toContain("Je préfère faire vérifier l’arme ou les organes de visée");
+    expect(configurationTest.observationCriteria).toContain("Je préfère faire vérifier");
     expect(instructions).not.toMatch(/déplacez|réglez|corrigez la hausse|corrigez le guidon/i);
   });
 
   it("présente des observations propres à la configuration", () => {
     expect(configurationTest.observationCriteria).toEqual([
-      "Tout correspond à ce que j’ai réellement fait",
-      "Les informations de la séance ne correspondent pas à la réalité",
-      "Je ne visais pas le point prévu",
-      "J’ai un doute sur le réglage ou le matériel",
-      "Je préfère faire vérifier l’arme ou les organes de visée",
-      "Je ne peux pas conclure",
+      "Rien d’anormal",
+      "J’ai changé d’arme ou de réglage",
+      "Je ne visais pas ce point",
+      "Quelque chose semble déréglé",
+      "Je préfère faire vérifier",
+      "Je ne sais pas",
     ]);
   });
 
   it("restitue prudemment une configuration cohérente", () => {
-    expect(presentOutcome("does_not_support_hypothesis", configurationTest.code)).toBe(
-      "Aucun écart évident de configuration n’a été identifié. La piste matérielle est moins soutenue et une cause technique peut être examinée davantage.",
-    );
+    expect(presentCoachingOutcome("does_not_support_hypothesis", configurationTest.code))
+      .toBe("Rien d’anormal côté visée / matériel. La piste matériel est peu probable.");
   });
 
   it("restitue un écart identifié sans le transformer en cause certaine", () => {
     const text = presentOutcome("supports_hypothesis", configurationTest.code);
     expect(text).toBe("Un écart de configuration a été identifié. Il peut contribuer au décalage observé.");
     expect(text).not.toMatch(/cause confirmée|matériel défectueux|arme mal réglée/i);
+  });
+
+  it("réduit le résultat visible à une conclusion utilisable", () => {
+    expect(presentCoachingOutcome("supports_hypothesis", configurationTest.code))
+      .toBe("Un problème de visée / matériel reste possible.");
+    expect(presentCoachingOutcome("inconclusive", configurationTest.code)).toBe("Impossible de conclure.");
   });
 
   it("oriente un doute matériel vers une vérification qualifiée sans réglage automatique", () => {

@@ -18,12 +18,12 @@ describe("observation factuelle du test de stabilité du guidon", () => {
 
 describe("vérification de configuration", () => {
   it.each([
-    ["Tout correspond à ce que j’ai réellement fait", "does_not_support_hypothesis"],
-    ["Les informations de la séance ne correspondent pas à la réalité", "supports_hypothesis"],
-    ["Je ne visais pas le point prévu", "supports_hypothesis"],
-    ["J’ai un doute sur le réglage ou le matériel", "weakly_supports_hypothesis"],
-    ["Je préfère faire vérifier l’arme ou les organes de visée", "inconclusive"],
-    ["Je ne peux pas conclure", "inconclusive"],
+    ["Rien d’anormal", "does_not_support_hypothesis"],
+    ["J’ai changé d’arme ou de réglage", "supports_hypothesis"],
+    ["Je ne visais pas ce point", "supports_hypothesis"],
+    ["Quelque chose semble déréglé", "weakly_supports_hypothesis"],
+    ["Je préfère faire vérifier", "inconclusive"],
+    ["Je ne sais pas", "inconclusive"],
   ] as const)("traduit %s sans interprétation probabiliste de l’utilisateur", (observation, expected) => {
     expect(outcomeForTestObservation(
       "TEST_EQUIPMENT_CONTEXT_CHECK",

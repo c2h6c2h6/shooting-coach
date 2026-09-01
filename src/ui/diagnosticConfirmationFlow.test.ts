@@ -163,7 +163,7 @@ describe("préparation et anti-boucle — garde-fous source", () => {
     const provider = source("src/ui/CoachingProvider.tsx");
     const screen = source("app/sessions/[id]/series/[seriesId].tsx");
     expect(provider).toContain("repo.findTestRun(h.seriesId!,h.id,CONTROLLED_BIAS_CONFIRMATION_TEST_CODE)");
-    expect(screen).toContain("Confirmation déjà réalisée");
+    expect(screen).toContain("existingBiasConfirmation&&compactOffset");
     expect(screen).toContain("Voir le résultat du test");
   });
 

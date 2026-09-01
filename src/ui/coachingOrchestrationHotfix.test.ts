@@ -26,7 +26,7 @@ describe("orchestration factuelle du test de coaching", () => {
   });
 
   it("affiche les observations factuelles seulement après Commencer le test", () => {
-    expect(screen).toContain("Qu’avez-vous observé ?");
+    expect(screen).toContain("<Text style={styles.section}>Réponse</Text>");
     expect(screen).toContain("test.observationCriteria.map");
   });
 
@@ -44,7 +44,7 @@ describe("orchestration factuelle du test de coaching", () => {
 
 describe("confirmation de sécurité coordonnée", () => {
   it("réunit la sécurité générale et la sécurité à sec sous une seule action", () => {
-    expect(screen).toContain("Sécurité avant le test");
+    expect(screen).toContain("<Text style={styles.section}>Sécurité</Text>");
     expect(screen).toContain("validateCombinedSafety");
     expect(screen).toContain(
       "Je confirme que les conditions de sécurité nécessaires à ce test sont réunies",
@@ -69,9 +69,9 @@ describe("clarification subjective E1", () => {
     expect(seriesScreen).toContain("not_observed");
   });
 
-  it("annonce explicitement la cause et le test sélectionnés", () => {
-    expect(screen).toContain("Cause à vérifier");
-    expect(screen).toContain("Test proposé");
+  it("annonce explicitement l’hypothèse et le test sélectionnés", () => {
+    expect(screen).toContain("<Text style={styles.section}>Hypothèse</Text>");
+    expect(screen).toContain("<Text style={styles.section}>Test</Text>");
   });
 
   it("nomme la prochaine cause après une hypothèse non soutenue", () => {

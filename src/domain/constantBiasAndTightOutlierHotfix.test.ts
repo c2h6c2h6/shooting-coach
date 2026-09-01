@@ -64,14 +64,15 @@ describe("hotfix biais constant — neutralité causale", () => {
     expect(lateralTrigger?.confidenceLevel).not.toBe("high");
   });
 
-  it("présente un biais à identifier et non une cause principale imposée", () => {
+  it("présente une seule piste puis le détail facultatif, sans imposer de cause", () => {
     const screen = readFileSync(resolve(
       process.cwd(), "app/sessions/[id]/series/[seriesId].tsx",
     ), "utf8");
 
-    expect(screen).toContain("Biais constant à identifier");
-    expect(screen).toContain("Causes possibles à départager");
-    expect(screen).toContain("la cible seule ne permet pas d’en identifier la cause");
+    expect(screen).toContain("Piste à vérifier");
+    expect(screen).toContain("Autres pistes");
+    expect(screen).toContain("Pourquoi ?");
+    expect(screen).not.toContain("Biais constant à identifier");
     expect(screen).toContain("technicalHypothesisCatalog.EQUIPMENT_OR_SIGHT_ISSUE.titleFr");
     expect(screen).toContain("technicalHypothesisCatalog.LATERAL_TRIGGER_PRESSURE.titleFr");
     expect(screen).toContain("La reproduction du biais ne permet pas, à elle seule, de choisir entre ces causes.");
@@ -84,9 +85,9 @@ describe("hotfix biais constant — neutralité causale", () => {
       process.cwd(), "app/sessions/[id]/series/[seriesId].tsx",
     ), "utf8");
 
-    expect(screen).toContain("Créer la série de confirmation");
-    expect(screen).toContain("Refaites une série de 5 coups dans les mêmes conditions");
-    expect(screen).toContain("Confirmation déjà réalisée");
+    expect(screen).toContain("compactOffset?void onConfirmBias(primary)");
+    expect(screen).toContain("existingBiasConfirmation&&compactOffset");
+    expect(screen).toContain("Voir le résultat du test");
   });
 });
 

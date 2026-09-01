@@ -115,6 +115,30 @@ export function presentOutcome(outcome: ConfirmationOutcome, testCode?: string):
   return texts[outcome];
 }
 
+/** Short, action-oriented wording for the coaching screen; the detailed wording remains available on demand. */
+export function presentCoachingOutcome(outcome: ConfirmationOutcome, testCode?: string): string {
+  if (testCode === "TEST_EQUIPMENT_CONTEXT_CHECK") {
+    const equipmentTexts: Record<ConfirmationOutcome, string> = {
+      supports_hypothesis: "Un problème de visée / matériel reste possible.",
+      weakly_supports_hypothesis: "Un problème de visée / matériel reste possible.",
+      does_not_support_hypothesis: "Rien d’anormal côté visée / matériel. La piste matériel est peu probable.",
+      contradicts_hypothesis: "La piste matériel est peu probable.",
+      inconclusive: "Impossible de conclure.",
+      not_observed: "Impossible de conclure.",
+    };
+    return equipmentTexts[outcome];
+  }
+  const texts: Record<ConfirmationOutcome, string> = {
+    supports_hypothesis: "Cette piste reste possible.",
+    weakly_supports_hypothesis: "Cette piste reste possible.",
+    does_not_support_hypothesis: "Cette piste est peu probable.",
+    contradicts_hypothesis: "Cette piste est peu probable.",
+    inconclusive: "Impossible de conclure.",
+    not_observed: "Impossible de conclure.",
+  };
+  return texts[outcome];
+}
+
 export function presentDrill(drill: TrainingDrill): DrillPresentation {
   if (drill.code === "DRILL_DRY_CONTROLLED_RELEASES") {
     return {

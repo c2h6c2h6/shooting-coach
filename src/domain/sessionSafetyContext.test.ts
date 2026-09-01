@@ -105,7 +105,7 @@ describe("contexte de sécurité de séance",()=>{
 describe("présentation sécurité globale",()=>{
  const screen=readFileSync(resolve(process.cwd(),"app/sessions/[id]/series/[seriesId]/coaching.tsx"),"utf8");
  it("remplace les cases générales par une seule confirmation coordonnée",()=>{
-  expect(screen).toContain("Sécurité avant le test");
+  expect(screen).toContain("<Text style={styles.section}>Sécurité</Text>");
   expect(screen).not.toContain("SESSION_SAFETY_KEYS.map(toggle)");
   expect(screen).not.toContain('safety[k]?"☑":"☐"');
  });
@@ -119,13 +119,12 @@ describe("présentation sécurité globale",()=>{
   expect(screen).toContain("Commencer le test");
  });
  it("présente la sécurité avant le contenu du test et compacte le contexte hérité",()=>{
-  expect(screen.indexOf("{safetyCard}")).toBeLessThan(screen.indexOf('<Text style={styles.section}>Test proposé</Text>'));
-  expect(screen).toContain("Conditions générales de sécurité de la séance déjà validées.");
-  expect(screen).toContain("Aucune condition supplémentaire à confirmer.");
-  expect(screen).not.toContain("Conditions générales déjà confirmées");
+  expect(screen.indexOf("{safetyCard}")).toBeLessThan(screen.indexOf('<Text style={styles.section}>Test</Text>'));
+  expect(screen).toContain("Conditions générales de sécurité déjà validées.");
+  expect(screen).toContain("Voir les consignes");
  });
  it("compacte une configuration à sec réutilisée et annonce une reprise restaurée",()=>{
-  expect(screen).toContain("Configuration à sec déjà vérifiée.");
+  expect(screen).toContain("Conditions à sec déjà validées.");
   expect(screen).toContain("REPRISE DU TEST EN COURS");
   expect(screen).toContain("setRestoredTest(true)");
   expect(screen).not.toContain("const previewTest");

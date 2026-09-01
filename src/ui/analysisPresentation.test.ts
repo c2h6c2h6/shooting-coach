@@ -98,24 +98,25 @@ describe("écran d’analyse simplifié — garde-fous source", () => {
     expect(screen).toContain("Voir les mesures détaillées");
   });
 
-  it("présente une piste principale, une alternative et un accès aux suivantes", () => {
-    expect(screen).toContain("Piste principale à vérifier");
+  it("présente une piste principale et relègue les autres dans une section repliable", () => {
+    expect(screen).toContain("Piste à vérifier");
     expect(screen).toContain("presentation.visibleAlternative");
     expect(screen).toContain("presentation.additionalAlternatives");
-    expect(screen).toContain("Voir les autres pistes");
+    expect(screen).toContain("Autres pistes");
     expect(screen).not.toContain("{hypotheses.map((h,index)");
   });
 
   it("retire le niveau de preuve répété et hiérarchise les actions", () => {
     expect(screen).not.toContain("Niveau de preuve :");
     expect(screen).not.toContain("Compatibilité avec les observations :");
-    expect(screen.indexOf("Continuer avec le coach")).toBeLessThan(screen.indexOf("Autres pistes possibles"));
-    expect(screen).toContain("Créer la série de confirmation");
+    expect(screen.indexOf("Vérifier cette piste")).toBeLessThan(screen.indexOf("Autres pistes"));
+    expect(screen).toContain("onConfirmBias(primary)");
     expect(screen).toContain("style={styles.debugAction}");
   });
 
   it("conserve la doctrine et une question à choix exclusif", () => {
-    expect(screen).toContain("La cible seule ne permet pas d’identifier avec certitude l’origine du résultat.");
+    expect(screen).not.toContain("La cible seule ne permet pas d’identifier avec certitude l’origine du résultat.");
+    expect(screen).toContain("Pourquoi ?");
     expect(screen).toContain("Pour mieux comprendre");
     expect(screen).toContain('selectedAnswer===v?"●":"○"');
     expect(screen).not.toMatch(/internalScore|sourceRules|rulesetVersion|hypothesisCode\}/);

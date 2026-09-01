@@ -28,9 +28,7 @@ import { technicalHypothesisCatalog } from "../../../../src/domain/technicalHypo
 import {
   factualConfidenceLabels,
   partitionHypothesesForDisplay,
-  plausibilityLabels,
   seriesObservationSummary,
-  userFacingHypothesisRationale,
   userFacingHypothesisTitle,
 } from "../../../../src/ui/analysisPresentation";
 import { isDiagnosticQuestionApplicableForNumberOfHands, numberOfHandsFromApplicableContext } from "../../../../src/domain/numberOfHandsApplicability";
@@ -230,7 +228,7 @@ function HypothesisSection({hypotheses,onAnswer,onConfirmBias,existingBiasConfir
   onAnswer:(question:string,value:DiagnosticAnswerValue)=>Promise<void>;
   allowBiasConfirmation?:boolean;
   showPrimaryAction?:boolean}){
- const [expanded,setExpanded]=useState<string|null>(null);
+ const [showWhy,setShowWhy]=useState(false);
  const [showAdditional,setShowAdditional]=useState(false);
  const [selectedAnswer,setSelectedAnswer]=useState<DiagnosticAnswerValue|null>(null);
  const numberOfHands=hypotheses[0]?numberOfHandsFromApplicableContext(hypotheses[0].applicableContext):null;
@@ -238,47 +236,24 @@ function HypothesisSection({hypotheses,onAnswer,onConfirmBias,existingBiasConfir
   &&hypotheses.some(h=>q.hypotheses.includes(h.hypothesisCode)));
  const compactOffset=allowBiasConfirmation&&hypotheses.some(h=>h.supportingEvidence.some(e=>e.code==="SYSTEMATIC_BIAS_COMPATIBILITY"));
  const presentation=partitionHypothesesForDisplay(hypotheses);
- const renderHypothesis=(h:TechnicalHypothesis,label:string)=>{const e=hypothesisExplanation(h);return <View key={h.id} style={styles.explanation}>
-  <Text style={styles.rowTitle}>{label}</Text>
-  <Text style={styles.hypothesisTitle}>{userFacingHypothesisTitle(h,e.title)}</Text>
-  <Text style={styles.body}>{userFacingHypothesisRationale(h)}</Text>
-  <Text style={styles.plausibility}>{plausibilityLabels[h.plausibilityLevel]}</Text>
-  <Pressable onPress={()=>setExpanded(expanded===h.id?null:h.id)}><Text style={styles.link}>{expanded===h.id?"Masquer l’explication":"Pourquoi cette piste ?"}</Text></Pressable>
-  {expanded===h.id?<View>
-   <Text style={styles.rowTitle}>Ce qui la renforce</Text>{e.support.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
-   <Text style={styles.rowTitle}>Ce qui l’affaiblit</Text>{e.weaken.length?e.weaken.map(x=><Text key={x} style={styles.help}>• {x}</Text>):<Text style={styles.help}>• Aucun indice affaiblissant structuré supplémentaire.</Text>}
-   <Text style={styles.rowTitle}>Ce qu’il manque pour conclure</Text>{e.missing.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
-  </View>:null}
- </View>};
+ const primary=presentation.primary;
+ const primaryExplanation=primary?hypothesisExplanation(primary):null;
+ const otherHypotheses=[presentation.visibleAlternative,...presentation.additionalAlternatives].filter((item):item is TechnicalHypothesis=>Boolean(item));
  return <View style={styles.card}>
-  <Text style={styles.sectionTitle}>Pistes à vérifier</Text>
-  <Text style={styles.warning}>La cible seule ne permet pas d’identifier avec certitude l’origine du résultat.</Text>
+  <Text style={styles.sectionTitle}>Piste à vérifier</Text>
   {!hypotheses.length?<Text style={styles.help}>Les données actuelles ne permettent pas de dégager une piste technique utile.</Text>:null}
-  {compactOffset?<View style={styles.biasNotice}>
-   <Text style={styles.sectionTitle}>Biais constant à identifier</Text>
-   <Text style={styles.body}>Le groupement resserré et décalé indique un biais possible, mais la cible seule ne permet pas d’en identifier la cause.</Text>
-   <Text style={styles.rowTitle}>Causes possibles à départager</Text>
-   {hypotheses.map(h=>renderHypothesis(h,"Cause possible"))}
-  </View>:presentation.primary?renderHypothesis(presentation.primary,"Piste principale à vérifier"):null}
-  {compactOffset?<View style={styles.biasNotice}>
-   <Text style={styles.sectionTitle}>{existingBiasConfirmation?"Confirmation déjà réalisée":"Comment vérifier ?"}</Text>
-   <Text style={styles.body}>{existingBiasConfirmation
-    ? "Une série a déjà testé cette question. Consultez son résultat plutôt que de répéter automatiquement le même test."
-    : "Refaites une série de 5 coups dans les mêmes conditions pour voir si le décalage se reproduit."}</Text>
-   {existingBiasConfirmation
-    ? <Pressable style={styles.confirmAction} onPress={()=>onOpenExistingBiasConfirmation(existingBiasConfirmation)}><Text style={styles.confirmActionText}>Voir le résultat du test</Text></Pressable>
-    : <Pressable style={styles.confirmAction} onPress={()=>presentation.primary&&void onConfirmBias(presentation.primary)}><Text style={styles.confirmActionText}>Créer la série de confirmation</Text></Pressable>}
-  </View>:null}
-  {presentation.primary&&showPrimaryAction&&!compactOffset?<Pressable style={styles.primary} onPress={()=>router.push(`/sessions/${presentation.primary!.sessionId}/series/${presentation.primary!.seriesId}/coaching`)}>
-    <Text style={styles.primaryText}>Continuer avec le coach</Text>
-   </Pressable>:null}
-  {presentation.visibleAlternative&&!compactOffset?<View style={styles.alternatives}>
-   <Text style={styles.sectionTitle}>Autres pistes possibles</Text>
-   {renderHypothesis(presentation.visibleAlternative,"Autre piste")}
-   {presentation.additionalAlternatives.length?<Pressable onPress={()=>setShowAdditional(value=>!value)}>
-    <Text style={styles.link}>{showAdditional?"Masquer les autres pistes":"Voir les autres pistes"}</Text>
-   </Pressable>:null}
-   {showAdditional?presentation.additionalAlternatives.map(h=>renderHypothesis(h,"Piste supplémentaire")):null}
+  {primary?<><Text style={styles.hypothesisTitle}>{userFacingHypothesisTitle(primary,primaryExplanation!.title)}</Text>
+   <Pressable onPress={()=>setShowWhy(value=>!value)}><Text style={styles.link}>{showWhy?"Masquer le détail":"Pourquoi ?"}</Text></Pressable>
+   {showWhy?<View style={styles.explanation}><Text style={styles.rowTitle}>Ce qui a été constaté</Text>
+    {primaryExplanation!.support.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}</View>:null}
+   {existingBiasConfirmation&&compactOffset
+    ? <Pressable style={styles.primary} onPress={()=>onOpenExistingBiasConfirmation(existingBiasConfirmation)}><Text style={styles.primaryText}>Voir le résultat du test</Text></Pressable>
+    : showPrimaryAction?<Pressable style={styles.primary} onPress={()=>compactOffset?void onConfirmBias(primary):router.push(`/sessions/${primary.sessionId}/series/${primary.seriesId}/coaching`)}>
+     <Text style={styles.primaryText}>Vérifier cette piste</Text>
+    </Pressable>:null}</>:null}
+  {otherHypotheses.length?<View style={styles.alternatives}>
+   <Pressable onPress={()=>setShowAdditional(value=>!value)}><Text style={styles.link}>{showAdditional?"Masquer les autres pistes":"Autres pistes"}</Text></Pressable>
+   {showAdditional?otherHypotheses.map(h=>{const explanation=hypothesisExplanation(h);return <Text key={h.id} style={styles.body}>• {userFacingHypothesisTitle(h,explanation.title)}</Text>}):null}
   </View>:null}
   {question?<View style={styles.explanation}><Text style={styles.sectionTitle}>Pour mieux comprendre</Text>
    <Text style={styles.body}>{question.textFr}</Text><View style={styles.answerRow}>
@@ -343,7 +318,7 @@ function ObservationSection({ result }: { result: ObservationResult }) {
   const outlier = all.find((item) => item?.observationCode === "OUTLIER_TO_VERIFY") ?? null;
   const otherSecondary = result.secondary.filter((item) => item.observationCode !== "OUTLIER_TO_VERIFY");
   return <View style={styles.card}>
-    <Text style={styles.sectionTitle}>Synthèse de la série</Text>
+    <Text style={styles.sectionTitle}>Constat</Text>
     {result.primary ? <Text style={styles.observationPrimary}>
       {seriesObservationSummary(result)}
     </Text> : null}

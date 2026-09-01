@@ -5,6 +5,7 @@ import { confirmationTestCatalog } from "../domain/confirmationTestCatalog";
 import { technicalHypothesisCatalog } from "../domain/technicalHypothesisCatalog";
 import { trainingDrillCatalog } from "../domain/trainingDrillCatalog";
 import {
+  presentCoachingOutcome,
   presentConfirmationTest,
   presentDrill,
   presentHypothesis,
@@ -102,5 +103,16 @@ describe("hotfix UX — présentation du coaching", () => {
     const screen = readFileSync(resolve(process.cwd(), "app/sessions/[id]/series/[seriesId]/coaching.tsx"), "utf8");
     expect(screen).not.toContain('<Text style={styles.section}>Index indépendant</Text>');
     expect(screen).toContain("presentTechnicalControlTitle(technicalControl)");
+  });
+  it("offre un résultat court pour l’écran de décision", () => {
+    expect(presentCoachingOutcome("does_not_support_hypothesis")).toBe("Cette piste est peu probable.");
+  });
+
+  it("garde le détail du test hors du flux principal", () => {
+    const screen = readFileSync(resolve(process.cwd(), "app/sessions/[id]/series/[seriesId]/coaching.tsx"), "utf8");
+    expect(screen).toContain("À faire");
+    expect(screen).toContain("instructions.slice(0,3)");
+    expect(screen).toContain("Pourquoi ce test ?");
+    expect(screen).toContain("presentCoachingOutcome");
   });
 });

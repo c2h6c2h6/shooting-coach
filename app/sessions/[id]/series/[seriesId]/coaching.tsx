@@ -9,7 +9,7 @@ import { safetyBlockers } from "../../../../../src/domain/coachingSafetyRules";
 import { confirmCoordinatedSafety,confirmSessionSafety,EMPTY_SAFETY_CONTEXT,invalidateDryFireConfiguration,isDryFireConfigurationValidated,
  isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys,USER_CONFIRMABLE_TEST_SAFETY_KEYS } from "../../../../../src/domain/sessionSafetyContext";
 import { useCoaching } from "../../../../../src/ui/CoachingProvider";
-import { presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome,presentTechnicalControlTitle } from "../../../../../src/ui/coachingPresentation";
+ import { presentCoachingOutcome,presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome,presentTechnicalControlTitle } from "../../../../../src/ui/coachingPresentation";
 import { useTechnicalHypotheses } from "../../../../../src/ui/TechnicalHypothesisProvider";
 import { colors,layout,shadows } from "../../../../../src/ui/theme";
 import { isConfirmationTestApplicableForNumberOfHands, numberOfHandsFromApplicableContext } from "../../../../../src/domain/numberOfHandsApplicability";
@@ -20,7 +20,8 @@ export default function CoachingScreen(){
  const [hypotheses,setHypotheses]=useState<Awaited<ReturnType<typeof hypService.forSeries>>>([]),[safety,setSafety]=useState(EMPTY_SAFETY_CONTEXT);
  const [sessionSafety,setSessionSafety]=useState<SessionSafetyContext|null>(null);
  const [state,setState]=useState<Awaited<ReturnType<typeof service.start>>|null>(null),[restoredTest,setRestoredTest]=useState(false),[outcome,setOutcome]=useState<ConfirmationOutcome|null>(null),[hasWork,setHasWork]=useState(false),[error,setError]=useState("");
- const [showTechnicalEvaluation,setShowTechnicalEvaluation]=useState(false),[technicalOutcome,setTechnicalOutcome]=useState<CoachingOutcome|null>(null);
+  const [showTechnicalEvaluation,setShowTechnicalEvaluation]=useState(false),[technicalOutcome,setTechnicalOutcome]=useState<CoachingOutcome|null>(null);
+  const [showTestDetails,setShowTestDetails]=useState(false),[showSafetyDetails,setShowSafetyDetails]=useState(false),[showOutcomeDetails,setShowOutcomeDetails]=useState(false);
  const [excludedTest,setExcludedTest]=useState<{hypothesisCode:TechnicalHypothesis["hypothesisCode"];confirmationTestCode:string}|null>(null);
  const [nextHypothesisCode,setNextHypothesisCode]=useState<TechnicalHypothesis["hypothesisCode"]|null>(null);
  useEffect(()=>{void hypService.forSeries(seriesId).then(setHypotheses);
@@ -81,12 +82,16 @@ export default function CoachingScreen(){
  async function beginTransfer(){if(!state||transferBlockers.length)return;try{setError("");const cycle=await service.beginTransfer(state.cycle,safety);
   const conditions=invalidateDryFireConfiguration(safety),saved=await service.validateSessionSafety(sessionId,conditions);setSessionSafety(saved);setSafety(conditions);
   setState({...state,cycle});setHasWork(true);setTechnicalOutcome(null);}catch{setError("Le transfert en tir réel ne peut pas encore commencer.");}}
- const safetyCard=test&&(!sessionSafetyConfirmed||blockers.length>0)?<View style={styles.card}><Text style={styles.section}>Sécurité avant le test</Text>
-   {!sessionSafetyConfirmed?<><Text style={styles.label}>Conditions générales de la séance</Text>
-    {SESSION_SAFETY_KEYS.map(k=><Text key={k} style={styles.help}>• {labels[k]}</Text>)}</>:<Text style={styles.inherited}>✓ Conditions générales de sécurité de la séance déjà validées.</Text>}
-   {requiredSafetyKeys.length?<><Text style={styles.label}>Conditions spécifiques au protocole</Text>
-    {requiredSafetyKeys.map(k=><Text key={k} style={safety[k]?styles.inherited:styles.help}>{safety[k]?"✓ ":"• "}{labels[k]}</Text>)}</>:<Text style={styles.inherited}>✓ Aucune condition supplémentaire à confirmer.</Text>}
-   <Text style={styles.label}>Règles de sécurité du protocole</Text>{test.safetyRequirements.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
+  const safetyCard=test&&(!sessionSafetyConfirmed||blockers.length>0||dryFireAlreadyVerified)?<View style={styles.card}><Text style={styles.section}>Sécurité</Text>
+    {sessionSafetyConfirmed&&dryFireAlreadyVerified&&blockers.length===0?<Text style={styles.inherited}>✓ Conditions à sec déjà validées.</Text>:null}
+    {!sessionSafetyConfirmed?<><Text style={styles.label}>À confirmer avant de commencer</Text>
+     {SESSION_SAFETY_KEYS.map(k=><Text key={k} style={styles.help}>• {labels[k]}</Text>)}</>:null}
+    {(showSafetyDetails||!sessionSafetyConfirmed||blockers.length>0)?<>
+     {sessionSafetyConfirmed?<Text style={styles.inherited}>✓ Conditions générales de sécurité déjà validées.</Text>:null}
+     {requiredSafetyKeys.length?<><Text style={styles.label}>Conditions du test</Text>
+      {requiredSafetyKeys.map(k=><Text key={k} style={safety[k]?styles.inherited:styles.help}>{safety[k]?"✓ ":"• "}{labels[k]}</Text>)}</>:null}
+     <Text style={styles.label}>Consignes</Text>{test.safetyRequirements.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
+    </>:<Pressable onPress={()=>setShowSafetyDetails(true)}><Text style={styles.link}>Voir les consignes</Text></Pressable>}
    {(!sessionSafetyConfirmed||pendingConfirmableSafetyKeys.length>0)?<Pressable style={styles.primary} onPress={()=>void validateCombinedSafety()}>
     <Text style={styles.primaryText}>{!sessionSafetyConfirmed&&pendingConfirmableSafetyKeys.length
      ? "Je confirme que les conditions de sécurité nécessaires à ce test sont réunies"
@@ -97,28 +102,24 @@ export default function CoachingScreen(){
   </View>:null;
  if(!h)return <View style={styles.page}><Text>{excludedTest?"Aucune autre piste testable n’est disponible pour cette série. Le test courant pourra être repris ultérieurement.":"Aucune hypothèse suffisamment étayée."}</Text></View>;
  return <ScrollView contentContainerStyle={styles.page}>
-  <View style={styles.steps}><Text style={styles.stepText}>1 Série analysée  ›  2 Hypothèse  ›  3 Test  ›  4 Travail  ›  5 Contrôle  ›  6 Résultat</Text></View>
-  <Text style={styles.kicker}>VÉRIFIER CETTE HYPOTHÈSE</Text><Text style={styles.title}>{hypothesisPresentation!.title}</Text>
-  <Text style={styles.body}>{hypothesisPresentation!.explanation}</Text>
-  <Text style={styles.help}>Observation factuelle → hypothèse à vérifier → action facultative. Vous pouvez arrêter à chaque étape.</Text>
-  {!state?<>{safetyCard}<View style={styles.card}><Text style={styles.section}>Cause à vérifier</Text>
-    <Text style={styles.label}>{hypothesisPresentation!.title}</Text><Text style={styles.section}>Test proposé</Text>
-    <Text style={styles.label}>{test?.title??"Test indisponible"}</Text>
-    <Text style={styles.body}>{selection?.reason??"Ce protocole est affiché avant validation afin que vous sachiez précisément ce qui est proposé."}</Text>
-    <Text style={styles.label}>Pourquoi ce test ?</Text><Text style={styles.body}>{testPresentation?.why}</Text>
-    {dryFireAlreadyVerified?<Text style={styles.inherited}>✓ Configuration à sec déjà vérifiée.</Text>:null}
-    <Text style={styles.label}>Comment réaliser le test</Text>{testPresentation?.instructions.map((x,index)=><Text key={`${index}-${x}`} style={styles.body}>{index+1}. {x}</Text>)}
-    <Text style={styles.label}>Durée</Text><Text style={styles.body}>{test?.minimumDuration} à {test?.maximumDuration} minutes</Text>
-    <Text style={styles.label}>Ce qu’il faudra observer</Text><Text style={styles.body}>{testPresentation?.observationQuestion}</Text>{test?.observationCriteria.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}
+  <View style={styles.steps}><Text style={styles.stepText}>Constat  ›  Piste à vérifier  ›  Test  ›  Réponse  ›  Suivant</Text></View>
+   {!state?<>{safetyCard}<View style={styles.card}><Text style={styles.section}>Hypothèse</Text>
+     <Text style={styles.label}>{hypothesisPresentation!.title}</Text><Text style={styles.section}>Test</Text>
+     <Text style={styles.label}>{test?.title??"Test indisponible"}</Text>
+     <Text style={styles.section}>À faire</Text>{testPresentation?.instructions.slice(0,3).map(x=><Text key={x} style={styles.body}>• {x}</Text>)}
+     <Pressable onPress={()=>setShowTestDetails(value=>!value)}><Text style={styles.link}>{showTestDetails?"Masquer le détail":"Pourquoi ce test ?"}</Text></Pressable>
+     {showTestDetails?<><Text style={styles.help}>{testPresentation?.why}</Text><Text style={styles.help}>{testPresentation?.observationQuestion}</Text></>:null}
     {canStart?<Pressable style={styles.primary} onPress={()=>void begin()}>
      <Text style={styles.primaryText}>Commencer le test</Text>
     </Pressable>:null}
    </View></>:null}
   {state&&!outcome?
-   <View style={styles.card}><Text style={styles.kicker}>{restoredTest?"REPRISE DU TEST EN COURS":"TEST EN COURS"}</Text>{restoredTest?<Text style={styles.section}>{test?.title}</Text>:null}<Text style={styles.section}>Qu’avez-vous observé ?</Text><Text style={styles.body}>Choisissez uniquement l’observation factuelle obtenue pendant le test. Son interprétation est effectuée ensuite.</Text>
+    <View style={styles.card}><Text style={styles.kicker}>{restoredTest?"REPRISE DU TEST EN COURS":"TEST EN COURS"}</Text>{restoredTest?<Text style={styles.section}>Reprise du test en cours</Text>:null}<Text style={styles.section}>Réponse</Text><Text style={styles.body}>Que voyez-vous ?</Text>
     {test&&test.observationCriteria.map(observation=><Pressable key={observation} style={styles.secondary} onPress={()=>void finish(observation)}><Text style={styles.secondaryText}>{observation}</Text></Pressable>)}
     <Pressable onPress={()=>void service.cancel(state.cycle,state.test).then(()=>router.replace(`/sessions/${sessionId}`))}><Text style={styles.link}>Interrompre ou refuser</Text></Pressable></View>:null}
-  {outcome?<View style={styles.card}><Text style={styles.section}>Résultat du test</Text><Text style={styles.body}>{presentOutcome(outcome,state?.test.testCode)}</Text>
+   {outcome?<View style={styles.card}><Text style={styles.section}>Résultat</Text><Text style={styles.body}>{presentCoachingOutcome(outcome,state?.test.testCode)}</Text>
+    <Pressable onPress={()=>setShowOutcomeDetails(value=>!value)}><Text style={styles.link}>{showOutcomeDetails?"Masquer le détail":"Voir le détail"}</Text></Pressable>
+    {showOutcomeDetails?<Text style={styles.help}>{presentOutcome(outcome,state?.test.testCode)}</Text>:null}
    {hasWork&&transferState?.acquisitionControlCompleted&&state?.cycle.status==="drill_pending"?<><Text style={styles.kicker}>CORRECTION OBSERVÉE À SEC</Text>
     <Text style={styles.body}>Étape suivante : valider cette correction en tir réel.</Text>
     {transferBlockers.length?<><Text style={styles.warning}>Validation en tir réel restant à effectuer.</Text>{transferBlockers.map(item=><Text key={item} style={styles.help}>• {item}</Text>)}</>
