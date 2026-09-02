@@ -4,6 +4,8 @@ import type {
   ConfirmationTestDefinition,
   TechnicalObservationControlSnapshot,
   TrainingDrill,
+  InconclusiveReason,
+  NextDiagnosticAction,
 } from "../domain/coachingTypes";
 import type { HypothesisCode } from "../domain/technicalHypothesisCatalog";
 import { technicalHypothesisCatalog } from "../domain/technicalHypothesisCatalog";
@@ -153,6 +155,25 @@ export function presentCoachingOutcome(
     not_observed: "Résultat non concluant pour la piste testée.",
   };
   return texts[outcome];
+}
+
+export function presentInconclusiveGuidance(reason: InconclusiveReason, action: NextDiagnosticAction): { explanation: string; action: string } {
+  const explanation: Record<InconclusiveReason, string> = {
+    OUTLIER_CONTAMINATION: "Cette série contient un impact atypique qui empêche une comparaison fiable.",
+    NOT_OBSERVABLE: "Le comportement n’a pas pu être observé clairement.",
+    AMBIGUOUS_OBSERVATION: "L’observation reste ambiguë.",
+    PROTOCOL_INTERRUPTED: "Le protocole a été interrompu avant de produire une observation exploitable.",
+    UNKNOWN: "Les conditions ne permettent pas encore d’identifier ce qui manque.",
+  };
+  const actions: Record<NextDiagnosticAction, string> = {
+    CHANGE_ONE_VARIABLE: "Modifier un seul paramètre",
+    CHANGE_OBSERVATION_MODALITY: "Changer les conditions d’observation",
+    RETRY_SAME_PROTOCOL: "Reprendre ce test",
+    TEST_ANOTHER_HYPOTHESIS: "Examiner une autre piste",
+    COLLECT_MORE_INFORMATION: "Recueillir une information complémentaire",
+    NONE: "Retourner à la série",
+  };
+  return { explanation: explanation[reason], action: actions[action] };
 }
 
 export function presentDrill(drill: TrainingDrill): DrillPresentation {

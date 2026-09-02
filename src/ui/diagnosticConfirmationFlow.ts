@@ -1,4 +1,4 @@
-import type { ConfirmationOutcome, ConfirmationTestRun } from "../domain/coachingTypes";
+import type { ConfirmationOutcome, ConfirmationTestRun, InconclusiveReason } from "../domain/coachingTypes";
 import type { Series } from "../domain/series";
 import type { SeriesComparison } from "../domain/seriesComparison";
 import { observationThresholds } from "../domain/observationRules";
@@ -14,6 +14,7 @@ export interface DiagnosticConfirmationResult {
   readonly comparison: SeriesComparison;
   readonly sourceSeriesId: string;
   readonly diagnosticSeriesId: string;
+  readonly inconclusiveReason?: InconclusiveReason;
 }
 
 export const SIGNIFICANT_ATYPICAL_IMPACT_LIMITATION =
@@ -61,6 +62,7 @@ export function deriveDiagnosticConfirmationResult(input: {
       conclusion: "inconclusive",
       headline: "Cette série ne permet pas de confirmer la reproductibilité d’un biais constant.",
       interpretation: SIGNIFICANT_ATYPICAL_IMPACT_LIMITATION,
+      inconclusiveReason: "OUTLIER_CONTAMINATION",
     };
   }
   if (horizontal.variation !== "notable" && vertical.variation !== "notable") {

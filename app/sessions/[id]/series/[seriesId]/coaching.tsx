@@ -9,12 +9,13 @@ import { safetyBlockers } from "../../../../../src/domain/coachingSafetyRules";
 import { confirmCoordinatedSafety,confirmSessionSafety,EMPTY_SAFETY_CONTEXT,invalidateDryFireConfiguration,isDryFireConfigurationValidated,
  isSessionSafetyConfirmed,SESSION_SAFETY_KEYS,specificSafetyKeys,USER_CONFIRMABLE_TEST_SAFETY_KEYS } from "../../../../../src/domain/sessionSafetyContext";
 import { useCoaching } from "../../../../../src/ui/CoachingProvider";
- import { presentCoachingOutcome,presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome,presentTechnicalControlTitle } from "../../../../../src/ui/coachingPresentation";
+ import { presentCoachingOutcome,presentConfirmationTest,presentDrill,presentHypothesis,presentOutcome,presentTechnicalControlTitle,presentInconclusiveGuidance } from "../../../../../src/ui/coachingPresentation";
 import { useTechnicalHypotheses } from "../../../../../src/ui/TechnicalHypothesisProvider";
 import { colors,layout,shadows } from "../../../../../src/ui/theme";
 import { isConfirmationTestApplicableForNumberOfHands, numberOfHandsFromApplicableContext } from "../../../../../src/domain/numberOfHandsApplicability";
 import { applyConfirmationOutcomeToHypothesis } from "../../../../../src/domain/confirmationOutcomeTransition";
 import { TechnicalHypothesis } from "../../../../../src/domain/technicalHypothesis";
+import { inconclusiveDiagnosticProjection } from "../../../../../src/domain/inconclusiveDiagnostic";
 export default function CoachingScreen(){
  const {id:sessionId,seriesId}=useLocalSearchParams<{id:string;seriesId:string}>(),hypService=useTechnicalHypotheses(),service=useCoaching();
  const [hypotheses,setHypotheses]=useState<Awaited<ReturnType<typeof hypService.forSeries>>>([]),[safety,setSafety]=useState(EMPTY_SAFETY_CONTEXT);
@@ -53,6 +54,9 @@ export default function CoachingScreen(){
  const transferBlockers=transferDrill?safetyBlockers(transferDrill,safety):["Exercice de transfert introuvable."];
  const drillBlockers=drill?safetyBlockers(drill,safety):[];
  const canStart=Boolean(test&&safetyConfirmedForTest&&blockers.length===0);
+ const inconclusiveGuidance=outcome&&state
+  ?(()=>{const projection=inconclusiveDiagnosticProjection({outcome,testCode:state.test.testCode,hypothesisCode:h?.hypothesisCode});return projection?presentInconclusiveGuidance(projection.reason,projection.nextAction):null;})()
+  :null;
  async function validateCombinedSafety(){if(!test)return;try{
   const coordinated=confirmCoordinatedSafety(safety,test,!sessionSafetyConfirmed);
   const conditions=test.requiresLiveFire?invalidateDryFireConfiguration(coordinated.testConditions):coordinated.testConditions;
@@ -125,6 +129,7 @@ export default function CoachingScreen(){
     {test&&test.observationCriteria.map(observation=><Pressable key={observation} style={styles.secondary} onPress={()=>void finish(observation)}><Text style={styles.secondaryText}>{observation}</Text></Pressable>)}
     <Pressable onPress={()=>void service.cancel(state.cycle,state.test).then(()=>router.replace(`/sessions/${sessionId}`))}><Text style={styles.link}>Interrompre ou refuser</Text></Pressable></View>:null}
    {outcome?<View style={styles.card}><Text style={styles.section}>Résultat</Text><Text style={styles.body}>{presentCoachingOutcome(outcome,state?.test.testCode,h?.hypothesisCode)}</Text>
+    {inconclusiveGuidance?<><Text style={styles.body}>{inconclusiveGuidance.explanation}</Text><Text style={styles.kicker}>SUIVANT</Text><Text style={styles.body}>{inconclusiveGuidance.action}</Text></>:null}
     <Pressable onPress={()=>setShowOutcomeDetails(value=>!value)}><Text style={styles.link}>{showOutcomeDetails?"Masquer le détail":"Voir le détail"}</Text></Pressable>
     {showOutcomeDetails?<Text style={styles.help}>{presentOutcome(outcome,state?.test.testCode)}</Text>:null}
    {hasWork&&transferState?.acquisitionControlCompleted&&state?.cycle.status==="drill_pending"?<><Text style={styles.kicker}>CORRECTION OBSERVÉE À SEC</Text>
