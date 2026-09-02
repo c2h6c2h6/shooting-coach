@@ -116,7 +116,11 @@ export function presentOutcome(outcome: ConfirmationOutcome, testCode?: string):
 }
 
 /** Short, action-oriented wording for the coaching screen; the detailed wording remains available on demand. */
-export function presentCoachingOutcome(outcome: ConfirmationOutcome, testCode?: string): string {
+export function presentCoachingOutcome(
+  outcome: ConfirmationOutcome,
+  testCode?: string,
+  hypothesisCode?: HypothesisCode,
+): string {
   if (testCode === "TEST_EQUIPMENT_CONTEXT_CHECK") {
     const equipmentTexts: Record<ConfirmationOutcome, string> = {
       supports_hypothesis: "Un problème de visée / matériel reste possible.",
@@ -128,13 +132,25 @@ export function presentCoachingOutcome(outcome: ConfirmationOutcome, testCode?: 
     };
     return equipmentTexts[outcome];
   }
+  const title = hypothesisCode ? presentHypothesis(hypothesisCode).title : null;
+  if (title) {
+    const namedTexts: Record<ConfirmationOutcome, string> = {
+      supports_hypothesis: `${title} reste possible.`,
+      weakly_supports_hypothesis: `${title} reste possible.`,
+      does_not_support_hypothesis: `${title} est peu probable.`,
+      contradicts_hypothesis: `${title} est peu probable.`,
+      inconclusive: `${title} : résultat non concluant.`,
+      not_observed: `${title} : résultat non concluant.`,
+    };
+    return namedTexts[outcome];
+  }
   const texts: Record<ConfirmationOutcome, string> = {
-    supports_hypothesis: "Cette piste reste possible.",
-    weakly_supports_hypothesis: "Cette piste reste possible.",
-    does_not_support_hypothesis: "Cette piste est peu probable.",
-    contradicts_hypothesis: "Cette piste est peu probable.",
-    inconclusive: "Impossible de conclure.",
-    not_observed: "Impossible de conclure.",
+    supports_hypothesis: "Le résultat reste compatible avec la piste testée.",
+    weakly_supports_hypothesis: "Le résultat reste compatible avec la piste testée.",
+    does_not_support_hypothesis: "La piste testée est peu probable.",
+    contradicts_hypothesis: "La piste testée est peu probable.",
+    inconclusive: "Résultat non concluant pour la piste testée.",
+    not_observed: "Résultat non concluant pour la piste testée.",
   };
   return texts[outcome];
 }

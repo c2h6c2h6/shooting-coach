@@ -2,8 +2,9 @@ import { describe, expect, it } from "vitest";
 import { calculateSeriesMetrics } from "./seriesMetrics";
 import { observeSeries } from "./shootingObservation";
 import { generateTechnicalHypotheses } from "./technicalHypothesis";
+import { firstStructurallyTestableHypothesis } from "./confirmationTestEngine";
 import { UNVERIFIED_TARGET_GEOMETRY_VERSION } from "./targetCoordinateConversion";
-import { seriesObservationSummary } from "../ui/analysisPresentation";
+import { seriesObservationSummary, userFacingHypothesisTitle } from "../ui/analysisPresentation";
 
 const geometry = {
   version: UNVERIFIED_TARGET_GEOMETRY_VERSION,
@@ -61,8 +62,21 @@ describe("priorité diagnostique de la structure du groupement", () => {
       (evidence) => evidence.code === "SYSTEMATIC_BIAS_COMPATIBILITY",
     ))).toBe(false);
     expect(seriesObservationSummary(result.observations)).toBe(
-      "Le groupement principal est resserré et proche du centre. Un impact isolé est à vérifier.",
+      "Groupement principal proche du centre.\n1 impact isolé à vérifier.",
     );
+    expect(result.hypotheses[0]).toMatchObject({
+      hypothesisCode: "SHOT_ANTICIPATION",
+      internalScore: 1,
+      rank: 1,
+    });
+    expect(userFacingHypothesisTitle(
+      result.hypotheses[0]!,
+      "Anticipation possible du départ du coup",
+    )).toBe("Perturbation ponctuelle au départ du coup");
+    expect(firstStructurallyTestableHypothesis({
+      hypotheses: result.hypotheses,
+      sessionMode: "coaching_free",
+    })).toBeNull();
   });
 
   it("conserve le biais constant pour cinq impacts compacts tous décalés", () => {

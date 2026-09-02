@@ -105,7 +105,16 @@ describe("hotfix UX — présentation du coaching", () => {
     expect(screen).toContain("presentTechnicalControlTitle(technicalControl)");
   });
   it("offre un résultat court pour l’écran de décision", () => {
-    expect(presentCoachingOutcome("does_not_support_hypothesis")).toBe("Cette piste est peu probable.");
+    expect(presentCoachingOutcome("does_not_support_hypothesis")).toBe("La piste testée est peu probable.");
+  });
+
+  it("nomme la piste pour les résultats non concluants", () => {
+    expect(presentCoachingOutcome("inconclusive", undefined, "LATERAL_TRIGGER_PRESSURE"))
+      .toBe("Action latérale sur la détente : résultat non concluant.");
+    expect(presentCoachingOutcome("not_observed", undefined, "SHOT_ANTICIPATION"))
+      .toBe("Anticipation possible du départ du coup : résultat non concluant.");
+    expect(presentCoachingOutcome("supports_hypothesis", undefined, "LATERAL_TRIGGER_PRESSURE"))
+      .not.toMatch(/^Cette piste/);
   });
 
   it("garde le détail du test hors du flux principal", () => {
@@ -114,5 +123,6 @@ describe("hotfix UX — présentation du coaching", () => {
     expect(screen).toContain("instructions.slice(0,3)");
     expect(screen).toContain("Pourquoi ce test ?");
     expect(screen).toContain("presentCoachingOutcome");
+    expect(screen).toContain("h?.hypothesisCode");
   });
 });

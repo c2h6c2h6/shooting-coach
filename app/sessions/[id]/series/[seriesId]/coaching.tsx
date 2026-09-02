@@ -117,7 +117,7 @@ export default function CoachingScreen(){
     <View style={styles.card}><Text style={styles.kicker}>{restoredTest?"REPRISE DU TEST EN COURS":"TEST EN COURS"}</Text>{restoredTest?<Text style={styles.section}>Reprise du test en cours</Text>:null}<Text style={styles.section}>Réponse</Text><Text style={styles.body}>Que voyez-vous ?</Text>
     {test&&test.observationCriteria.map(observation=><Pressable key={observation} style={styles.secondary} onPress={()=>void finish(observation)}><Text style={styles.secondaryText}>{observation}</Text></Pressable>)}
     <Pressable onPress={()=>void service.cancel(state.cycle,state.test).then(()=>router.replace(`/sessions/${sessionId}`))}><Text style={styles.link}>Interrompre ou refuser</Text></Pressable></View>:null}
-   {outcome?<View style={styles.card}><Text style={styles.section}>Résultat</Text><Text style={styles.body}>{presentCoachingOutcome(outcome,state?.test.testCode)}</Text>
+   {outcome?<View style={styles.card}><Text style={styles.section}>Résultat</Text><Text style={styles.body}>{presentCoachingOutcome(outcome,state?.test.testCode,h?.hypothesisCode)}</Text>
     <Pressable onPress={()=>setShowOutcomeDetails(value=>!value)}><Text style={styles.link}>{showOutcomeDetails?"Masquer le détail":"Voir le détail"}</Text></Pressable>
     {showOutcomeDetails?<Text style={styles.help}>{presentOutcome(outcome,state?.test.testCode)}</Text>:null}
    {hasWork&&transferState?.acquisitionControlCompleted&&state?.cycle.status==="drill_pending"?<><Text style={styles.kicker}>CORRECTION OBSERVÉE À SEC</Text>

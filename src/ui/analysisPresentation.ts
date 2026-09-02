@@ -57,6 +57,6 @@ export function seriesObservationSummary(result: ObservationResult): string | nu
   const principalGroupCenteredAndCompact = result.primary.observationCode === "OUTLIER_TO_VERIFY"
     && result.secondary.some((item) => item.observationCode === "CENTERED_AND_COMPACT");
   return principalGroupCenteredAndCompact
-    ? "Le groupement principal est resserré et proche du centre. Un impact isolé est à vérifier."
+    ? "Groupement principal proche du centre.\n1 impact isolé à vérifier."
     : observationLabelsFr[result.primary.observationCode];
 }
