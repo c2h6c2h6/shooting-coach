@@ -100,7 +100,14 @@ export default function CoachingScreen(){
       : "Je confirme que les conditions de sécurité spécifiques au protocole sont réunies"}</Text>
    </Pressable>:blockers.length?<View style={styles.blocked}><Text style={styles.warning}>Le test ne peut pas encore commencer.</Text>{blockers.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}</View>:null}
   </View>:null;
- if(!h)return <View style={styles.page}><Text>{excludedTest?"Aucune autre piste testable n’est disponible pour cette série. Le test courant pourra être repris ultérieurement.":"Aucune hypothèse suffisamment étayée."}</Text></View>;
+ if(!h)return <View style={styles.page}>
+  <View style={styles.card}><Text style={styles.section}>Suite de l’analyse</Text>
+   <Text style={styles.body}>Pas assez d’éléments pour identifier une cause.</Text>
+   <Pressable style={styles.primary} onPress={()=>router.replace(`/sessions/${sessionId}/series/${seriesId}`)}>
+    <Text style={styles.primaryText}>Retour à la série</Text>
+   </Pressable>
+  </View>
+ </View>;
  return <ScrollView contentContainerStyle={styles.page}>
   <View style={styles.steps}><Text style={styles.stepText}>Constat  ›  Piste à vérifier  ›  Test  ›  Réponse  ›  Suivant</Text></View>
    {!state?<>{safetyCard}<View style={styles.card}><Text style={styles.section}>Hypothèse</Text>

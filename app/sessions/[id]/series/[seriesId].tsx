@@ -32,6 +32,7 @@ import {
   userFacingHypothesisTitle,
 } from "../../../../src/ui/analysisPresentation";
 import { isDiagnosticQuestionApplicableForNumberOfHands, numberOfHandsFromApplicableContext } from "../../../../src/domain/numberOfHandsApplicability";
+import { firstStructurallyTestableHypothesis } from "../../../../src/domain/confirmationTestEngine";
 
 export default function SeriesDetailScreen() {
   const { id: sessionId, seriesId } = useLocalSearchParams<{ id: string; seriesId: string }>();
@@ -175,6 +176,8 @@ export default function SeriesDetailScreen() {
           onOpenExistingBiasConfirmation={(item)=>router.push(`/sessions/${sessionId}/series/${item.id}`)}
           allowBiasConfirmation={!hasContextualResult}
           showPrimaryAction={!hasContextualResult}
+          hasTestableHypothesis={Boolean(firstStructurallyTestableHypothesis({ hypotheses, sessionMode: "coaching_free" }))}
+          onRefaireSerie={() => void openImpactEntry()}
           onAnswer={(q,v)=>hypothesesService.answer(q,series.id,v).then(setHypotheses)} /> : null}
       {(!hasContextualResult || showDiagnosticGeneralAnalysis) && diagnosticChecked && objectiveMetrics
         ? <ObjectiveResults metrics={objectiveMetrics} /> : null}
@@ -220,11 +223,13 @@ export default function SeriesDetailScreen() {
   );
 }
 
-function HypothesisSection({hypotheses,onAnswer,onConfirmBias,existingBiasConfirmation,onOpenExistingBiasConfirmation,
-  allowBiasConfirmation=true,showPrimaryAction=true}:{hypotheses:TechnicalHypothesis[];
+function HypothesisSection({hypotheses,onAnswer,onConfirmBias,existingBiasConfirmation,onOpenExistingBiasConfirmation,onRefaireSerie,
+  allowBiasConfirmation=true,showPrimaryAction=true,hasTestableHypothesis=true}:{hypotheses:TechnicalHypothesis[];
   onConfirmBias:(hypothesis:TechnicalHypothesis)=>Promise<void>;
   existingBiasConfirmation:Series|null;
   onOpenExistingBiasConfirmation:(series:Series)=>void;
+  onRefaireSerie:()=>void;
+  hasTestableHypothesis?:boolean;
   onAnswer:(question:string,value:DiagnosticAnswerValue)=>Promise<void>;
   allowBiasConfirmation?:boolean;
   showPrimaryAction?:boolean}){
@@ -242,13 +247,17 @@ function HypothesisSection({hypotheses,onAnswer,onConfirmBias,existingBiasConfir
  return <View style={styles.card}>
   <Text style={styles.sectionTitle}>Piste à vérifier</Text>
   {!hypotheses.length?<Text style={styles.help}>Les données actuelles ne permettent pas de dégager une piste technique utile.</Text>:null}
+  {hypotheses.length>0&&showPrimaryAction&&!hasTestableHypothesis
+    ? <><Text style={styles.help}>Pas assez d’éléments pour identifier une cause.</Text>
+      <Pressable style={styles.primary} onPress={onRefaireSerie}><Text style={styles.primaryText}>Refaire une série</Text></Pressable></>
+    : null}
   {primary?<><Text style={styles.hypothesisTitle}>{userFacingHypothesisTitle(primary,primaryExplanation!.title)}</Text>
    <Pressable onPress={()=>setShowWhy(value=>!value)}><Text style={styles.link}>{showWhy?"Masquer le détail":"Pourquoi ?"}</Text></Pressable>
    {showWhy?<View style={styles.explanation}><Text style={styles.rowTitle}>Ce qui a été constaté</Text>
     {primaryExplanation!.support.map(x=><Text key={x} style={styles.help}>• {x}</Text>)}</View>:null}
    {existingBiasConfirmation&&compactOffset
     ? <Pressable style={styles.primary} onPress={()=>onOpenExistingBiasConfirmation(existingBiasConfirmation)}><Text style={styles.primaryText}>Voir le résultat du test</Text></Pressable>
-    : showPrimaryAction?<Pressable style={styles.primary} onPress={()=>compactOffset?void onConfirmBias(primary):router.push(`/sessions/${primary.sessionId}/series/${primary.seriesId}/coaching`)}>
+    : showPrimaryAction&&hasTestableHypothesis?<Pressable style={styles.primary} onPress={()=>compactOffset?void onConfirmBias(primary):router.push(`/sessions/${primary.sessionId}/series/${primary.seriesId}/coaching`)}>
      <Text style={styles.primaryText}>Vérifier cette piste</Text>
     </Pressable>:null}</>:null}
   {otherHypotheses.length?<View style={styles.alternatives}>

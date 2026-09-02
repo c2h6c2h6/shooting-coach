@@ -79,7 +79,14 @@ describe("clarification subjective E1", () => {
   });
 
   it("termine prudemment lorsqu’aucune autre piste n’est disponible", () => {
-    expect(screen).toContain("Aucune autre piste testable n’est disponible pour cette série.");
-    expect(screen).toContain("Le test courant pourra être repris ultérieurement.");
+    expect(screen).toContain("Pas assez d’éléments pour identifier une cause.");
+    expect(screen).toContain("Retour à la série");
+    expect(screen).not.toContain("Aucune hypothèse suffisamment étayée.");
+  });
+
+  it("n’affiche le CTA de vérification que lorsqu’une piste testable existe", () => {
+    expect(seriesScreen).toContain("hasTestableHypothesis");
+    expect(seriesScreen).toContain("showPrimaryAction&&hasTestableHypothesis");
+    expect(seriesScreen).toContain("Refaire une série");
   });
 });
